@@ -94,6 +94,23 @@ describe("baú", () => {
 });
 
 describe("metas de farm", () => {
+  it("ausência de 7+ dias na semana dispensa da meta; ausência curta não", async () => {
+    const m = await metal();
+    await actAs("dev-gerente");
+    await createGoal(form({ itemId: m.id, quantity: "100" }));
+    const [nina, leo] = [await memberByName("Nina Torres"), await memberByName("Léo Vieira")];
+    const now = new Date();
+    const d = (days: number) => new Date(now.getTime() + days * 86400_000);
+    await db.absence.create({ data: { memberId: nina.id, startsAt: d(-2), endsAt: d(6), reason: "Viagem longa", status: "APROVADA" } });
+    await db.absence.create({ data: { memberId: leo.id, startsAt: d(-1), endsAt: d(2), reason: "Fim de semana", status: "APROVADA" } });
+    const { rows } = await weeklyGoals(now);
+    expect(rows.find((r) => r.member.id === nina.id)?.exempt).toBe(true);
+    expect(rows.find((r) => r.member.id === leo.id)?.exempt).toBe(false);
+    // ausência recusada não dispensa
+    await db.absence.updateMany({ where: { memberId: nina.id }, data: { status: "RECUSADA" } });
+    expect((await weeklyGoals(now)).rows.find((r) => r.member.id === nina.id)?.exempt).toBe(false);
+  });
+
   it("progresso da semana conta só entregas conferidas; meta da patente vence a geral", async () => {
     await setRankPerms("Soldado", ["painel.ver", "economia.ver"]);
     const m = await metal();

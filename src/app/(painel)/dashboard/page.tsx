@@ -174,7 +174,7 @@ export default async function DashboardPage() {
                 <span className="flex items-center gap-2">
                   <TargetIcon className="size-4 text-primary" /> Minhas metas da semana
                 </span>
-                {myRow.complete && <span className="text-success">✓ batidas</span>}
+                {myRow.exempt ? <span className="text-muted-foreground">dispensado (ausência)</span> : myRow.complete && <span className="text-success">✓ batidas</span>}
               </span>
               {myRow.cells.map((c) => {
                 if (!c.applicable) return null;

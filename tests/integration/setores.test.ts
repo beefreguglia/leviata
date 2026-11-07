@@ -4,6 +4,9 @@ import { setMemberSector } from "@/app/(painel)/membros/actions";
 import { discordSignIn } from "@/lib/discord-sync";
 import { getViewer } from "@/lib/session";
 import { applyLeviataStructure, LEVIATA_RANKS } from "../../prisma/leviata-structure";
+import { deliverFarm, registerMove } from "@/app/(painel)/bau/actions";
+import { createFarmGuide } from "@/app/(painel)/farm/actions";
+import { requireViewer } from "@/lib/session";
 import { actAs, db, form, memberByName, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
 
 const profile = { id: "999", username: "novato", global_name: "Novato", avatar: null };
@@ -124,5 +127,25 @@ describe("estrutura oficial da Leviatã", () => {
     expect((await sector("Comércio")).discordRoleId).toBe("1534404775171330106");
     expect((await management("G-Comércio")).discordRoleId).toBe("1534404775171330106");
     expect((await management("G-Ação")).sectorId).toBe((await sector("Vanguarda")).id);
+  });
+});
+
+describe("estrutura oficial: Recruta, Membro e Veterano veem a economia sem editar", () => {
+  it.each(["Recruta", "Membro", "Veterano"])("%s", async (rank) => {
+    await applyLeviataStructure(db);
+    const leo = await memberByName("Léo Vieira");
+    await db.member.update({ where: { id: leo.id }, data: { rank: { connect: { name: rank } } } });
+    await actAs("dev-recruta");
+    await expect(requireViewer("economia.ver")).resolves.toBeTruthy();
+    const item = await db.item.create({ data: { name: `Metal ${rank}` } });
+    // entrega de farm: pode (entra pendente para a gerência conferir)
+    expect((await deliverFarm(form({ itemId: item.id, quantity: "10" }))).ok).toBe(true);
+    expect((await db.vaultTransaction.findFirstOrThrow({ where: { itemId: item.id } })).status).toBe("PENDENTE");
+    // editar: não
+    expect((await registerMove(form({ kind: "ENTRADA", asset: "DINHEIRO_SUJO", quantity: "100", reason: "x" }))).ok).toBe(false);
+    expect((await createFarmGuide(form({ title: "Guia", location: "Lugar", howTo: "x", risk: "BAIXO" })).catch(() => ({ ok: true }))).ok).toBe(false);
+    const v = await getViewer();
+    expect(v?.can("financeiro.gerenciar")).toBe(false);
+    expect(v?.can("conteudo.editar")).toBe(false);
   });
 });

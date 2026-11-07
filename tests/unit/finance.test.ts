@@ -83,3 +83,21 @@ describe("validações da Fase 4", () => {
     expect(() => parsePunishmentForm(fd({ memberId: "m1", kind: "ADVERTENCIA", reason: "x" }))).toThrow("motivo");
   });
 });
+
+describe("dispensa da meta por ausência longa", () => {
+  const { from, to } = { from: new Date("2026-11-09T03:00:00Z"), to: new Date("2026-11-16T03:00:00Z") }; // seg→seg (Brasília)
+  const day = (d: string, end = false) => new Date(`${d}T${end ? "23:59:59.999" : "00:00:00.000"}-03:00`);
+  it("conta os dias incluindo o primeiro e o último", async () => {
+    const { absenceDays } = await import("@/lib/finance");
+    expect(absenceDays({ startsAt: day("2026-11-10"), endsAt: day("2026-11-10", true) })).toBe(1);
+    expect(absenceDays({ startsAt: day("2026-11-10"), endsAt: day("2026-11-16", true) })).toBe(7);
+  });
+  it("7 dias ou mais encostando na semana dispensa; menos não; fora da semana não", async () => {
+    const { isFarmExempt } = await import("@/lib/finance");
+    expect(isFarmExempt([{ startsAt: day("2026-11-12"), endsAt: day("2026-11-18", true) }], from, to)).toBe(true);
+    expect(isFarmExempt([{ startsAt: day("2026-11-03"), endsAt: day("2026-11-09", true) }], from, to)).toBe(true);
+    expect(isFarmExempt([{ startsAt: day("2026-11-10"), endsAt: day("2026-11-15", true) }], from, to)).toBe(false);
+    expect(isFarmExempt([{ startsAt: day("2026-11-16"), endsAt: day("2026-11-30", true) }], from, to)).toBe(false);
+    expect(isFarmExempt([], from, to)).toBe(false);
+  });
+});

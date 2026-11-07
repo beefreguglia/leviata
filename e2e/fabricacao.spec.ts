@@ -94,7 +94,8 @@ test.describe("calculadora rápida", () => {
     await c.getByRole("button", { name: "Adicionar material" }).click();
     await expect(c.getByLabel("Material 3", { exact: true })).toBeVisible();
 
-    // continua lá depois de recarregar
+    // continua lá depois de recarregar (espera a calculadora gravar no navegador antes)
+    await expect.poll(() => page.evaluate(() => localStorage.getItem("leviata:calc-rapida") ?? "")).toContain("Pólvora");
     await page.reload();
     await expect(page.getByTestId("quick-calc").getByLabel("Material 1", { exact: true })).toHaveValue("Pólvora");
     await expect(page.getByTestId("quick-calc").getByLabel("Item", { exact: true })).toHaveValue("Munição");

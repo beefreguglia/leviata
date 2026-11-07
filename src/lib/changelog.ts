@@ -15,6 +15,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-07-economia-metas",
+    date: "2026-11-07",
+    title: "Economia aberta para todos e metas mais justas",
+    items: [
+      "Recrutas, membros e veteranos agora **veem** farm, fabricação, baú, metas, encomendas e vendas (editar continua com as gerências)",
+      "Todo mundo pode **entregar farm** no baú — a gerência confere e a entrega conta na sua meta",
+      "Quem avisar ausência de **7 dias ou mais** fica dispensado da meta de farm daquela semana",
+    ],
+  },
+  {
     id: "2026-11-07-setores",
     date: "2026-11-07",
     title: "Setores e gerências",

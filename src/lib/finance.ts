@@ -32,6 +32,17 @@ export function weekRangeBRT(now = new Date()) {
   return { from, to };
 }
 
+/** Ausência deste tamanho (ou maior) que pega a semana dispensa a pessoa da meta de farm. */
+export const LONG_ABSENCE_DAYS = 7;
+
+/** Dias de uma ausência contando o primeiro e o último (ela vai do início do 1º dia ao fim do último). */
+export const absenceDays = (a: { startsAt: Date; endsAt: Date }) => Math.round((a.endsAt.getTime() - a.startsAt.getTime()) / 86400_000);
+
+/** Dispensado da meta da semana [from, to): tem ausência de 7+ dias que encosta na semana. */
+export function isFarmExempt(absences: { startsAt: Date; endsAt: Date }[], from: Date, to: Date) {
+  return absences.some((a) => a.startsAt < to && a.endsAt >= from && absenceDays(a) >= LONG_ABSENCE_DAYS);
+}
+
 /** Progresso de uma meta: 0 a 100 (pode passar de 100 no "feito"). */
 export function goalProgress(done: number, target: number) {
   const pct = target > 0 ? Math.min(100, Math.round((done / target) * 100)) : 100;

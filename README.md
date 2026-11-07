@@ -93,7 +93,7 @@ Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel
 
 **Estrutura da Leviatã** (`prisma/leviata-structure.ts`, ligada aos cargos do Discord):
 
-- **Patente** (uma por pessoa): Recruta → Membro → Veterano → Hierarquia (Hierarquia = tudo; as outras veem o painel).
+- **Patente** (uma por pessoa): Recruta → Membro → Veterano → Hierarquia (Hierarquia = tudo; as outras veem o painel inteiro, inclusive farm, fabricação, baú, metas, encomendas e vendas, sem editar — só entregam farm, que a gerência confere).
 - **Setor** (um por pessoa): Vanguarda (Ações), Propulsão (Corrida), Vigília (Investigativa), Comércio.
 - **Gerências** (somam permissões à patente; uma pessoa pode ter várias):
 

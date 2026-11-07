@@ -4,7 +4,8 @@
  */
 import { RANK_PALETTE } from "../src/lib/rank-colors";
 
-const VER = ["painel.ver"];
+/** Recruta, Membro e Veterano: veem tudo (inclusive a economia), mas não editam. */
+const VER = ["painel.ver", "economia.ver"];
 
 /** Patentes (escada): uma por pessoa. */
 export const LEVIATA_RANKS = [

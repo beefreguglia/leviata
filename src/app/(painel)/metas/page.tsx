@@ -36,8 +36,9 @@ export default async function MetasPage() {
   ]);
   const me = rows.find((r) => r.member.id === viewer.member?.id);
   const lastDay = new Date(to.getTime() - 1);
-  const doneCount = rows.filter((r) => r.hasGoals && r.complete).length;
-  const withGoals = rows.filter((r) => r.hasGoals && !r.absent).length;
+  // dispensados (ausência de 7+ dias na semana) não entram na conta
+  const doneCount = rows.filter((r) => r.hasGoals && !r.exempt && r.complete).length;
+  const withGoals = rows.filter((r) => r.hasGoals && !r.exempt).length;
 
   return (
     <>
@@ -92,7 +93,10 @@ export default async function MetasPage() {
         <div className="flex flex-col gap-10">
           {me?.hasGoals && (
             <FadeIn>
-              <GroupedList header="Minha semana">
+              <GroupedList
+                header="Minha semana"
+                footer={me.exempt ? "Você está dispensado da meta desta semana por causa da sua ausência (7 dias ou mais)." : undefined}
+              >
                 {me.cells.map((c) => {
                   if (!c.applicable) return null;
                   const item = items.find((i) => i.id === c.itemId)!;
@@ -177,7 +181,11 @@ export default async function MetasPage() {
                           <span className="flex items-center gap-3">
                             <PresenceAvatar name={r.member.rpName} src={r.member.user?.avatarUrl} presence={r.absent ? "AUSENTE" : "ATIVO"} size="sm" />
                             <span className="text-base text-grey-100">{r.member.rpName}</span>
-                            {r.complete && <StatusBadge label="Bateu" className="bg-success-low text-success" />}
+                            {r.exempt ? (
+                              <StatusBadge label="Dispensado" className="bg-grey-600 text-grey-200" />
+                            ) : (
+                              r.complete && <StatusBadge label="Bateu" className="bg-success-low text-success" />
+                            )}
                             {r.absent && <StatusBadge label="Ausente" className="bg-warning-low text-warning" />}
                           </span>
                         </td>
