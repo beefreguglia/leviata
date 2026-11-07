@@ -19,12 +19,17 @@ describe("checagem de configuração de produção", () => {
   });
   it("aponta o que falta", () => {
     expect(productionProblems({ ...full, SUPABASE_URL: "", AUTH_DISCORD_SECRET: "" })).toEqual([
-      "Login do Discord incompleto (AUTH_DISCORD_ID, AUTH_DISCORD_SECRET, DISCORD_GUILD_ID)",
+      "Login do Discord incompleto (AUTH_DISCORD_ID, AUTH_DISCORD_SECRET)",
       "Sem Supabase Storage: imagens não funcionam na Vercel (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)",
     ]);
   });
   it("login de teste ligado em produção é problema (mesmo que o código já o ignore)", () => {
     expect(productionProblems({ ...full, AUTH_DEV_LOGIN: "true" })).toContain("AUTH_DEV_LOGIN deve ficar vazio em produção");
     expect(configStatus({ ...full, AUTH_DEV_LOGIN: "true" }).devLoginOn).toBe(false);
+  });
+
+  it("servidor do Discord é opcional (login sem checar cargos)", () => {
+    expect(productionProblems({ ...full, DISCORD_GUILD_ID: "" })).toEqual([]);
+    expect(configStatus({ ...full, DISCORD_GUILD_ID: "" })).toMatchObject({ discordLogin: true, discordGuild: false });
   });
 });

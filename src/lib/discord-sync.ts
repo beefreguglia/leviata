@@ -30,6 +30,8 @@ export async function syncDiscordUser(params: {
   avatarUrl: string | null;
   nick: string | null;
   roles: string[];
+  /** sem servidor configurado: cria a ficha mesmo sem patente (a liderança promove depois) */
+  createWithoutRank?: boolean;
 }) {
   const user = await db.user.upsert({
     where: { discordId: params.discordId },
@@ -70,9 +72,9 @@ export async function syncDiscordUser(params: {
         }),
       ]);
     }
-  } else if (rank) {
+  } else if (rank || params.createWithoutRank) {
     await db.member.create({
-      data: { rpName: params.nick ?? params.username, userId: user.id, rankId: rank.id },
+      data: { rpName: params.nick ?? params.username, userId: user.id, rankId: rank?.id ?? null },
     });
   }
 
@@ -83,6 +85,10 @@ export async function syncDiscordUser(params: {
 /**
  * Decide o login via Discord: confere config, se a pessoa está no servidor e sincroniza.
  * Retorna true (entra) ou uma URL de /login com o erro.
+ *
+ * Sem DISCORD_GUILD_ID (servidor ainda não conectado): qualquer conta do Discord entra,
+ * ganha uma ficha SEM patente (só vê as regras públicas) e a liderança promove em Membros.
+ * IDs em BOOTSTRAP_ADMIN_DISCORD_IDS entram com a patente mais alta.
  */
 export async function discordSignIn(params: {
   accessToken?: string;
@@ -90,16 +96,25 @@ export async function discordSignIn(params: {
   profile?: DiscordProfileLike;
 }): Promise<true | string> {
   const { accessToken, guildId, profile } = params;
-  if (!guildId || !accessToken || !profile?.id) return "/login?erro=config";
+  if (!accessToken || !profile?.id) return "/login?erro=config";
+
+  const discordId = String(profile.id);
+  const base = {
+    discordId,
+    username: profile.global_name || profile.username || "sem-nome",
+    avatarUrl: discordAvatarUrl(discordId, profile.avatar),
+  };
+
+  if (!guildId) {
+    await syncDiscordUser({ ...base, nick: null, roles: [], createWithoutRank: true });
+    return true;
+  }
 
   const guildMember = await getGuildMember(accessToken, guildId);
   if (!guildMember) return "/login?erro=fora-do-servidor";
 
-  const discordId = String(profile.id);
   await syncDiscordUser({
-    discordId,
-    username: profile.global_name || profile.username || "sem-nome",
-    avatarUrl: discordAvatarUrl(discordId, profile.avatar),
+    ...base,
     nick: guildMember.nick,
     roles: guildMember.roles,
   });

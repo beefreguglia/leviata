@@ -8,7 +8,9 @@ Navegador ──► Vercel (site, São Paulo) ──► Supabase (banco + imagen
                      └─► Discord (login + webhooks)
 ```
 
-Você vai precisar de contas no **GitHub**, **Supabase**, **Vercel** e acesso de administrador ao **servidor do Discord** da Leviata.
+Você vai precisar de contas no **GitHub**, **Supabase**, **Vercel** e **Discord**.
+
+> **Servidor do Discord ainda não conectado?** Sem `DISCORD_GUILD_ID`, o login pelo Discord funciona normalmente, mas o painel **não confere** se a pessoa está no servidor nem puxa os cargos: quem entra ganha uma ficha **sem patente** (só vê as regras públicas) e você promove em **Membros**. Seu ID em `BOOTSTRAP_ADMIN_DISCORD_IDS` entra como Líder. Quando puder, siga **"Conectar o servidor depois"** no fim.
 
 ---
 
@@ -62,9 +64,9 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
    `https://SEU-PROJETO.vercel.app/api/auth/callback/discord`
    (você descobre a URL exata no passo 4; volte aqui e ajuste. Se usar domínio próprio, adicione ele também.)
 4. No app do Discord: **Configurações → Avançado → Modo desenvolvedor** ligado.
-   - Botão direito no servidor da Leviata → **Copiar ID do servidor** → `DISCORD_GUILD_ID`.
+   - Botão direito no servidor da Leviata → **Copiar ID do servidor** → `DISCORD_GUILD_ID` *(opcional por enquanto)*.
    - Botão direito no **seu** nome → **Copiar ID do usuário** → vai no `BOOTSTRAP_ADMIN_DISCORD_IDS`.
-5. Webhooks (opcional, mas recomendado): em cada canal → **Editar canal → Integrações → Webhooks → Novo webhook → Copiar URL**:
+5. Webhooks (opcionais, podem ficar para depois): em cada canal → **Editar canal → Integrações → Webhooks → Novo webhook → Copiar URL**:
    - canal de avisos → `DISCORD_WEBHOOK_AVISOS`
    - canal de ações → `DISCORD_WEBHOOK_ACOES`
    - canal de lives → `DISCORD_WEBHOOK_LIVES`
@@ -85,7 +87,7 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 | `AUTH_SECRET` | gere com `npx auth secret` (ou `openssl rand -base64 32`) |
 | `AUTH_URL` | `https://SEU-PROJETO.vercel.app` |
 | `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET` | do passo 3 |
-| `DISCORD_GUILD_ID` | do passo 3 |
+| `DISCORD_GUILD_ID` | do passo 3 — **deixe de fora** enquanto o servidor não estiver conectado |
 | `BOOTSTRAP_ADMIN_DISCORD_IDS` | seu Discord ID (e de outro líder, separados por vírgula) |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | do passo 2 |
 | `SUPABASE_BUCKET` | `leviata` |
@@ -103,10 +105,19 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 ## 5. Primeiro acesso
 
 1. Entre no painel com o Discord. Como seu ID está em `BOOTSTRAP_ADMIN_DISCORD_IDS`, você entra como **Líder**.
-2. **Hierarquia** → edite cada patente: nome, cor e o **ID do cargo do Discord** (Configurações do servidor → Cargos → botão direito → Copiar ID).
-3. Peça para alguém de cada cargo entrar e confira se a patente veio certa.
-4. Na Vercel, **apague o valor** de `BOOTSTRAP_ADMIN_DISCORD_IDS` e faça **Redeploy**. A partir daqui, o cargo do Discord manda.
+2. **Hierarquia** → edite cada patente: nome e cor. Com o servidor conectado, preencha também o **ID do cargo do Discord** (Configurações do servidor → Cargos → botão direito → Copiar ID).
+3. Peça para os membros entrarem. Sem servidor conectado, eles aparecem em **Membros** sem patente: abra a ficha e dê a patente. Com servidor, confira se a patente veio certa.
+4. Na Vercel, **apague o valor** de `BOOTSTRAP_ADMIN_DISCORD_IDS` e faça **Redeploy** (sua patente fica salva).
 5. **Mapa** → "Enviar imagem do mapa". Depois é só ir preenchendo regras, lore, facções, farm…
+
+---
+
+## Conectar o servidor depois
+
+1. Copie o ID do servidor (passo 3.4) e crie os webhooks que quiser (passo 3.5).
+2. Na Vercel, adicione `DISCORD_GUILD_ID` (e os `DISCORD_WEBHOOK_*`) → **Redeploy**.
+3. Em **Hierarquia**, ligue cada patente ao ID do cargo do Discord.
+4. A partir daqui só entra quem está no servidor, e a patente segue o cargo do Discord a cada login (quem não tiver cargo ligado mantém a patente que já tinha no painel).
 
 ---
 
@@ -131,6 +142,7 @@ Vercel → projeto → **Settings → Domains** → adicione (ex.: `painel.levia
 
 | Sintoma | Causa provável |
 | --- | --- |
+| Pessoa entra mas só vê as regras | Ficha sem patente — promova em **Membros** (ou ligue o cargo do Discord em Hierarquia) |
 | "Você precisa estar no servidor do Discord" | Conta não está no servidor ou `DISCORD_GUILD_ID` errado |
 | Login volta para a tela de login com erro | Redirect do Discord diferente da URL do site / `AUTH_URL` errado |
 | Entra mas cai em "Acesso restrito" | O cargo da pessoa não está ligado a nenhuma patente (Hierarquia) |

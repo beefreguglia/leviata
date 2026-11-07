@@ -17,9 +17,9 @@ async function linkRole(rankName: string, roleId: string) {
 }
 
 describe("login com Discord", () => {
-  it("sem DISCORD_GUILD_ID ou token → erro de configuração", async () => {
-    await expect(discordSignIn({ accessToken: "t", guildId: undefined, profile })).resolves.toBe("/login?erro=config");
+  it("sem token ou perfil → erro de configuração", async () => {
     await expect(discordSignIn({ accessToken: undefined, guildId: "g", profile })).resolves.toBe("/login?erro=config");
+    await expect(discordSignIn({ accessToken: "t", guildId: "g", profile: undefined })).resolves.toBe("/login?erro=config");
   });
 
   it("quem não está no servidor é barrado e não é salvo", async () => {
@@ -116,5 +116,37 @@ describe("acesso inicial (BOOTSTRAP_ADMIN_DISCORD_IDS)", () => {
     await discordSignIn({ accessToken: "t", guildId: "g", profile });
     const m = await db.member.findFirstOrThrow({ where: { user: { discordId: "999" } }, include: { rank: true } });
     expect(m.rank?.name).toBe("Soldado");
+  });
+});
+
+describe("login sem servidor conectado (DISCORD_GUILD_ID vazio)", () => {
+  afterEach(() => {
+    delete process.env.BOOTSTRAP_ADMIN_DISCORD_IDS;
+  });
+
+  it("entra sem consultar o Discord e ganha ficha SEM patente", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    await expect(discordSignIn({ accessToken: "t", guildId: undefined, profile })).resolves.toBe(true);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    const user = await db.user.findUniqueOrThrow({ where: { discordId: "999" }, include: { member: true } });
+    expect(user.member?.rpName).toBe("Novato");
+    expect(user.member?.rankId).toBeNull();
+  });
+
+  it("ID de bootstrap entra com a patente mais alta", async () => {
+    process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "999";
+    await expect(discordSignIn({ accessToken: "t", guildId: "", profile })).resolves.toBe(true);
+    const user = await db.user.findUniqueOrThrow({ where: { discordId: "999" }, include: { member: { include: { rank: true } } } });
+    expect(user.member?.rank?.name).toBe("Líder");
+  });
+
+  it("patente dada no painel não é perdida no próximo login", async () => {
+    await discordSignIn({ accessToken: "t", guildId: undefined, profile });
+    const soldado = await db.rank.findUniqueOrThrow({ where: { name: "Soldado" } });
+    await db.member.updateMany({ where: { user: { discordId: "999" } }, data: { rankId: soldado.id } });
+    await discordSignIn({ accessToken: "t", guildId: undefined, profile });
+    const user = await db.user.findUniqueOrThrow({ where: { discordId: "999" }, include: { member: true } });
+    expect(user.member?.rankId).toBe(soldado.id);
+    expect(await db.member.count({ where: { user: { discordId: "999" } } })).toBe(1);
   });
 });

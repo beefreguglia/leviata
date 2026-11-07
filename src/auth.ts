@@ -10,7 +10,10 @@ export const devLoginEnabled =
 
 const providers: Provider[] = [
   Discord({
-    authorization: { params: { scope: "identify guilds.members.read" } },
+    // sem servidor configurado, só pede a identidade (não dá para ler cargos)
+    authorization: {
+      params: { scope: process.env.DISCORD_GUILD_ID ? "identify guilds.members.read" : "identify" },
+    },
   }),
 ];
 
