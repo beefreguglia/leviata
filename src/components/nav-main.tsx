@@ -25,7 +25,7 @@ export function NavMain({ permissions }: { permissions: string[] }) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Painel</SidebarGroupLabel>
+      <SidebarGroupLabel className="type-label text-sidebar-foreground/60">Painel</SidebarGroupLabel>
       <SidebarMenu>
         {sections.map((section) => {
           const Icon = section.icon;

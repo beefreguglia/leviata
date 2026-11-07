@@ -25,12 +25,12 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 - Ciano só em: botão principal, foco, item ativo, links, indicadores. Badges de status = fundo `*-low` + texto `*-light`.
 - Separadores dentro de cards: `border-grey-700`. Inputs ficam em `bg-input` (grey-900) — dentro de card contrastam; na página use `bg-card`.
 
-## Tipografia
-- **Roboto** (texto) e **Fira Code** (código), via `next/font`.
-- Escala Andromeda = Tailwind: xs 12 · sm 14 · base 16 · lg 18 · xl 20 · 2xl 24 · `text-[2rem]` 32.
-- Line-height: `leading-shorter` (125%) em títulos, `leading-base` (160%) em texto (padrão do body).
-- Pesos: 400 regular, 500 medium, 700 bold. Botões e títulos em **bold**.
-- Título de página: `text-2xl md:text-[2rem] font-bold leading-shorter text-grey-100`. Rótulo de seção: `text-sm font-bold text-grey-200`. Sem caixa-alta.
+## Tipografia (manual: `docs/TIPOGRAFIA.md` · ao vivo: `/design/tipografia`)
+- Famílias: **Bebas Neue** (títulos e números grandes, sempre maiúscula), **Barlow** (texto), **Barlow Condensed** (rótulos/seções em maiúscula), **Permanent Marker** (destaque grafitado, no máx. 1× por tela) e **Fira Code** (IDs/códigos). Carregadas em `src/app/layout.tsx`.
+- Use as classes `type-display`, `type-h1`, `type-h2`, `type-h3`, `type-body`, `type-small`, `type-caption`, `type-label`, `type-stat`, `type-accent`, `type-code` (em `globals.css`). A cor fica por conta de quem usa.
+- Título de página: `type-h1 text-grey-100` (o `PageHeader` já faz). Cabeçalho de seção: `type-h2 text-grey-300` (o `GroupedList` já faz). Número grande: `type-stat`. Selos/patentes já usam a fonte de rótulo.
+- Nunca Bebas abaixo de 24px nem em parágrafo/botão/campo. A maiúscula vem da classe, não do texto digitado.
+- Pricedown (fonte do GTA) é proprietária: não usar.
 
 ## Espaçamento e raios
 - Escala de 4px (Andromeda space = Tailwind). Valores usuais: 2 (8) · 3 (12) · 4 (16) · 5 (20) · 6 (24) · 8 (32) · 10 (40).

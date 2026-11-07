@@ -76,7 +76,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
               <span className="flex items-center gap-2 text-sm text-grey-200">
                 <span className={cn("size-2.5 rounded-full", info.dot)} /> {info.label}
               </span>
-              <span className="text-2xl font-bold tabular-nums text-grey-100">{counts[r]}</span>
+              <span className="type-stat text-grey-100">{counts[r]}</span>
             </Link>
           );
         })}

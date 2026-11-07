@@ -75,7 +75,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
             <StatusBadge {...EVENT_STATUS[ev.status]} />
             {ev.lineupPublishedAt && <StatusBadge label="Escalação publicada" className="bg-cyan-low text-cyan-light" />}
           </div>
-          <h1 className={cn("text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]", ev.status === "CANCELADO" && "line-through opacity-60")}>{ev.title}</h1>
+          <h1 className={cn("type-h1 text-grey-100", ev.status === "CANCELADO" && "line-through opacity-60")}>{ev.title}</h1>
           <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-grey-300">
             <span className="flex items-center gap-1.5">
               <CalendarIcon className="size-4 text-muted-foreground" /> {fmtDateTime(ev.startsAt)}
@@ -154,7 +154,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
 
       {/* Presença */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-grey-200">Presença</h2>
+        <h2 className="type-h2 text-grey-300">Presença</h2>
         {open && viewer.member && (
           <div className="flex flex-wrap gap-2" role="group" aria-label="Minha presença">
             {(["VOU", "TALVEZ", "NAO_VOU"] as const).map((st) => (
@@ -198,7 +198,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
 
       {ev.perimeter?.imageId && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-sm font-bold text-grey-200">Perímetro · {ev.perimeter.name}</h2>
+          <h2 className="type-h2 text-grey-300">Perímetro · {ev.perimeter.name}</h2>
           <Link href={`/perimetros/${ev.perimeter.id}`} className="overflow-hidden rounded-card bg-input">
             <UploadImage id={ev.perimeter.imageId} alt={`Vista de cima: ${ev.perimeter.name}`} className="max-h-[60svh] w-full" />
           </Link>
@@ -208,7 +208,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
       {/* Escalação */}
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-bold text-grey-200">
+          <h2 className="type-h2 text-grey-300">
             Escalação {ev.lineupPublishedAt && <span className="font-normal text-muted-foreground">· publicada {fmtAgo(ev.lineupPublishedAt)}</span>}
           </h2>
           {canManage && open && (
@@ -261,7 +261,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
 
       {/* Relatório */}
       <section className="flex flex-col gap-3">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-grey-200">
+        <h2 className="flex items-center gap-2 type-h2 text-grey-300">
           <FileTextIcon className="size-4" /> Relatório
         </h2>
         {ev.report && (

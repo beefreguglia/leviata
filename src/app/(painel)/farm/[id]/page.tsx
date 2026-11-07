@@ -29,7 +29,7 @@ export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">)
             {guide.item && <StatusBadge label={guide.item.name} className="bg-cyan-low text-cyan-light" />}
             <StatusBadge {...RISK[guide.risk]} />
           </div>
-          <h1 className="text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]">{guide.title}</h1>
+          <h1 className="type-h1 text-grey-100">{guide.title}</h1>
           <p className="text-sm text-muted-foreground">
             Por {guide.author?.rpName ?? "Leviatã"} · atualizado {fmtAgo(guide.updatedAt)}
           </p>
@@ -59,7 +59,7 @@ export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">)
 
       {guide.imageIds.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-sm font-bold text-grey-200">Prints</h2>
+          <h2 className="type-h2 text-grey-300">Prints</h2>
           <div className="grid gap-3 sm:grid-cols-2" data-testid="farm-images">
             {guide.imageIds.map((imgId, i) => (
               <a key={imgId} href={uploadUrl(imgId)} target="_blank" rel="noreferrer" className="overflow-hidden rounded-card bg-input" aria-label={`Abrir print ${i + 1}`}>

@@ -25,7 +25,7 @@ export default async function PerimeterPage({ params }: PageProps<"/perimetros/[
     <FadeIn className="mx-auto flex max-w-5xl flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]">{p.name}</h1>
+          <h1 className="type-h1 text-grey-100">{p.name}</h1>
           <p className="text-sm text-muted-foreground">
             Atualizado {fmtAgo(p.updatedAt)}
             {p.author ? ` por ${p.author.rpName}` : ""}

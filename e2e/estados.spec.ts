@@ -58,3 +58,24 @@ test.describe("registro", () => {
     await expect(page.getByLabel("Número")).toHaveValue("(055) 130-999");
   });
 });
+
+test.describe("tipografia e créditos", () => {
+  test.use(as("lider"));
+  test("manual ao vivo abre para quem tem acesso total e o crédito aparece no menu", async ({ page }) => {
+    await page.goto("/design/tipografia");
+    await expect(page.getByRole("heading", { name: "Tipografia" })).toBeVisible();
+    await expect(page.getByText(".type-h1")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Bernardo Freguglia" })).toHaveAttribute("href", "https://github.com/beefreguglia");
+    // título de página usa a fonte de título
+    const family = await page.getByRole("heading", { name: "Tipografia" }).evaluate((el) => getComputedStyle(el).fontFamily);
+    expect(family).toMatch(/Bebas/i);
+  });
+});
+
+test.describe("tipografia (soldado)", () => {
+  test.use(as("soldado"));
+  test("soldado não abre o manual", async ({ page }) => {
+    await page.goto("/design/tipografia");
+    await expect(page).toHaveURL(/sem-acesso/);
+  });
+});

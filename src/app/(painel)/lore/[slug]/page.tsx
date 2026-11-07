@@ -33,7 +33,7 @@ export default async function LoreArticlePage({ params }: PageProps<"/lore/[slug
             <StatusBadge {...LORE_CATEGORY[article.category]} />
             {article.happenedAt && <span className="text-sm text-muted-foreground">{fmtDate(article.happenedAt)}</span>}
           </div>
-          <h1 className="text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]">{article.title}</h1>
+          <h1 className="type-h1 text-grey-100">{article.title}</h1>
           {article.summary && <p className="text-lg text-grey-300">{article.summary}</p>}
           <p className="text-sm text-muted-foreground">
             Por {article.author?.rpName ?? "Leviatã"} · atualizado {fmtAgo(article.updatedAt)}

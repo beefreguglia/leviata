@@ -1,12 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Fira_Code, Roboto } from "next/font/google";
+import { Barlow, Barlow_Condensed, Bebas_Neue, Fira_Code, Permanent_Marker } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MotionProvider } from "@/components/motion";
 import "./globals.css";
 
-// Tipografia do Andromeda: Roboto (texto) e Fira Code (código)
-const body = Roboto({ variable: "--font-body", subsets: ["latin"], weight: ["400", "500", "700"] });
+// Tipografia da Leviatã (manual em docs/TIPOGRAFIA.md):
+//   Bebas Neue → títulos e números grandes (condensada, maiúscula, clima de tela de GTA)
+//   Barlow → texto · Barlow Condensed → rótulos e seções · Permanent Marker → destaque grafitado
+//   Fira Code → códigos, IDs e valores técnicos
+const display = Bebas_Neue({ variable: "--font-display-face", subsets: ["latin", "latin-ext"], weight: "400" });
+const body = Barlow({ variable: "--font-body", subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700"] });
+const label = Barlow_Condensed({ variable: "--font-label-face", subsets: ["latin", "latin-ext"], weight: ["500", "600", "700"] });
+const accent = Permanent_Marker({ variable: "--font-accent-face", subsets: ["latin"], weight: "400" });
 const mono = Fira_Code({ variable: "--font-mono-face", subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,7 +31,7 @@ export const viewport: Viewport = { themeColor: "#09090a", colorScheme: "dark" }
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`dark ${body.variable} ${mono.variable} h-full antialiased`}>
+    <html lang="pt-BR" className={`dark ${display.variable} ${body.variable} ${label.variable} ${accent.variable} ${mono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <MotionProvider>
           <TooltipProvider>{children}</TooltipProvider>

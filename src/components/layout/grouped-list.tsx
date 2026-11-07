@@ -21,7 +21,7 @@ export function GroupedList({
     <section className={cn("flex flex-col gap-3", className)}>
       {(header || action) && (
         <div className="flex items-center justify-between gap-3">
-          {header && <h2 className="text-sm font-bold text-grey-200">{header}</h2>}
+          {header && <h2 className="type-h2 text-grey-300">{header}</h2>}
           {action}
         </div>
       )}

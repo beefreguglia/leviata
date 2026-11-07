@@ -5,6 +5,7 @@ import {
   Sidebar, SidebarContent, SidebarFooter, SidebarHeader,
 } from "@/components/ui/sidebar";
 import { BrandLogo } from "@/components/layout/logo";
+import { Credits } from "@/components/layout/credits";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser, type SidebarUser } from "@/components/nav-user";
@@ -37,6 +38,7 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} signOutAction={signOutAction} />
+        <Credits className="px-2 pt-1 text-center" />
       </SidebarFooter>
     </Sidebar>
   );

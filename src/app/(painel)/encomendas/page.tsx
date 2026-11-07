@@ -206,7 +206,7 @@ export default async function EncomendasPage() {
               const list = active.filter((o) => o.status === st);
               return (
                 <section key={st} className="flex flex-col gap-3" data-testid={`orders-${st}`}>
-                  <h2 className="flex items-center gap-2 text-sm font-bold text-grey-200">
+                  <h2 className="flex items-center gap-2 type-h2 text-grey-300">
                     <StatusBadge {...ORDER_STATUS[st]} /> <span className="tabular-nums text-muted-foreground">{list.length}</span>
                   </h2>
                   {list.length === 0 ? (

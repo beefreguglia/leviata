@@ -4,6 +4,7 @@ import { getViewer } from "@/lib/session";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/layout/logo";
+import { Credits } from "@/components/layout/credits";
 import { FadeIn } from "@/components/motion";
 
 export const metadata = { title: "Entrar" };
@@ -54,7 +55,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="mb-8 flex flex-col items-center text-center">
           <h1 className="sr-only">Leviatã</h1>
           <BrandLogo alt="" className="w-72 drop-shadow-[0_0_40px_rgba(6,212,236,0.25)] sm:w-80" />
-          <p className="mt-1 text-base text-muted-foreground">Cidade dos Anjos · Painel interno</p>
+          <p className="mt-2 type-label text-grey-300">Cidade dos Anjos · Painel interno</p>
         </div>
 
         <FadeIn className="rounded-card bg-card p-6">
@@ -106,6 +107,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             </div>
           )}
         </FadeIn>
+        <Credits className="mt-8 text-center" />
       </div>
     </main>
   );

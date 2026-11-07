@@ -25,15 +25,16 @@ const DETAIL: Record<string, string> = {
 /** Breadcrumb a partir da URL: Seção › Módulo › subpágina. */
 export function Breadcrumbs() {
   const pathname = usePathname();
-  const parts = pathname.split("/").filter(Boolean);
-  const base = ALL_NAV_LINKS.find((l) => l.href === `/${parts[0]}`);
+  // link do menu mais específico que contém a página (ex.: /design/tipografia)
+  const base = ALL_NAV_LINKS.filter((l) => pathname === l.href || pathname.startsWith(`${l.href}/`)).sort((a, b) => b.href.length - a.href.length)[0];
   if (!base) return null;
+  const parts = pathname.slice(base.href.length).split("/").filter(Boolean);
 
   const crumbs: { label: string; href?: string }[] = [];
   if (base.section) crumbs.push({ label: base.section });
   crumbs.push({ label: base.label, href: base.href });
 
-  const rest = parts.slice(1);
+  const rest = parts;
   if (rest[0] && SUBPAGES[rest[0]]) crumbs.push({ label: SUBPAGES[rest[0]] });
   else if (rest[0]) {
     crumbs.push({ label: DETAIL[base.href] ?? "Detalhe", href: `${base.href}/${rest[0]}` });

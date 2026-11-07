@@ -134,7 +134,7 @@ export default async function BauPage() {
                     <WalletIcon className="size-5" />
                   </span>
                   <span>
-                    <span className="block text-[2rem] font-bold leading-shorter tabular-nums text-grey-100">{money(b.value)}</span>
+                    <span className="block type-stat text-grey-100">{money(b.value)}</span>
                     <span className="text-sm text-muted-foreground">{b.label}</span>
                   </span>
                 </div>

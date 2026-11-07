@@ -153,7 +153,7 @@ export default async function MetasPage() {
           )}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-grey-200">
+            <h2 className="type-h2 text-grey-300">
               Fac · {doneCount} de {withGoals} bateram tudo
             </h2>
             <div className="overflow-x-auto rounded-card bg-card">

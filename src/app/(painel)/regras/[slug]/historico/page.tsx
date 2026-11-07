@@ -17,7 +17,7 @@ export default async function HistoricoRegraPage({ params }: PageProps<"/regras/
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-2 text-2xl font-bold leading-shorter md:text-[2rem]">Histórico</h1>
+      <h1 className="mb-2 type-h1 text-grey-100">Histórico</h1>
       <p className="mb-10 text-base text-muted-foreground">{page.title}</p>
       <div className="flex flex-col gap-4">
         {page.versions.map((v, i) => (

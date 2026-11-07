@@ -131,7 +131,7 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
         <div className="flex flex-col gap-10">
           {pinned.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-grey-200">
+              <h2 className="flex items-center gap-2 type-h2 text-grey-300">
                 <PinIcon className="size-4 text-primary" /> Em destaque
               </h2>
               <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
@@ -146,7 +146,7 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
               <StaggerItem key={label}>
                 <section className="relative flex flex-col gap-3 border-l-2 border-grey-700 pl-6">
                   <span className="absolute top-1 -left-[7px] size-3 rounded-full bg-primary ring-4 ring-background" aria-hidden="true" />
-                  <h2 className="text-sm font-bold text-grey-200 first-letter:uppercase">{label}</h2>
+                  <h2 className="type-h2 text-grey-300 first-letter:uppercase">{label}</h2>
                   <div className="flex flex-col gap-3">
                     {items.map((a) => (
                       <LoreCard key={a.id} article={a} />

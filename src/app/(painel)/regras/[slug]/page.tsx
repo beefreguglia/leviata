@@ -27,7 +27,7 @@ export default async function RegraPage({ params }: PageProps<"/regras/[slug]">)
     <FadeIn key={page.id} className="max-w-3xl">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold leading-shorter md:text-[2rem]">{page.title}</h1>
+          <h1 className="type-h1 text-grey-100">{page.title}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Atualizado {fmtAgo(page.updatedAt)}
             {last?.author ? ` por ${last.author.rpName}` : ""}

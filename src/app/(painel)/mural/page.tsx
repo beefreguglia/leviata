@@ -126,7 +126,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
             ))}
             {expired.length > 0 && (
               <StaggerItem className="mt-6 flex flex-col gap-4">
-                <h2 className="text-sm font-bold text-grey-200">Expirados (só a gerência vê)</h2>
+                <h2 className="type-h2 text-grey-300">Expirados (só a gerência vê)</h2>
                 {expired.map((n) => (
                   <NoticeCard key={n.id} notice={n} canEdit={canEdit} />
                 ))}

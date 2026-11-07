@@ -73,7 +73,7 @@ export default async function LivesPage() {
 
       <div className="flex flex-col gap-10">
         <section className="flex flex-col gap-3">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-grey-200">
+          <h2 className="flex items-center gap-2 type-h2 text-grey-300">
             <span className="size-2 rounded-full bg-danger-light" /> Ao vivo agora · {live.length}
           </h2>
           {live.length === 0 ? (

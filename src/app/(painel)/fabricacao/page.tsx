@@ -88,7 +88,7 @@ export default async function FabricacaoPage() {
       <div className="flex flex-col gap-10">
         <FadeIn className="flex flex-col gap-3">
           <div>
-            <h2 className="text-sm font-bold text-grey-200">Calculadora rápida</h2>
+            <h2 className="type-h2 text-grey-300">Calculadora rápida</h2>
             <p className="text-sm text-muted-foreground">Digite os materiais de uma fabricação e quanto quer fazer — não precisa cadastrar nada.</p>
           </div>
           <QuickCalculator
@@ -103,7 +103,7 @@ export default async function FabricacaoPage() {
 
         <FadeIn className="flex flex-col gap-3">
           <div>
-            <h2 className="text-sm font-bold text-grey-200">Calculadora de receitas</h2>
+            <h2 className="type-h2 text-grey-300">Calculadora de receitas</h2>
             <p className="text-sm text-muted-foreground">Usa as receitas cadastradas e abre a árvore até a matéria-prima.</p>
           </div>
           <CraftCalculator
@@ -119,7 +119,7 @@ export default async function FabricacaoPage() {
         </FadeIn>
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-sm font-bold text-grey-200">Receitas · {recipes.length}</h2>
+          <h2 className="type-h2 text-grey-300">Receitas · {recipes.length}</h2>
           {recipes.length === 0 ? (
             <EmptyState
               icon={HammerIcon}

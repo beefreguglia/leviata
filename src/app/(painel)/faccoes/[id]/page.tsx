@@ -42,7 +42,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
       <FadeIn className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-start">
         <FactionAvatar name={faction.name} tag={faction.tag} color={faction.color} logoId={faction.logoId} className="size-20 text-xl" />
         <div className="flex flex-1 flex-col gap-2">
-          <h1 className="text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]">
+          <h1 className="type-h1 text-grey-100">
             {faction.name} {faction.tag && <span className="text-lg font-normal text-muted-foreground">[{faction.tag}]</span>}
           </h1>
           <div className="flex flex-wrap gap-1.5">
@@ -104,7 +104,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
 
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-bold text-grey-200">Histórico com a Leviatã</h2>
+            <h2 className="type-h2 text-grey-300">Histórico com a Leviatã</h2>
             {canEdit && (
               <FormDialog
                 title="Registrar no histórico"

@@ -56,7 +56,7 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
           ringClassName="ring-background"
         />
         <div className="flex-1">
-          <h1 className="text-2xl font-bold leading-shorter md:text-[2rem]">{member.rpName}</h1>
+          <h1 className="type-h1 text-grey-100">{member.rpName}</h1>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5 sm:justify-start">
             <RankBadge name={member.rank?.name} color={member.rank?.color} />
             <StatusBadge {...MEMBER_STATUS[member.status]} />

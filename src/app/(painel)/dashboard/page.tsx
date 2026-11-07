@@ -51,7 +51,7 @@ function Stat({
         <Icon className="size-5" />
       </span>
       <span>
-        <span className="block text-[2rem] font-bold leading-shorter text-grey-100 tabular-nums">{value}</span>
+        <span className="block type-stat text-grey-100">{value}</span>
         <span className="text-sm text-muted-foreground">{label}</span>
       </span>
     </Link>
@@ -118,11 +118,13 @@ export default async function DashboardPage() {
         </FadeIn>
       )}
       <FadeIn className="mb-10">
-        <p className="mb-2 text-sm font-medium text-muted-foreground first-letter:uppercase">
+        <p className="mb-2 type-label text-muted-foreground">
           {new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long", timeZone: "America/Sao_Paulo" }).format(now)}
         </p>
-        <h1 className="text-2xl font-bold leading-shorter md:text-[2rem]">
-          {greeting()}, {firstName}
+        <h1 className="type-h1 text-grey-100">
+          {greeting()},{" "}
+          {/* destaque grafitado (Permanent Marker) só no nome — ver docs/TIPOGRAFIA.md */}
+          <span className="type-accent text-[0.82em] normal-case text-cyan-light">{firstName}</span>
         </h1>
       </FadeIn>
 
@@ -156,11 +158,11 @@ export default async function DashboardPage() {
               </span>
               <span className="grid grid-cols-2 gap-4">
                 <span>
-                  <span className="block text-2xl font-bold tabular-nums text-grey-100">{money(balances.dirty)}</span>
+                  <span className="block type-stat text-grey-100">{money(balances.dirty)}</span>
                   <span className="text-sm text-muted-foreground">sujo</span>
                 </span>
                 <span>
-                  <span className="block text-2xl font-bold tabular-nums text-grey-100">{money(balances.clean)}</span>
+                  <span className="block type-stat text-grey-100">{money(balances.clean)}</span>
                   <span className="text-sm text-muted-foreground">limpo</span>
                 </span>
               </span>
@@ -199,7 +201,7 @@ export default async function DashboardPage() {
       {pinnedNotices.length > 0 && (
         <FadeIn delay={0.05} className="mt-10 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-grey-200">Mural</h2>
+            <h2 className="type-h2 text-grey-300">Mural</h2>
             <Link href="/mural" className="text-sm text-cyan-light hover:underline">Ver todos</Link>
           </div>
           <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">

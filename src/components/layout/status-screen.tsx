@@ -36,7 +36,7 @@ export function StatusScreen({
         <Icon className="size-9" aria-hidden="true" />
       </span>
       {code && <p className="mt-6 font-mono text-sm font-bold tracking-widest text-muted-foreground">{code}</p>}
-      <h1 id="status-title" className={cn("text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]", code ? "mt-2" : "mt-6")}>
+      <h1 id="status-title" className={cn("type-h1 text-grey-100", code ? "mt-2" : "mt-6")}>
         {title}
       </h1>
       <p className="mt-3 max-w-md text-base text-muted-foreground">{description}</p>
