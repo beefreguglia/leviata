@@ -71,11 +71,12 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
       const L = (await import("leaflet")).default;
       if (disposed || !containerRef.current || mapRef.current) return;
       const bounds = L.latLngBounds([0, 0], [map.height, map.width]);
-      // zoom 0 = 1 pixel da imagem por pixel da tela: é o máximo (não amplia além do tamanho real)
+      // zoom 0 = 1 pixel da imagem por pixel da tela. Mínimo: o mapa inteiro na tela; máximo: 3 níveis
+      // (8×) acima disso, para aproximar bem dos detalhes
       const m = L.map(containerRef.current, {
         crs: L.CRS.Simple,
         minZoom: -6,
-        maxZoom: 0,
+        maxZoom: 4,
         zoomSnap: 0.25,
         maxBounds: bounds,
         maxBoundsViscosity: 1,
@@ -83,9 +84,11 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
       });
       L.imageOverlay(uploadUrl(map.imageId), bounds).addTo(m);
       // mínimo = a imagem inteira cabendo na área do mapa (recalcula quando a área muda de tamanho)
+      const ZOOM_IN_LEVELS = 3;
       const fitMinZoom = () => {
-        const fit = Math.min(m.getBoundsZoom(bounds), 0);
+        const fit = m.getBoundsZoom(bounds);
         m.setMinZoom(fit);
+        m.setMaxZoom(fit + ZOOM_IN_LEVELS);
         if (m.getZoom() < fit) m.setZoom(fit);
       };
       m.fitBounds(bounds);

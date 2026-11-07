@@ -100,21 +100,30 @@ test.describe("mapa (soldado)", () => {
 
 test.describe("mapa: zoom", () => {
   test.use(as("soldado"));
-  test("zoom máximo é o tamanho real da imagem", async ({ page }) => {
+  test("mínimo é o mapa inteiro; dá para aproximar até 8×", async ({ page }) => {
     await page.goto("/mapa");
     const map = page.getByTestId("map");
     const img = map.locator(".leaflet-image-layer");
     await expect(img).toBeVisible();
     const zoomIn = map.locator(".leaflet-control-zoom-in");
-    for (let i = 0; i < 12 && !(await zoomIn.getAttribute("class"))?.includes("leaflet-disabled"); i++) {
+    const zoomOut = map.locator(".leaflet-control-zoom-out");
+    // começa mostrando o mapa todo: não dá para afastar mais
+    await expect(zoomOut).toHaveClass(/leaflet-disabled/);
+    await expect(zoomIn).not.toHaveClass(/leaflet-disabled/);
+    await page.waitForTimeout(300);
+    const start = (await img.boundingBox())!;
+    const mapBox = (await map.boundingBox())!;
+    // a imagem inteira cabe na área do mapa
+    expect(start.width).toBeLessThanOrEqual(mapBox.width + 1);
+    expect(start.height).toBeLessThanOrEqual(mapBox.height + 1);
+
+    for (let i = 0; i < 20 && !(await zoomIn.getAttribute("class"))?.includes("leaflet-disabled"); i++) {
       await zoomIn.click();
       await page.waitForTimeout(300);
     }
     await expect(zoomIn).toHaveClass(/leaflet-disabled/);
     await page.waitForTimeout(400);
-    // a imagem de teste tem 400×300: no zoom máximo ela fica exatamente nesse tamanho
-    const box = (await img.boundingBox())!;
-    expect(Math.round(box.width)).toBe(400);
-    expect(Math.round(box.height)).toBe(300);
+    const end = (await img.boundingBox())!;
+    expect(Math.round(end.width / start.width)).toBe(8);
   });
 });

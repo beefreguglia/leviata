@@ -25,7 +25,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "**Enquetes** no Mural: vote direto no aviso (um voto por membro, dá pra trocar)",
       "**Meu registro**: informe nome, número e ID da cidade",
       "Calculadora de fabricação em 3 passos: o que vai fazer → materiais → quantos",
-      "Campos de dinheiro e telefone com máscara; mapa com zoom até o tamanho real da imagem",
+      "Campos de dinheiro e telefone com máscara; mapa abre mostrando a cidade inteira e aproxima até 8×",
       "Painel funciona no celular (dá pra adicionar à tela inicial)",
     ],
   },
