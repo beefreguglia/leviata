@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithToast } from "@/lib/flash";
 import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -29,7 +29,7 @@ export async function createFarmGuide(fd: FormData) {
     await audit({ userId: viewer.user.id, action: "farm.create", entity: "FarmGuide", entityId: guide.id, summary: `Escreveu o guia de farm "${guide.title}"` });
     revalidate();
   });
-  if (result.ok) redirect(`/farm/${id}`);
+  if (result.ok) redirectWithToast(`/farm/${id}`, "criado");
   return result;
 }
 
@@ -40,7 +40,7 @@ export async function updateFarmGuide(id: string, fd: FormData) {
     await audit({ userId: viewer.user.id, action: "farm.update", entity: "FarmGuide", entityId: id, summary: `Editou o guia de farm "${guide.title}"` });
     revalidate();
   });
-  if (result.ok) redirect(`/farm/${id}`);
+  if (result.ok) redirectWithToast(`/farm/${id}`, "salvo");
   return result;
 }
 
@@ -51,6 +51,6 @@ export async function deleteFarmGuide(id: string) {
     await audit({ userId: viewer.user.id, action: "farm.delete", entity: "FarmGuide", entityId: id, summary: `Apagou o guia de farm "${guide.title}"`, data: { howTo: guide.howTo } });
     revalidate();
   });
-  if (result.ok) redirect("/farm");
+  if (result.ok) redirectWithToast("/farm", "apagado");
   return result;
 }

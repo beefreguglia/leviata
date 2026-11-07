@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { ROLES, as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid } from "./helpers";
 
 /** Escolhe a opção de um <select> pelo começo do texto (ex.: "Alvo x · Soldado"). */
 async function selectByText(select: Locator, text: string) {
@@ -47,7 +47,7 @@ test.describe("baú e metas", () => {
     await expect(page.getByTestId("balance-Dinheiro limpo")).toContainText("R$ 50.000");
   });
 
-  test("meta semanal: soldado entrega → gerência confere → progresso aparece", async ({ page, browser }) => {
+  test("meta semanal: gerente entrega (já confere) → progresso aparece", async ({ page }) => {
     test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const item = `Cobre ${uid()}`;
     await newItem(page, item);
@@ -58,27 +58,20 @@ test.describe("baú e metas", () => {
     await page.getByRole("dialog").getByRole("button", { name: "Criar meta" }).click();
     await expectToast(page, "Meta criada");
 
-    const nina = await (await browser.newContext({ storageState: ROLES.soldado.file })).newPage();
-    await nina.goto("/bau");
-    await nina.getByRole("button", { name: "Entregar farm" }).click();
-    await nina.getByRole("dialog").getByLabel("Item").selectOption({ label: `${item} (un)` });
-    await nina.getByRole("dialog").getByLabel("Quantidade").fill("30");
-    await nina.getByRole("dialog").getByRole("button", { name: "Entregar" }).click();
-    await expect(nina.locator("[data-sonner-toast]").filter({ hasText: "Entrega enviada" })).toBeVisible();
-    await expect(nina.getByTestId("vault-move").filter({ hasText: item })).toContainText("Pendente");
-
     await page.goto("/bau");
-    const pending = page.getByTestId("vault-move").filter({ hasText: item }).filter({ hasText: "Nina Torres" });
-    await pending.getByRole("button", { name: "Conferir" }).click();
-    await expectToast(page, "Entrega conferida");
+    await page.getByRole("button", { name: "Entregar farm" }).click();
+    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: `${item} (un)` });
+    await page.getByRole("dialog").getByLabel("Quantidade").fill("30");
+    await page.getByRole("dialog").getByRole("button", { name: "Entregar" }).click();
+    await expectToast(page, "Entrega registrada");
     await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("30");
 
-    await nina.goto("/metas");
-    const mine = nina.getByTestId("my-goal").filter({ hasText: item });
+    await page.goto("/metas");
+    const mine = page.getByTestId("my-goal").filter({ hasText: item });
     await expect(mine).toContainText("30");
     await expect(mine).toContainText("faltam 20");
-    await nina.goto("/dashboard");
-    await expect(nina.getByTestId("dashboard-goals")).toContainText(item);
+    await page.goto("/dashboard");
+    await expect(page.getByTestId("dashboard-goals")).toContainText(item);
   });
 });
 
@@ -130,7 +123,7 @@ test.describe("encomendas", () => {
 });
 
 test.describe("punições", () => {
-  test.use(as("gerente"));
+  test.use(as("lider"));
 
   test("advertência, alerta de 3, expulsão tira o acesso e revogar devolve", async ({ page }) => {
     test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
@@ -170,14 +163,14 @@ test.describe("punições", () => {
 
 test.describe("punições (soldado)", () => {
   test.use(as("soldado"));
-  test("vê só as próprias e não aplica", async ({ page }) => {
+  test("vê só as próprias, não aplica e não acessa a economia", async ({ page }) => {
     await page.goto("/punicoes");
     await expect(page.getByRole("button", { name: "Aplicar punição" })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Punições" })).toBeVisible();
-    await page.goto("/encomendas");
-    await expect(page.getByRole("button", { name: "Nova encomenda" })).toHaveCount(0);
-    await page.goto("/bau");
-    await expect(page.getByRole("button", { name: "Registrar", exact: true })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Entregar farm" })).toBeVisible();
+    // economia é da gerência
+    for (const path of ["/encomendas", "/bau", "/metas"]) {
+      await page.goto(path);
+      await expect(page).toHaveURL(/sem-acesso/);
+    }
   });
 });

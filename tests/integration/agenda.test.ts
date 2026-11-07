@@ -49,7 +49,7 @@ describe("agenda: eventos", () => {
     expect(await setEventStatus(ev.id, "CANCELADO")).toEqual({ ok: true, message: "Evento cancelado" });
     expect(fetchSpy.mock.calls.some(([, init]) => String((init as RequestInit).body).includes("❌ Cancelado: Fleeca adiada"))).toBe(true);
     expect(await setEventStatus(ev.id, "AGENDADO")).toEqual({ ok: true, message: "Evento reaberto" });
-    await expect(deleteEvent(ev.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/agenda;") });
+    await expect(deleteEvent(ev.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/agenda?ok=apagado;") });
   });
 
   it("soldado não agenda", async () => {

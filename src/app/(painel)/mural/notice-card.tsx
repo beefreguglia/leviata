@@ -8,7 +8,8 @@ import { ActionForm } from "@/components/forms/action-form";
 import { NOTICE_PRIORITY } from "@/lib/labels";
 import { fmtAgo, fmtDate } from "@/lib/dates";
 import { cn } from "@/lib/utils";
-import type { Member, Notice } from "@/generated/prisma/client";
+import type { NoticeWithPoll } from "@/lib/polls";
+import { Poll } from "./poll";
 import { NoticeFields } from "./notice-fields";
 import { deleteNotice, toggleNoticePin, updateNotice } from "./actions";
 
@@ -17,7 +18,7 @@ export function NoticeCard({
   canEdit,
   compact,
 }: {
-  notice: Notice & { author: Member | null };
+  notice: NoticeWithPoll;
   canEdit?: boolean;
   compact?: boolean;
 }) {
@@ -41,6 +42,7 @@ export function NoticeCard({
           </p>
         </div>
         <div className="flex items-center gap-1.5">
+          {notice.pollOptions.length > 0 && <StatusBadge label="Enquete" className="bg-cyan-low text-cyan-light" />}
           {notice.priority !== "NORMAL" && <StatusBadge {...p} />}
           {canEdit && !compact && (
             <>
@@ -76,7 +78,8 @@ export function NoticeCard({
           )}
         </div>
       </header>
-      <Markdown className={compact ? "line-clamp-4" : undefined}>{notice.content}</Markdown>
+      {notice.content && <Markdown className={compact ? "line-clamp-4" : undefined}>{notice.content}</Markdown>}
+      {notice.pollOptions.length > 0 && <Poll notice={notice} closed={Boolean(expired)} />}
     </article>
   );
 }

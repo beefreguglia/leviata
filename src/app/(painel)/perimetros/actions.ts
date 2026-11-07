@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithToast } from "@/lib/flash";
 import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -31,7 +31,7 @@ export async function createPerimeter(fd: FormData) {
     await audit({ userId: viewer.user.id, action: "perimeter.create", entity: "Perimeter", entityId: p.id, summary: `Criou o perímetro "${p.name}"` });
     revalidate();
   });
-  if (result.ok) redirect(`/perimetros/${id}`);
+  if (result.ok) redirectWithToast(`/perimetros/${id}`, "criado");
   return result;
 }
 
@@ -43,7 +43,7 @@ export async function updatePerimeter(id: string, fd: FormData) {
     await audit({ userId: viewer.user.id, action: "perimeter.update", entity: "Perimeter", entityId: id, summary: `Editou o perímetro "${p.name}"` });
     revalidate();
   });
-  if (result.ok) redirect(`/perimetros/${id}`);
+  if (result.ok) redirectWithToast(`/perimetros/${id}`, "salvo");
   return result;
 }
 
@@ -54,6 +54,6 @@ export async function deletePerimeter(id: string) {
     await audit({ userId: viewer.user.id, action: "perimeter.delete", entity: "Perimeter", entityId: id, summary: `Apagou o perímetro "${p.name}"`, data: { imageId: p.imageId } });
     revalidate();
   });
-  if (result.ok) redirect("/perimetros");
+  if (result.ok) redirectWithToast("/perimetros", "apagado");
   return result;
 }

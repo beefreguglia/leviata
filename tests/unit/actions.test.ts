@@ -48,3 +48,11 @@ describe("formToObject", () => {
     expect(formToObject(fd)).toEqual({});
   });
 });
+
+describe("toast depois do redirect", () => {
+  it("anexa o código na URL (com ou sem query)", async () => {
+    const { withFlash } = await import("@/lib/flash");
+    expect(withFlash("/lore/x", "criado")).toBe("/lore/x?ok=criado");
+    expect(withFlash("/agenda?mes=2026-11", "apagado")).toBe("/agenda?mes=2026-11&ok=apagado");
+  });
+});

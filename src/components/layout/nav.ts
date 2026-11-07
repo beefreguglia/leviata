@@ -1,7 +1,7 @@
 import type { Permission } from "@/lib/permissions";
 import {
-  BookOpenIcon, CalendarDaysIcon, CoinsIcon, HomeIcon, LayoutListIcon, MegaphoneIcon, ScrollTextIcon,
-  UsersIcon, type LucideIcon,
+  BookOpenIcon, CalendarDaysIcon, CoinsIcon, ExternalLinkIcon, HomeIcon, IdCardIcon, LayoutListIcon, MegaphoneIcon,
+  ScrollTextIcon, UsersIcon, type LucideIcon,
 } from "lucide-react";
 
 export type NavLink = {
@@ -10,6 +10,8 @@ export type NavLink = {
   perm?: Permission;
   /** módulo ainda não construído: aparece desabilitado com a fase prevista */
   soon?: string;
+  /** link para fora do painel (abre em nova aba) */
+  external?: boolean;
 };
 
 /** Item principal do menu (sidebar-08): link direto ou grupo que abre subitens. */
@@ -73,8 +75,13 @@ export const NAV_MAIN: NavSection[] = [
 ];
 
 /** Links secundários (rodapé do menu). */
+/** Regras oficiais do servidor Cidade dos Anjos. */
+export const CITY_RULES_URL = "https://regras.cdanjos.com/";
+
 export const NAV_SECONDARY: (NavLink & { icon: LucideIcon })[] = [
-  { href: "/regras", label: "Regras", icon: ScrollTextIcon },
+  { href: "/registro", label: "Meu registro", icon: IdCardIcon },
+  { href: "/regras", label: "Regras da Leviatã", icon: ScrollTextIcon },
+  { href: CITY_RULES_URL, label: "Regras da cidade", icon: ExternalLinkIcon, external: true },
   { href: "/auditoria", label: "Auditoria", icon: LayoutListIcon, perm: "auditoria.ver" },
 ];
 
@@ -85,7 +92,7 @@ export const ALL_NAV_LINKS: FlatNavLink[] = [
   ...NAV_MAIN.flatMap((s): FlatNavLink[] =>
     s.href ? [{ href: s.href, label: s.label, perm: s.perm }] : (s.items ?? []).map((i) => ({ ...i, section: s.label })),
   ),
-  ...NAV_SECONDARY,
+  ...NAV_SECONDARY.filter((l) => !l.external),
 ];
 
 export function isActivePath(pathname: string, href: string) {

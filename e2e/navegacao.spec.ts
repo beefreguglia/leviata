@@ -15,7 +15,9 @@ test.describe("menu lateral", () => {
     for (const group of ["Fac", "Operações", "Economia", "Cidade", "Comunicação"]) {
       await expect(nav.getByRole("button", { name: group })).toBeVisible();
     }
-    await expect(nav.getByRole("link", { name: "Regras" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Regras da Leviatã" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Regras da cidade" })).toHaveAttribute("href", "https://regras.cdanjos.com/");
+    await expect(nav.getByRole("link", { name: "Meu registro" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Auditoria" })).toBeVisible();
     await expect(nav.getByRole("button", { name: "Menu do usuário" })).toContainText("Dante Moretti");
   });
@@ -87,10 +89,12 @@ test.describe("menu lateral", () => {
 
 test.describe("menu por patente", () => {
   test.use(as("soldado"));
-  test("soldado não vê Auditoria", async ({ page }) => {
+  test("soldado não vê Auditoria nem Economia", async ({ page }) => {
     await page.goto("/dashboard");
-    await expect(sidebar(page).getByRole("link", { name: "Regras" })).toBeVisible();
+    await expect(sidebar(page).getByRole("link", { name: "Regras da Leviatã" })).toBeVisible();
     await expect(sidebar(page).getByRole("link", { name: "Auditoria" })).toHaveCount(0);
+    await expect(sidebar(page).getByRole("button", { name: "Economia" })).toHaveCount(0);
+    await expect(sidebar(page).getByRole("button", { name: "Cidade" })).toBeVisible();
   });
 });
 

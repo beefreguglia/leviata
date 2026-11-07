@@ -82,7 +82,7 @@ describe("perímetros", () => {
     await createPerimeter(form({ name: "Fleeca", imageId: upload })).catch(() => {});
     const p = await db.perimeter.findFirstOrThrow();
     const ev = await db.event.create({ data: { title: "Ação", startsAt: new Date(), perimeterId: p.id } });
-    await expect(deletePerimeter(p.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/perimetros;") });
+    await expect(deletePerimeter(p.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/perimetros?ok=apagado;") });
     expect((await db.event.findUniqueOrThrow({ where: { id: ev.id } })).perimeterId).toBeNull();
   });
 

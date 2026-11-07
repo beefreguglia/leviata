@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithToast } from "@/lib/flash";
 import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -36,7 +36,7 @@ export async function createLore(fd: FormData) {
     await audit({ userId: viewer.user.id, action: "lore.create", entity: "LoreArticle", entityId: article.id, summary: `Escreveu "${article.title}" na lore` });
     revalidatePath("/lore", "layout");
   });
-  if (result.ok) redirect(`/lore/${slug}`);
+  if (result.ok) redirectWithToast(`/lore/${slug}`, "criado");
   return result;
 }
 
@@ -50,7 +50,7 @@ export async function updateLore(id: string, fd: FormData) {
     await audit({ userId: viewer.user.id, action: "lore.update", entity: "LoreArticle", entityId: id, summary: `Editou "${article.title}" na lore` });
     revalidatePath("/lore", "layout");
   });
-  if (result.ok) redirect(`/lore/${slug}`);
+  if (result.ok) redirectWithToast(`/lore/${slug}`, "salvo");
   return result;
 }
 
@@ -61,6 +61,6 @@ export async function deleteLore(id: string) {
     await audit({ userId: viewer.user.id, action: "lore.delete", entity: "LoreArticle", entityId: id, summary: `Apagou "${article.title}" da lore`, data: { content: article.content } });
     revalidatePath("/lore", "layout");
   });
-  if (result.ok) redirect("/lore");
+  if (result.ok) redirectWithToast("/lore", "apagado");
   return result;
 }

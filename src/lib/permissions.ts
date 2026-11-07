@@ -3,8 +3,8 @@
  * "admin" libera tudo.
  */
 export const PERMISSIONS = {
-  "painel.ver": "Acessar o painel interno (cidade, comunicação, operações, membros e hierarquia)",
-  "economia.ver": "Ver a economia: farm, fabricação, baú, metas e encomendas",
+  "painel.ver": "Acessar o painel interno",
+  "economia.ver": "Ver a economia (farm, fabricação, baú, metas e encomendas)",
   "membros.gerenciar": "Cadastrar/editar membros e promover",
   "hierarquia.gerenciar": "Criar/editar patentes e permissões",
   "regras.editar": "Editar regras",

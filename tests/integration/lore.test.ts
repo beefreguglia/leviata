@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createLore, deleteLore, updateLore } from "@/app/(painel)/lore/actions";
 import { actAs, db, form, makeUpload } from "../helpers/db";
 
-const redirectTo = (path: string) => ({ digest: expect.stringContaining(`;${path};`) });
+const redirectTo = (path: string) => ({ digest: expect.stringMatching(new RegExp(`;${path}\\?ok=\\w+;`)) });
 
 describe("lore", () => {
   it("cria artigo com capa, tags e redireciona para o slug", async () => {

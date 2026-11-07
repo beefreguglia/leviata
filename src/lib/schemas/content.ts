@@ -218,23 +218,41 @@ export function parseRecipeForm(fd: FormData) {
 // ---------------- Mural ----------------
 export const NOTICE_PRIORITIES = ["NORMAL", "IMPORTANTE", "URGENTE"] as const;
 
-export const noticeSchema = z.object({
+export const noticeSchema = z
+  .object({
   title: z.string().trim().min(3, "Título muito curto").max(120),
-  content: z.string().trim().min(1, "Escreva o aviso"),
+  // enquete pode ter só a pergunta (título) e as opções
+  content: z.string().trim(),
   priority: z.enum(NOTICE_PRIORITIES, { error: "Prioridade inválida" }),
   isPinned: z.boolean(),
   expiresAt: optionalDay,
   notifyDiscord: z.boolean(),
-});
+  /** enquete: nenhuma opção (aviso comum) ou de 2 a 10 */
+  pollOptions: z
+    .array(z.string().trim().min(1).max(80, "Opção da enquete muito longa (máx. 80)"))
+    .max(10, "Máximo de 10 opções na enquete")
+    .refine((o) => o.length === 0 || o.length >= 2, "A enquete precisa de pelo menos 2 opções")
+    .refine((o) => new Set(o.map((x) => x.toLowerCase())).size === o.length, "Opções da enquete repetidas"),
+  })
+  .refine((n) => n.content.length > 0 || n.pollOptions.length > 0, { message: "Escreva o aviso", path: ["content"] });
+
+/** Uma opção por linha (linhas vazias são ignoradas). */
+export function splitPollOptions(raw: string | null | undefined) {
+  return (raw ?? "")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+}
 
 export function parseNoticeForm(fd: FormData) {
   return noticeSchema.parse({
     title: str(fd, "title"),
-    content: str(fd, "content"),
+    content: str(fd, "content") ?? "",
     priority: str(fd, "priority") ?? "NORMAL",
     isPinned: fd.get("isPinned") === "on",
     expiresAt: str(fd, "expiresAt"),
     notifyDiscord: fd.get("notifyDiscord") === "on",
+    pollOptions: splitPollOptions(str(fd, "pollOptions")),
   });
 }
 

@@ -42,18 +42,17 @@ test.describe("login e acesso", () => {
   test.describe("recruta", () => {
     test.use(as("recruta"));
 
-    test("vai direto para as regras públicas", async ({ page }) => {
+    test("entra no painel e lê as regras internas", async ({ page }) => {
       await page.goto("/dashboard");
-      await expect(page).toHaveURL(/\/regras\/estatuto$/);
-      await expect(page.getByRole("heading", { name: "Estatuto da Leviata" })).toBeVisible();
+      await expect(page).toHaveURL(/dashboard/);
+      await page.goto("/regras/estatuto");
+      await expect(page.getByRole("heading", { name: "Regras da Leviatã" })).toBeVisible();
+      const conduta = await page.goto("/regras/conduta");
+      expect(conduta?.status()).toBe(200);
     });
 
-    test("não vê regras internas nem módulos do painel", async ({ page }) => {
-      await page.goto("/regras/estatuto");
-      await expect(page.getByRole("link", { name: "Conduta e punições" })).toHaveCount(0);
-      const conduta = await page.goto("/regras/conduta");
-      expect(conduta?.status()).toBe(404);
-      await page.goto("/membros");
+    test("não vê a economia", async ({ page }) => {
+      await page.goto("/bau");
       await expect(page).toHaveURL(/sem-acesso/);
       await expect(page.getByRole("heading", { name: "Acesso restrito" })).toBeVisible();
     });

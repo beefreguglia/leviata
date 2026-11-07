@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Stagger, StaggerItem } from "@/components/motion";
 import { NoticeCard } from "./notice-card";
+import { noticeInclude } from "@/lib/polls";
 import { NoticeFields } from "./notice-fields";
 import { createFlyer, createNotice, deleteFlyer } from "./actions";
 
@@ -37,11 +38,11 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
   const [notices, expired, flyers] = await Promise.all([
     db.notice.findMany({
       where: { OR: [{ expiresAt: null }, { expiresAt: { gte: now } }] },
-      include: { author: true },
+      include: noticeInclude(viewer.member?.id),
       orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
     }),
     canEdit
-      ? db.notice.findMany({ where: { expiresAt: { lt: now } }, include: { author: true }, orderBy: { expiresAt: "desc" }, take: 10 })
+      ? db.notice.findMany({ where: { expiresAt: { lt: now } }, include: noticeInclude(viewer.member?.id), orderBy: { expiresAt: "desc" }, take: 10 })
       : Promise.resolve([]),
     db.flyer.findMany({ include: { author: true }, orderBy: [{ eventDate: "desc" }, { createdAt: "desc" }] }),
   ]);

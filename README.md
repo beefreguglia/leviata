@@ -89,7 +89,19 @@ Como funciona: no login o painel confere se a pessoa está no servidor e pega os
 
 ## Permissões
 
-Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel.ver`, `membros.gerenciar`, `hierarquia.gerenciar`, `regras.editar`, `conteudo.editar` (lore, facções, farm, fabricação, mural, mapa), `operacoes.gerenciar` (agenda, escalações, perímetros), `financeiro.gerenciar` (baú, metas, encomendas), `punicoes.gerenciar`, `ausencias.gerenciar`, `auditoria.ver` e `admin` (tudo). Patente sem `painel.ver` (ex.: Recruta) só vê as regras marcadas como "visível para recrutas".
+Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel.ver`, `economia.ver` (farm, fabricação, baú, metas, encomendas), `membros.gerenciar`, `hierarquia.gerenciar`, `regras.editar`, `conteudo.editar` (lore, facções, farm, fabricação, mural, mapa, lives), `operacoes.gerenciar` (agenda, escalações, perímetros), `financeiro.gerenciar` (baú, metas, encomendas — inclui ver a economia), `punicoes.gerenciar`, `ausencias.gerenciar` (inclui ver as ausências dos outros), `auditoria.ver` e `admin` (tudo).
+
+Padrão:
+
+| Patente | Pode |
+| --- | --- |
+| Líder, Sub-líder | tudo |
+| Gerente | cria e edita operações, economia, cidade e comunicação. **Não** vê ausências dos outros, não pune, não edita regras, não vê auditoria nem cadastra membros |
+| Soldado, Recruta | só veem cidade, comunicação, operações, membros, hierarquia e regras; registram a própria ausência e votam nas enquetes |
+
+Ficha sem patente (quem entrou pelo Discord e ainda não foi promovido) só faz o **registro** (nome, número e ID) e lê as regras públicas.
+
+**Desenvolvedor:** IDs em `DEVELOPER_DISCORD_IDS` têm acesso total, mas a ficha continua mostrando a patente cadastrada (ex.: Recruta).
 
 ## Personalizar
 

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { CalendarDaysIcon, ChevronRightIcon, ClockIcon, PackageIcon, RadioIcon, TargetIcon, UserXIcon, UsersIcon, WalletIcon } from "lucide-react";
 import { allBalances } from "@/lib/vault";
 import { weeklyGoals } from "@/lib/goals";
+import { noticeInclude } from "@/lib/polls";
 import { money } from "@/lib/finance";
 import { after } from "next/server";
 import { refreshStreamsIfStale } from "@/lib/stream-refresh";
@@ -60,7 +61,8 @@ function Stat({
 export default async function DashboardPage() {
   const viewer = await getViewer();
   if (!viewer) redirect("/login");
-  if (!viewer.can("painel.ver")) redirect("/regras");
+  const registered = Boolean(viewer.member?.passport && viewer.member?.phone);
+  if (!viewer.can("painel.ver")) redirect(registered ? "/regras" : "/registro");
 
   const now = new Date();
   const canManage = viewer.can("ausencias.gerenciar");
@@ -77,7 +79,7 @@ export default async function DashboardPage() {
       : Promise.resolve([]),
     db.notice.findMany({
       where: { AND: [{ OR: [{ isPinned: true }, { priority: "URGENTE" }] }, { OR: [{ expiresAt: null }, { expiresAt: { gte: now } }] }] },
-      include: { author: true },
+      include: noticeInclude(viewer.member?.id),
       orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
       take: 3,
     }),
@@ -101,6 +103,20 @@ export default async function DashboardPage() {
 
   return (
     <>
+      {!registered && (
+        <FadeIn className="mb-6">
+          <Link
+            href="/registro"
+            data-testid="registro-pendente"
+            className="flex items-center justify-between gap-3 rounded-card border-2 border-warning/40 bg-warning-low px-5 py-4 text-base text-grey-100 hover:border-warning"
+          >
+            <span>
+              <strong>Falta seu registro.</strong> Informe nome, número e ID para a liderança te encontrar.
+            </span>
+            <ChevronRightIcon className="size-5 shrink-0" />
+          </Link>
+        </FadeIn>
+      )}
       <FadeIn className="mb-10">
         <p className="mb-2 text-sm font-medium text-muted-foreground first-letter:uppercase">
           {new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long", timeZone: "America/Sao_Paulo" }).format(now)}

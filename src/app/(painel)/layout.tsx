@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
@@ -5,6 +6,7 @@ import { getViewer } from "@/lib/session";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ContentScroll } from "@/components/layout/scroll-area";
+import { FlashToast } from "@/components/flash-toast";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -38,6 +40,9 @@ export default async function PainelLayout({ children }: LayoutProps<"/">) {
           <Separator orientation="vertical" className="mr-2 data-vertical:h-4 data-vertical:self-auto" />
           <Breadcrumbs />
         </header>
+        <Suspense>
+          <FlashToast />
+        </Suspense>
         <ContentScroll>
           <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8">{children}</div>
         </ContentScroll>

@@ -39,7 +39,7 @@ describe("facções", () => {
     await createFaction(ballas());
     const f = await db.faction.findFirstOrThrow();
     await addFactionEvent(f.id, form({ kind: "OUTRO", title: "Algo aconteceu" }));
-    await expect(deleteFaction(f.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/faccoes;") });
+    await expect(deleteFaction(f.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/faccoes?ok=apagado;") });
     expect(await db.factionEvent.count()).toBe(0);
   });
 

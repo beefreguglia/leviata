@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { as, expectToast, uid } from "./helpers";
 
-test.describe("regras (gerência)", () => {
-  test.use(as("gerente"));
+test.describe("regras (liderança)", () => {
+  test.use(as("lider"));
 
   test("/regras abre a primeira página e lista as demais", async ({ page }) => {
     await page.goto("/regras");
     await expect(page).toHaveURL(/\/regras\/estatuto$/);
-    await expect(page.getByRole("heading", { name: "Estatuto da Leviata" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "1. Lealdade" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Regras da Leviatã" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Lealdade acima de tudo" })).toBeVisible();
     await page.getByRole("link", { name: "Conduta e punições" }).click();
     await expect(page.getByRole("table")).toBeVisible();
   });
@@ -49,6 +49,15 @@ test.describe("regras (gerência)", () => {
     await page.getByRole("button", { name: "Publicar" }).click();
     await expectToast(page, "Título muito curto");
     await expect(page).toHaveURL(/\/regras\/nova$/);
+  });
+});
+
+test.describe("regras (gerente)", () => {
+  test.use(as("gerente"));
+  test("gerente lê, mas não edita regras", async ({ page }) => {
+    await page.goto("/regras/estatuto");
+    await expect(page.getByRole("link", { name: "Editar" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Nova página" })).toHaveCount(0);
   });
 });
 

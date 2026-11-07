@@ -98,8 +98,9 @@ test.describe("membros (soldado)", () => {
     await expect(page.getByRole("button", { name: "Patente" })).toHaveCount(0);
   });
 
-  test("ficha inexistente dá 404", async ({ page }) => {
-    const res = await page.goto("/membros/nao-existe");
-    expect(res?.status()).toBe(404);
+  test("ficha inexistente mostra o 404 do painel", async ({ page }) => {
+    // com loading.tsx a resposta já começou (200 + noindex); o que importa é a tela
+    await page.goto("/membros/nao-existe");
+    await expect(page.getByRole("heading", { name: "Não encontramos isso" })).toBeVisible();
   });
 });

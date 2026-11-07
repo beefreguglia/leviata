@@ -35,10 +35,10 @@ export async function seedRanks(db: PrismaClient) {
 /** Usuários de teste (SÓ desenvolvimento/testes — nunca em produção). */
 export async function seedDevUsers(db: PrismaClient, rankByName: Record<string, string>) {
   const people = [
-    { discordId: "dev-lider", username: "lider.dev", rpName: "Dante Moretti", passport: "1001", rank: "Líder" },
-    { discordId: "dev-gerente", username: "gerente.dev", rpName: "Rafa Cardoso", passport: "1024", rank: "Gerente" },
-    { discordId: "dev-soldado", username: "soldado.dev", rpName: "Nina Torres", passport: "1187", rank: "Soldado" },
-    { discordId: "dev-recruta", username: "recruta.dev", rpName: "Léo Vieira", passport: "1302", rank: "Recruta" },
+    { discordId: "dev-lider", username: "lider.dev", rpName: "Dante Moretti", passport: "1001", phone: "(055) 100-101", rank: "Líder" },
+    { discordId: "dev-gerente", username: "gerente.dev", rpName: "Rafa Cardoso", passport: "1024", phone: "(055) 102-424", rank: "Gerente" },
+    { discordId: "dev-soldado", username: "soldado.dev", rpName: "Nina Torres", passport: "1187", phone: "(055) 118-787", rank: "Soldado" },
+    { discordId: "dev-recruta", username: "recruta.dev", rpName: "Léo Vieira", passport: "1302", phone: "(055) 130-202", rank: "Recruta" },
   ];
   for (const p of people) {
     const user = await db.user.upsert({
@@ -48,33 +48,60 @@ export async function seedDevUsers(db: PrismaClient, rankByName: Record<string, 
     });
     await db.member.upsert({
       where: { userId: user.id },
-      create: { rpName: p.rpName, passport: p.passport, userId: user.id, rankId: rankByName[p.rank] },
+      create: { rpName: p.rpName, passport: p.passport, phone: p.phone, userId: user.id, rankId: rankByName[p.rank] },
       update: {},
     });
   }
 
 }
 
-/** Regras iniciais de exemplo (a liderança edita pelo painel). */
+/** Regras da Leviatã (texto oficial da facção). */
+export const ESTATUTO = `## Lealdade acima de tudo
+A lealdade à Leviatã está acima de interesses, amizades externas ou benefícios individuais.
+
+- Problemas internos devem ser resolvidos internamente.
+- **Traição, vazamento de informações ou atitudes que prejudiquem deliberadamente a facção não serão toleradas.**
+- Nenhum membro deve colocar interesses pessoais acima da organização.
+
+## Ambição com propósito
+Não se mover por ambições vazias.
+
+- Cargos, reconhecimento e poder devem ser consequência de dedicação, competência, lealdade e contribuição para a Leviatã.
+- Não será tolerado criar conflitos, passar por cima de companheiros ou buscar cargos apenas por status.
+- Quem deseja crescer dentro da hierarquia deve demonstrar, por atitudes, que está preparado para assumir maiores responsabilidades.
+
+## Relacionamentos entre membros
+**É expressamente proibido namoro ou relacionamento amoroso entre membros da Leviatã.**
+
+- A regra existe para evitar conflitos de interesse, favoritismo, ciúmes, conflitos internos e situações que possam atrapalhar o funcionamento da facção.
+- O envolvimento afetivo entre membros não será considerado uma questão exclusivamente pessoal quando puder interferir na organização.
+- O descumprimento da regra poderá resultar em exoneração.
+
+## Hierarquia e respeito
+- A hierarquia deve ser respeitada em todos os momentos.
+- Ordens e decisões da liderança devem ser cumpridas durante ações.
+- Discordâncias podem e devem ser apresentadas, mas com respeito.
+
+## Compromisso com a Leviatã
+- Participação, comprometimento e responsabilidade são exigidos de todos.
+- Quando não puder logar ou participar das atividades, registre sua ausência no painel (**Ausências**).
+- Não será aceito aparecer apenas quando houver benefícios, ações grandes ou oportunidades de destaque.
+
+## Comunicação e organização
+- Rádio organizado durante ações.
+- Informações internas devem permanecer dentro da organização.
+- Todos devem colaborar para manter a facção organizada e preparada.
+`;
+
+/** Regras iniciais (a liderança edita pelo painel). */
 export async function seedRules(db: PrismaClient) {
   const rules = [
     {
       slug: "estatuto",
-      title: "Estatuto da Leviata",
+      title: "Regras da Leviatã",
       order: 1,
       isPublic: true,
-      content: `## 1. Lealdade
-- A família vem em primeiro lugar. Nada do que é falado aqui sai daqui.
-- Proibido negociar com facções inimigas sem autorização da liderança.
-
-## 2. Hierarquia
-- Ordens da liderança são cumpridas. Discordou? Fala em particular depois.
-- Promoções são decididas pela liderança com base em presença, farm e postura.
-
-## 3. Ações
-- Só participa quem estiver escalado.
-- Rádio sempre na frequência combinada.
-`,
+      content: ESTATUTO,
     },
     {
       slug: "conduta",

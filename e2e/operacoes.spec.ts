@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ROLES, as, expectToast, uid } from "./helpers";
+import { FIXTURE, ROLES, as, expectImageLoaded, expectToast, uid, uploadImages } from "./helpers";
 
 /** "YYYY-MM-DDTHH:mm" daqui a N horas (Brasília). */
 function inHours(h: number) {
@@ -12,13 +12,9 @@ function inHours(h: number) {
 
 async function createPerimeter(page: Page, name: string) {
   await page.goto("/perimetros/novo");
-  await page.getByLabel("Nome do plano").fill(name);
-  await page.getByLabel("Alvo").fill("Banco Fleeca");
-  await page.getByLabel("Função 1", { exact: true }).fill("Piloto");
-  await page.getByLabel("Quantidade da função 1").fill("2");
-  await page.getByRole("button", { name: "Adicionar função" }).click();
-  await page.getByLabel("Função 2", { exact: true }).fill("Hacker");
-  await page.locator('textarea[name="plan"]').fill("## Entrada pelos fundos");
+  await page.getByLabel("Título").fill(name);
+  await uploadImages(page, "Enviar imagem", [FIXTURE.map]);
+  await expect(page.getByRole("button", { name: "Remover imagem" })).toBeVisible();
   await page.getByRole("button", { name: "Criar perímetro" }).click();
   await expect(page.getByRole("heading", { name })).toBeVisible();
 }
@@ -26,13 +22,12 @@ async function createPerimeter(page: Page, name: string) {
 test.describe("perímetros, agenda e escalação", () => {
   test.use(as("gerente"));
 
-  test("perímetro → agendar ação → presença → gerar e salvar escalação → publicar → relatório indisponível no futuro", async ({ page }) => {
+  test("perímetro (título + imagem) → agendar ação → presença → montar e salvar escalação → publicar → relatório indisponível no futuro", async ({ page }) => {
     test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const s = uid();
     const name = `Fleeca fundos ${s}`;
     await createPerimeter(page, name);
-    await expect(page.getByTestId("perimeter-role")).toHaveCount(2);
-    await expect(page.getByText("3 vagas")).toBeVisible();
+    await expectImageLoaded(page.getByRole("img", { name: `Vista de cima: ${name}` }));
 
     // agendar a partir do perímetro: abre o formulário já com ele
     await page.getByRole("link", { name: "Agendar ação" }).click();
@@ -49,13 +44,17 @@ test.describe("perímetros, agenda e escalação", () => {
     await expectToast(page, "Presença confirmada");
     await expect(page.getByTestId("attendance-VOU")).toContainText("Rafa Cardoso");
 
-    // escalação gerada pelo perímetro
-    await page.getByRole("button", { name: "Gerar pelo perímetro" }).click();
-    await expectToast(page, "3 vagas criadas");
-    await expect(page.getByTestId("lineup-row")).toHaveCount(3);
+    // o evento mostra a vista de cima do perímetro
+    await expectImageLoaded(page.getByRole("img", { name: `Vista de cima: ${name}` }));
+
+    // escalação montada à mão
+    while ((await page.getByTestId("lineup-row").count()) < 2) await page.getByRole("button", { name: "Adicionar vaga" }).click();
+    await expect(page.getByTestId("lineup-row")).toHaveCount(2);
+    await page.getByLabel("Função da vaga 1").fill("Piloto");
     await page.getByLabel("Membro da vaga 1").selectOption({ label: "Rafa Cardoso (vou)" });
     await page.getByLabel("Veículo da vaga 1").fill("Sultan RS");
-    await page.getByLabel("Membro da vaga 3").selectOption({ label: "Nina Torres" });
+    await page.getByLabel("Função da vaga 2").fill("Hacker");
+    await page.getByLabel("Membro da vaga 2").selectOption({ label: "Nina Torres" });
     await page.getByRole("button", { name: "Salvar escalação" }).click();
     await expectToast(page, "Escalação salva");
     await expect(page.getByTestId("my-slot")).toContainText("Piloto");

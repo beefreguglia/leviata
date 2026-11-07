@@ -20,5 +20,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Produção
 - Guia completo: `DEPLOY.md`. Build da Vercel = `npm run vercel-build` (gera client + `prisma migrate deploy` + build).
 - Migrações novas: gere com `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script` numa pasta nova em `prisma/migrations/` (o `migrate dev` falha no banco sombra do Prisma Dev local).
+- Telas de estado: `app/not-found.tsx` (404 geral), `(painel)/not-found.tsx` e `(painel)/error.tsx` (dentro do painel), `app/global-error.tsx`, `/sem-acesso` (403). Carregamento: `loading.tsx` com `components/layout/skeletons.tsx`.
+- Ação que redireciona depois de salvar usa `redirectWithToast(path, "criado" | "salvo" | "apagado")` (`lib/flash.ts`) para o toast aparecer no destino.
 - `seed-prod` só cria patentes e regras. Nunca rode `npm run db:seed` (cria usuários de teste) em produção.
 - Uploads em produção vão direto ao Supabase por link assinado (`/api/uploads/sign` → PUT → `/api/uploads/finish`).

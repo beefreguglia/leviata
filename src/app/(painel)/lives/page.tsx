@@ -30,7 +30,7 @@ const CONFIGURED = {
 
 export default async function LivesPage() {
   const viewer = await requireViewer();
-  const canManage = viewer.can("membros.gerenciar");
+  const canManage = viewer.can("conteudo.editar");
   // atualiza em segundo plano se os dados estiverem velhos (a próxima visita/auto-refresh já mostra)
   after(() => refreshStreamsIfStale().catch((err) => console.error("Falha ao atualizar lives:", err)));
 

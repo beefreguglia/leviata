@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
-import { createFlyer, createNotice, deleteFlyer, deleteNotice, toggleNoticePin, updateNotice } from "@/app/(painel)/mural/actions";
+import { createFlyer, createNotice, deleteFlyer, deleteNotice, toggleNoticePin, updateNotice, votePoll } from "@/app/(painel)/mural/actions";
 import { actAs, day, db, form, makeUpload } from "../helpers/db";
 
 let fetchSpy: MockInstance<typeof fetch>;
@@ -70,5 +70,72 @@ describe("mural: flyers", () => {
   it("id de imagem que não existe é recusado", async () => {
     await actAs("dev-gerente");
     expect(await createFlyer(form({ title: "Corrida", imageId: "falso" }))).toEqual({ ok: false, error: "Envie a imagem do flyer" });
+  });
+});
+
+describe("enquetes", () => {
+  async function newPoll(extra: Record<string, string> = {}) {
+    await actAs("dev-gerente");
+    const r = await createNotice(form({ title: "Melhor dia da reunião?", pollOptions: "Sábado 20h\n\nDomingo 21h\n", ...extra }));
+    expect(r).toEqual({ ok: true, message: "Enquete publicada" });
+    return db.notice.findFirstOrThrow({ orderBy: { createdAt: "desc" }, include: { pollOptions: { orderBy: { order: "asc" } } } });
+  }
+
+  it("cria enquete só com título e opções (linhas vazias ignoradas)", async () => {
+    const n = await newPoll();
+    expect(n.content).toBe("");
+    expect(n.pollOptions.map((o) => o.text)).toEqual(["Sábado 20h", "Domingo 21h"]);
+  });
+
+  it("valida as opções", async () => {
+    await actAs("dev-gerente");
+    expect(await createNotice(form({ title: "Enquete", pollOptions: "Só uma" }))).toMatchObject({ ok: false, error: "A enquete precisa de pelo menos 2 opções" });
+    expect(await createNotice(form({ title: "Enquete", pollOptions: "Sim\nsim" }))).toMatchObject({ ok: false, error: "Opções da enquete repetidas" });
+    expect(await createNotice(form({ title: "Aviso sem nada" }))).toMatchObject({ ok: false, error: "Escreva o aviso" });
+  });
+
+  it("um voto por membro: votar troca, votar de novo tira", async () => {
+    const n = await newPoll();
+    const [sab, dom] = n.pollOptions;
+    await actAs("dev-soldado");
+    expect(await votePoll(n.id, sab.id)).toEqual({ ok: true, message: "Voto registrado" });
+    expect(await votePoll(n.id, dom.id)).toEqual({ ok: true, message: "Voto trocado" });
+    expect(await db.pollVote.count()).toBe(1);
+    expect((await db.pollVote.findFirstOrThrow()).optionId).toBe(dom.id);
+    expect(await votePoll(n.id, dom.id)).toEqual({ ok: true, message: "Voto retirado" });
+    expect(await db.pollVote.count()).toBe(0);
+  });
+
+  it("recruta vota; opção de outra enquete e enquete encerrada são recusadas", async () => {
+    const n = await newPoll();
+    const outra = await newPoll({ title: "Outra enquete" });
+    await actAs("dev-recruta");
+    expect(await votePoll(n.id, outra.pollOptions[0].id)).toEqual({ ok: false, error: "Opção inválida" });
+    expect((await votePoll(n.id, n.pollOptions[0].id)).ok).toBe(true);
+    await db.notice.update({ where: { id: n.id }, data: { expiresAt: new Date(Date.now() - 1000) } });
+    expect(await votePoll(n.id, n.pollOptions[1].id)).toEqual({ ok: false, error: "Enquete encerrada" });
+  });
+
+  it("com votos, as opções ficam travadas; sem votos dá para editar", async () => {
+    const n = await newPoll();
+    expect(await updateNotice(n.id, form({ title: n.title, pollOptions: "Sexta\nSábado" }))).toEqual({ ok: true, message: "Aviso atualizado" });
+    const opts = await db.pollOption.findMany({ where: { noticeId: n.id }, orderBy: { order: "asc" } });
+    expect(opts.map((o) => o.text)).toEqual(["Sexta", "Sábado"]);
+    await actAs("dev-soldado");
+    await votePoll(n.id, opts[0].id);
+    await actAs("dev-gerente");
+    expect(await updateNotice(n.id, form({ title: n.title, pollOptions: "Outra\nCoisa" }))).toEqual({ ok: false, error: "A enquete já tem votos: as opções não podem mudar" });
+    expect((await updateNotice(n.id, form({ title: "Título novo", pollOptions: "Sexta\nSábado" }))).ok).toBe(true);
+  });
+
+  it("aviso no Discord leva as opções", async () => {
+    process.env.DISCORD_WEBHOOK_AVISOS = "https://discord.test/hook";
+    await actAs("dev-gerente");
+    expect(await createNotice(form({ title: "Dia?", pollOptions: "Sábado 20h\nDomingo 21h", notifyDiscord: "on" }))).toEqual({
+      ok: true,
+      message: "Enquete publicada e enviada no Discord",
+    });
+    const body = JSON.parse(String(fetchSpy.mock.calls[0][1]?.body));
+    expect(body.embeds[0].description).toContain("1. Sábado 20h\n2. Domingo 21h");
   });
 });

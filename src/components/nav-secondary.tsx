@@ -26,8 +26,14 @@ export function NavSecondary({
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   size="sm"
-                  isActive={isActivePath(pathname, item.href)}
-                  render={<Link href={item.href} onClick={() => isMobile && setOpenMobile(false)} />}
+                  isActive={!item.external && isActivePath(pathname, item.href)}
+                  render={
+                    item.external ? (
+                      <a href={item.href} target="_blank" rel="noreferrer" />
+                    ) : (
+                      <Link href={item.href} onClick={() => isMobile && setOpenMobile(false)} />
+                    )
+                  }
                 >
                   <Icon />
                   <span>{item.label}</span>

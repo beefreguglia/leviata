@@ -17,7 +17,7 @@ async function avisar(page: Page, start: number, end: number, reason: string) {
 }
 
 test.describe("ausências", () => {
-  test("soldado avisa, gerente aprova, aparece como ausente", async ({ browser }) => {
+  test("soldado avisa, liderança aprova, aparece como ausente; gerente não vê a ausência", async ({ browser }) => {
     const reason = `Viagem ${uid()}`;
     const soldado = await openAs(browser, "soldado");
     await avisar(soldado.page, 0, 2, reason);
@@ -26,7 +26,14 @@ test.describe("ausências", () => {
     await expect(meu.getByText(reason)).toBeVisible();
     await expect(meu.getByText("Pendente").first()).toBeVisible();
 
-    const gerente = await openAs(browser, "gerente");
+    // gerente não vê as ausências dos outros
+    const outro = await openAs(browser, "gerente");
+    await outro.page.goto("/ausencias");
+    await expect(outro.page.getByRole("heading", { name: "Ausências" })).toBeVisible();
+    await expect(outro.page.getByText(reason)).toHaveCount(0);
+    await outro.ctx.close();
+
+    const gerente = await openAs(browser, "lider");
     await gerente.page.goto("/ausencias");
     const pend = gerente.page.locator("section", { hasText: "Aguardando aprovação" });
     const row = pend.getByTestId("absence-row").filter({ hasText: reason });
@@ -50,7 +57,7 @@ test.describe("ausências", () => {
     await gerente.ctx.close();
   });
 
-  test("gerente recusa um aviso", async ({ browser }) => {
+  test("liderança recusa um aviso", async ({ browser }) => {
     const reason = `Recusar ${uid()}`;
     const soldado = await openAs(browser, "soldado");
     await avisar(soldado.page, 20, 21, reason);
@@ -68,9 +75,9 @@ test.describe("ausências", () => {
     await lider.ctx.close();
   });
 
-  test("gerente avisa → já sai aprovada; cancelar antes de começar", async ({ browser }) => {
+  test("liderança avisa → já sai aprovada; cancelar antes de começar", async ({ browser }) => {
     const reason = `Folga ${uid()}`;
-    const { ctx, page } = await openAs(browser, "gerente");
+    const { ctx, page } = await openAs(browser, "lider");
     await avisar(page, 10, 12, reason);
     await expectToast(page, "Ausência registrada");
     const row = page.locator("section", { hasText: "Meus avisos" }).getByTestId("absence-row").filter({ hasText: reason });

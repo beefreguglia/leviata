@@ -8,7 +8,7 @@ beforeEach(async () => {
   await setRankPerms("Gerente", GERENCIA_COMPLETA);
 });
 
-const redirectTo = (path: string) => ({ digest: expect.stringContaining(`;${path};`) });
+const redirectTo = (path: string) => ({ digest: expect.stringMatching(new RegExp(`;${path}\\?ok=\\w+;`)) });
 
 describe("regras", () => {
   it("cria página, gera slug, primeira versão e redireciona", async () => {

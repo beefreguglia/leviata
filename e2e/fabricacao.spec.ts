@@ -56,16 +56,14 @@ test.describe("fabricação", () => {
 
 test.describe("fabricação (soldado)", () => {
   test.use(as("soldado"));
-  test("usa a calculadora, mas não edita", async ({ page }) => {
+  test("economia é só da gerência: soldado não acessa", async ({ page }) => {
     await page.goto("/fabricacao");
-    await expect(page.getByRole("heading", { name: "Fabricação" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Nova receita" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Novo item" })).toHaveCount(0);
+    await expect(page).toHaveURL(/sem-acesso/);
   });
 });
 
 test.describe("calculadora rápida", () => {
-  test.use(as("soldado"));
+  test.use(as("gerente"));
 
   test("materiais de uma fabricação × meta, o que falta e quanto dá pra fazer agora", async ({ page }) => {
     await page.goto("/fabricacao");

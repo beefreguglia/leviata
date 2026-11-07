@@ -89,6 +89,7 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 | `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET` | do passo 3 |
 | `DISCORD_GUILD_ID` | do passo 3 — **deixe de fora** enquanto o servidor não estiver conectado |
 | `BOOTSTRAP_ADMIN_DISCORD_IDS` | seu Discord ID (e de outro líder, separados por vírgula) |
+| `DEVELOPER_DISCORD_IDS` | (opcional) IDs com acesso total sem mudar a patente exibida |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | do passo 2 |
 | `SUPABASE_BUCKET` | `leviata` |
 | `DISCORD_WEBHOOK_AVISOS` / `_ACOES` / `_LIVES` | do passo 3 (opcionais) |

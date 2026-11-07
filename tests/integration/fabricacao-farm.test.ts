@@ -87,6 +87,6 @@ describe("farm", () => {
     await actAs("dev-soldado");
     expect((await deleteFarmGuide(g.id)).ok).toBe(false);
     await actAs("dev-gerente");
-    await expect(deleteFarmGuide(g.id)).rejects.toMatchObject(redirectTo(";/farm;"));
+    await expect(deleteFarmGuide(g.id)).rejects.toMatchObject(redirectTo(";/farm?ok=apagado;"));
   });
 });

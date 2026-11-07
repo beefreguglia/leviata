@@ -1,30 +1,47 @@
+import { LockKeyholeIcon } from "lucide-react";
 import { signOut } from "@/auth";
+import { getViewer } from "@/lib/session";
+import { StatusScreen } from "@/components/layout/status-screen";
 import { Button } from "@/components/ui/button";
-import { LeviataMark } from "@/components/layout/logo";
+import { LinkButton } from "@/components/ui/link-button";
 
-export const metadata = { title: "Sem acesso" };
+export const metadata = { title: "Acesso restrito" };
 
-export default function SemAcessoPage() {
+async function signOutAction() {
+  "use server";
+  await signOut({ redirectTo: "/login" });
+}
+
+/** 403: logado, mas sem permissão para a área (ou sem ficha/expulso). */
+export default async function SemAcessoPage() {
+  const viewer = await getViewer();
+  const inPanel = Boolean(viewer?.member && viewer.member.status !== "EXPULSO");
+  const expelled = viewer?.member?.status === "EXPULSO";
+
+  const description = expelled
+    ? "Sua ficha está como expulso da Leviata. Se acha que é um engano, fale com a liderança."
+    : inPanel
+      ? "Essa área é só para quem tem a patente certa. Se precisa dela, fale com a liderança."
+      : "Sua conta ainda não tem ficha na Leviata. Fale com a liderança para liberar seu acesso.";
+
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <LeviataMark className="mx-auto size-12 text-muted-foreground" />
-        <h1 className="mt-4 text-2xl font-bold tracking-tight">Acesso restrito</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Sua conta ainda não tem uma patente com acesso a esta área. Fale com a liderança da Leviata para liberar seu
-          cargo no Discord.
-        </p>
-        <div className="mt-6 flex justify-center gap-2">
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <Button type="submit" variant="ghost">Sair</Button>
+    <StatusScreen
+      fullscreen
+      icon={LockKeyholeIcon}
+      tone="warning"
+      code="403"
+      title="Acesso restrito"
+      description={description}
+      actions={
+        <>
+          {inPanel && <LinkButton href="/dashboard">Voltar ao início</LinkButton>}
+          <form action={signOutAction}>
+            <Button type="submit" variant={inPanel ? "ghost" : "secondary"}>
+              Sair
+            </Button>
           </form>
-        </div>
-      </div>
-    </main>
+        </>
+      }
+    />
   );
 }

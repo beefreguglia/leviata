@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithToast } from "@/lib/flash";
 import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -78,7 +78,7 @@ export async function deleteFaction(id: string) {
     await audit({ userId: viewer.user.id, action: "faction.delete", entity: "Faction", entityId: id, summary: `Apagou a facção ${faction.name}` });
     revalidate();
   });
-  if (result.ok) redirect("/faccoes");
+  if (result.ok) redirectWithToast("/faccoes", "apagado");
   return result;
 }
 

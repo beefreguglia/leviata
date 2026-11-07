@@ -60,6 +60,7 @@ model Member {
   factionEvents FactionEvent[]  @relation("FactionEventAuthor")
   farmGuides    FarmGuide[]     @relation("FarmGuideAuthor")
   notices       Notice[]        @relation("NoticeAuthor")
+  pollVotes     PollVote[]
   flyers        Flyer[]         @relation("FlyerAuthor")
   streams       StreamChannel[]
 
@@ -384,7 +385,36 @@ model Notice {
   authorId String?
   author   Member? @relation("NoticeAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
+  // enquete (opcional): se tiver opções, o aviso vira enquete; fecha quando o aviso expira
+  pollOptions PollOption[]
+  pollVotes   PollVote[]
+
   @@index([isPinned, createdAt])
+}
+
+model PollOption {
+  id    String @id @default(cuid())
+  text  String
+  order Int    @default(0)
+
+  noticeId String
+  notice   Notice     @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+  votes    PollVote[]
+}
+
+/// Um voto por membro em cada enquete (votar de novo troca a opção).
+model PollVote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  noticeId String
+  notice   Notice     @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+  optionId String
+  option   PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([noticeId, memberId])
 }
 
 /// Flyer (imagem de evento, recrutamento, corrida...).

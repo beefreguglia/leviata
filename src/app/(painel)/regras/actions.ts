@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithToast } from "@/lib/flash";
 import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -21,7 +21,7 @@ export async function createRule(fd: FormData) {
     await audit({ userId: viewer.user.id, action: "rule.create", entity: "RulePage", entityId: page.id, summary: `Criou a página de regras "${page.title}"` });
     revalidatePath("/regras", "layout");
   });
-  if (result.ok) redirect(`/regras/${slug}`);
+  if (result.ok) redirectWithToast(`/regras/${slug}`, "criado");
   return result;
 }
 
@@ -38,7 +38,7 @@ export async function updateRule(id: string, fd: FormData) {
     await audit({ userId: viewer.user.id, action: "rule.update", entity: "RulePage", entityId: id, summary: `Editou "${page.title}"` });
     revalidatePath("/regras", "layout");
   });
-  if (result.ok) redirect(`/regras/${slug}`);
+  if (result.ok) redirectWithToast(`/regras/${slug}`, "salvo");
   return result;
 }
 
@@ -49,6 +49,6 @@ export async function deleteRule(id: string) {
     await audit({ userId: viewer.user.id, action: "rule.delete", entity: "RulePage", entityId: id, summary: `Apagou "${page.title}"`, data: { content: page.content } });
     revalidatePath("/regras", "layout");
   });
-  if (result.ok) redirect("/regras");
+  if (result.ok) redirectWithToast("/regras", "apagado");
   return result;
 }

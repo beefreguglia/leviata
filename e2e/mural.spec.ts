@@ -76,3 +76,35 @@ test.describe("mural (soldado)", () => {
     await expect(page.getByRole("button", { name: "Novo flyer" })).toHaveCount(0);
   });
 });
+
+test.describe("enquetes", () => {
+  test("gerente cria enquete; soldado vota, troca e vê o resultado", async ({ browser }) => {
+    const title = `Melhor dia ${uid()}`;
+    const ger = await browser.newContext({ ...as("gerente"), locale: "pt-BR" });
+    const gp = await ger.newPage();
+    await gp.goto("/mural");
+    await gp.getByRole("button", { name: "Novo aviso" }).click();
+    const dialog = gp.getByRole("dialog");
+    await dialog.getByLabel("Título").fill(title);
+    await dialog.getByLabel(/Enquete \(opcional\)/).fill("Sábado 20h\nDomingo 21h");
+    await dialog.getByLabel("Enviar no canal de avisos do Discord").uncheck();
+    await dialog.getByRole("button", { name: "Publicar" }).click();
+    await expectToast(gp, "Enquete publicada");
+    await ger.close();
+
+    const sol = await browser.newContext({ ...as("soldado"), locale: "pt-BR" });
+    const page = await sol.newPage();
+    await page.goto("/mural");
+    const poll = page.getByRole("region", { name: `Enquete: ${title}` });
+    await poll.getByRole("button", { name: /Sábado 20h/ }).click();
+    await expectToast(page, "Voto registrado");
+    await expect(poll.getByRole("button", { name: /Sábado 20h/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(poll.getByRole("button", { name: /Sábado 20h/ })).toContainText("100%");
+
+    await poll.getByRole("button", { name: /Domingo 21h/ }).click();
+    await expectToast(page, "Voto trocado");
+    await expect(poll.getByRole("button", { name: /Domingo 21h/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(poll).toContainText("1 voto");
+    await sol.close();
+  });
+});

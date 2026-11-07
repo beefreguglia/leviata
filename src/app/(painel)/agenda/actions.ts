@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithToast } from "@/lib/flash";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
@@ -51,7 +51,7 @@ export async function createEvent(fd: FormData) {
     }
     revalidate();
   });
-  if (result.ok) redirect(`/agenda/${id}`);
+  if (result.ok) redirectWithToast(`/agenda/${id}`, "criado");
   return result;
 }
 
@@ -87,7 +87,7 @@ export async function deleteEvent(id: string) {
     await audit({ userId: viewer.user.id, action: "event.delete", entity: "Event", entityId: id, summary: `Apagou "${ev.title}" da agenda` });
     revalidate();
   });
-  if (result.ok) redirect("/agenda");
+  if (result.ok) redirectWithToast("/agenda", "apagado");
   return result;
 }
 
