@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { runAction } from "@/lib/actions";
-import { parseRankForm as parse } from "@/lib/schemas/rank";
+import { parseManagementForm, parseRankForm as parse, parseSectorForm } from "@/lib/schemas/rank";
 
 function revalidate() {
   revalidatePath("/hierarquia");
@@ -74,5 +74,93 @@ export async function deleteRank(id: string) {
     await audit({ userId: viewer.user.id, action: "rank.delete", entity: "Rank", entityId: id, summary: `Apagou a patente ${rank.name}` });
     revalidate();
     return "Patente apagada";
+  });
+}
+
+/** Cargo do Discord usado em outro setor/gerência/patente dá conflito confuso: avisa antes. */
+async function assertRoleFree(kind: "sector" | "management", roleId: string | null, exceptId?: string) {
+  if (!roleId) return;
+  const other = kind === "sector" ? await db.sector.findUnique({ where: { discordRoleId: roleId } }) : await db.management.findUnique({ where: { discordRoleId: roleId } });
+  if (other && other.id !== exceptId) throw new Error(`O cargo ${roleId} já está ligado a ${other.name}`);
+}
+
+// ---------------- Setores ----------------
+
+export async function createSector(fd: FormData) {
+  return runAction(async () => {
+    const viewer = await assertPermission("hierarquia.gerenciar");
+    const data = parseSectorForm(fd);
+    await assertRoleFree("sector", data.discordRoleId);
+    const sector = await db.sector.create({ data });
+    await audit({ userId: viewer.user.id, action: "sector.create", entity: "Sector", entityId: sector.id, summary: `Criou o setor ${sector.name}` });
+    revalidate();
+    return `Setor ${sector.name} criado`;
+  });
+}
+
+export async function updateSector(id: string, fd: FormData) {
+  return runAction(async () => {
+    const viewer = await assertPermission("hierarquia.gerenciar");
+    const data = parseSectorForm(fd);
+    await assertRoleFree("sector", data.discordRoleId, id);
+    const sector = await db.sector.update({ where: { id }, data });
+    await audit({ userId: viewer.user.id, action: "sector.update", entity: "Sector", entityId: id, summary: `Editou o setor ${sector.name}` });
+    revalidate();
+    return "Setor atualizado";
+  });
+}
+
+export async function deleteSector(id: string) {
+  return runAction(async () => {
+    const viewer = await assertPermission("hierarquia.gerenciar");
+    const sector = await db.sector.findUniqueOrThrow({ where: { id }, include: { _count: { select: { members: true } } } });
+    if (sector._count.members > 0) throw new Error(`Tire os ${sector._count.members} membros deste setor antes de apagar`);
+    await db.sector.delete({ where: { id } });
+    await audit({ userId: viewer.user.id, action: "sector.delete", entity: "Sector", entityId: id, summary: `Apagou o setor ${sector.name}` });
+    revalidate();
+    return "Setor apagado";
+  });
+}
+
+// ---------------- Gerências ----------------
+
+export async function createManagement(fd: FormData) {
+  return runAction(async () => {
+    const viewer = await assertPermission("hierarquia.gerenciar");
+    const data = parseManagementForm(fd);
+    await assertRoleFree("management", data.discordRoleId);
+    const g = await db.management.create({ data });
+    await audit({ userId: viewer.user.id, action: "management.create", entity: "Management", entityId: g.id, summary: `Criou a gerência ${g.name}` });
+    revalidate();
+    return `Gerência ${g.name} criada`;
+  });
+}
+
+export async function updateManagement(id: string, fd: FormData) {
+  return runAction(async () => {
+    const viewer = await assertPermission("hierarquia.gerenciar");
+    const data = parseManagementForm(fd);
+    await assertRoleFree("management", data.discordRoleId, id);
+    const g = await db.management.update({ where: { id }, data });
+    await audit({
+      userId: viewer.user.id,
+      action: "management.update",
+      entity: "Management",
+      entityId: id,
+      summary: `Editou a gerência ${g.name}`,
+      data: { permissions: data.permissions },
+    });
+    revalidate();
+    return "Gerência atualizada";
+  });
+}
+
+export async function deleteManagement(id: string) {
+  return runAction(async () => {
+    const viewer = await assertPermission("hierarquia.gerenciar");
+    const g = await db.management.delete({ where: { id } });
+    await audit({ userId: viewer.user.id, action: "management.delete", entity: "Management", entityId: id, summary: `Apagou a gerência ${g.name}` });
+    revalidate();
+    return "Gerência apagada";
   });
 }

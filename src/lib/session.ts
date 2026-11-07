@@ -13,15 +13,20 @@ export const getViewer = cache(async () => {
 
   const user = await db.user.findUnique({
     where: { id: userId },
-    include: { member: { include: { rank: true } } },
+    include: { member: { include: { rank: true, sector: true, managements: true } } },
   });
   if (!user) return null;
 
   const member = user.member;
   const blocked = !member || member.status === "EXPULSO";
   // desenvolvedor: tudo liberado, mas a ficha continua mostrando a patente cadastrada
+  // permissões = patente + todas as gerências da pessoa
   const permissions: string[] =
-    member && isDeveloper(user.discordId) ? ["admin"] : blocked ? [] : (member.rank?.permissions ?? []);
+    member && isDeveloper(user.discordId)
+      ? ["admin"]
+      : blocked
+        ? []
+        : [...new Set([...(member.rank?.permissions ?? []), ...member.managements.flatMap((g) => g.permissions)])];
 
   return {
     user,

@@ -49,6 +49,10 @@ model Member {
   rankId String?
   rank   Rank?   @relation(fields: [rankId], references: [id], onDelete: SetNull)
 
+  sectorId    String?
+  sector      Sector?      @relation(fields: [sectorId], references: [id], onDelete: SetNull)
+  managements Management[] @relation("MemberManagements")
+
   promotions       Promotion[]   @relation("PromotionMember")
   promotionsGiven  Promotion[]   @relation("PromotionBy")
   absences         Absence[]     @relation("AbsenceMember")
@@ -792,4 +796,34 @@ model Sale {
 
   @@index([createdAt])
   @@index([factionId, createdAt])
+}
+
+/// Setor da facção (Comércio, Vigília, Propulsão, Vanguarda). Cada membro está em um setor.
+model Sector {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  /// o que o setor faz (ex.: "Investigativa", "Corrida", "Ações")
+  description   String?
+  color         String   @default("#06d4ec")
+  order         Int      @default(0)
+  /// cargo do Discord que coloca a pessoa neste setor
+  discordRoleId String?  @unique
+  createdAt     DateTime @default(now())
+
+  members     Member[]
+  managements Management[]
+}
+
+/// Gerência (G-Geral, G-Ação…): soma permissões às da patente. Um membro pode ter várias.
+model Management {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  order         Int      @default(0)
+  discordRoleId String?  @unique
+  permissions   String[] // ver src/lib/permissions.ts
+  createdAt     DateTime @default(now())
+
+  sectorId String?
+  sector   Sector?  @relation(fields: [sectorId], references: [id], onDelete: SetNull)
+  members  Member[] @relation("MemberManagements")
 }

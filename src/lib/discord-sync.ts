@@ -32,6 +32,8 @@ export async function syncDiscordUser(params: {
   roles: string[];
   /** sem servidor configurado: cria a ficha mesmo sem patente (a liderança promove depois) */
   createWithoutRank?: boolean;
+  /** servidor conectado: setor e gerências seguem os cargos do Discord */
+  syncRoles?: boolean;
 }) {
   const user = await db.user.upsert({
     where: { discordId: params.discordId },
@@ -78,9 +80,40 @@ export async function syncDiscordUser(params: {
     });
   }
 
+  if (params.syncRoles) await syncSectorAndManagements(user.id, params.roles);
+
   return user;
 }
 
+
+/**
+ * Setor e gerências seguem os cargos do Discord, mas só para o que está ligado a um cargo:
+ * - setor: o primeiro (pela ordem) cujo cargo a pessoa tem; se não tem nenhum e o setor atual
+ *   veio do Discord, sai do setor; setor escolhido no painel (sem cargo) é mantido;
+ * - gerências com cargo: exatamente as que a pessoa tem no Discord; sem cargo: ficam como estão.
+ */
+export async function syncSectorAndManagements(userId: string, roles: string[]) {
+  const member = await db.member.findUnique({ where: { userId }, include: { sector: true, managements: true } });
+  if (!member) return;
+  const [sectors, managements] = await Promise.all([
+    db.sector.findMany({ where: { discordRoleId: { not: null } }, orderBy: [{ order: "asc" }, { name: "asc" }] }),
+    db.management.findMany({ where: { discordRoleId: { not: null } } }),
+  ]);
+  const sector = sectors.find((s) => roles.includes(s.discordRoleId!));
+  const sectorId = sector ? sector.id : member.sector?.discordRoleId ? null : member.sectorId;
+
+  const mappedIds = new Set(managements.map((g) => g.id));
+  const keep = member.managements.filter((g) => !mappedIds.has(g.id)).map((g) => g.id);
+  const fromRoles = managements.filter((g) => roles.includes(g.discordRoleId!)).map((g) => g.id);
+  const next = [...new Set([...keep, ...fromRoles])];
+
+  const same = sectorId === member.sectorId && next.length === member.managements.length && next.every((id) => member.managements.some((g) => g.id === id));
+  if (same) return;
+  await db.member.update({
+    where: { id: member.id },
+    data: { sectorId, managements: { set: next.map((id) => ({ id })) } },
+  });
+}
 
 /**
  * Decide o login via Discord: confere config, se a pessoa está no servidor e sincroniza.
@@ -120,6 +153,7 @@ export async function discordSignIn(params: {
     nick: guildMember.nick,
     roles: guildMember.roles,
     createWithoutRank: true,
+    syncRoles: true,
   });
   return true;
 }

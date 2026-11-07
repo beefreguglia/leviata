@@ -12,7 +12,7 @@ import { FormDialog } from "@/components/forms/form-dialog";
 import { NativeSelect } from "@/components/forms/fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RankBadge } from "@/components/status-badge";
+import { RankBadge, SectorBadge } from "@/components/status-badge";
 import { PresenceAvatar, PresenceLegend } from "@/components/presence-avatar";
 import { Stagger, StaggerItem } from "@/components/motion";
 import { MemberFields } from "./member-fields";
@@ -25,6 +25,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
   const status = typeof sp.status === "string" ? sp.status : "ATUAIS";
+  const setor = typeof sp.setor === "string" ? sp.setor : "";
 
   const where: Prisma.MemberWhereInput = {};
   if (q) {
@@ -36,15 +37,18 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
   }
   if (status === "ATUAIS") where.status = { not: "EXPULSO" };
   else if (status in MEMBER_STATUS) where.status = status as keyof typeof MEMBER_STATUS;
+  if (setor === "nenhum") where.sectorId = null;
+  else if (setor) where.sectorId = setor;
 
-  const [members, ranks, total] = await Promise.all([
+  const [members, ranks, total, sectors] = await Promise.all([
     db.member.findMany({
       where,
-      include: { rank: true, user: true, absences: { where: activeAbsenceWhere(), take: 1 } },
+      include: { rank: true, sector: true, user: true, absences: { where: activeAbsenceWhere(), take: 1 } },
       orderBy: [{ rank: { order: "asc" } }, { rpName: "asc" }],
     }),
     db.rank.findMany({ orderBy: { order: "asc" } }),
     db.member.count({ where: { status: { not: "EXPULSO" } } }),
+    db.sector.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] }),
   ]);
 
   const canManage = viewer.can("membros.gerenciar");
@@ -78,7 +82,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
           <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
           <Input name="q" defaultValue={q} placeholder="Buscar por nome, passaporte ou Discord" className="bg-card pl-12" />
         </div>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:flex">
           <NativeSelect name="status" defaultValue={status} className="bg-card sm:w-44" aria-label="Filtrar por status">
             <option value="ATUAIS">Atuais</option>
             {Object.entries(MEMBER_STATUS).map(([v, { label }]) => (
@@ -88,7 +92,18 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
             ))}
             <option value="TODOS">Todos</option>
           </NativeSelect>
-          <Button type="submit" variant="secondary" size="lg">
+          {sectors.length > 0 && (
+            <NativeSelect name="setor" defaultValue={setor} className="bg-card sm:w-44" aria-label="Filtrar por setor">
+              <option value="">Todos os setores</option>
+              {sectors.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+              <option value="nenhum">Sem setor</option>
+            </NativeSelect>
+          )}
+          <Button type="submit" variant="secondary" size="lg" className="col-span-2 sm:col-span-1">
             Filtrar
           </Button>
         </div>
@@ -127,6 +142,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
+                    {m.sector && <SectorBadge name={m.sector.name} color={m.sector.color} className="hidden md:inline-flex" />}
                     <RankBadge name={m.rank?.name} color={m.rank?.color} className="group-hover:bg-grey-600 group-focus-visible:bg-grey-600" />
                     <ChevronRightIcon className="size-4 text-muted-foreground/60" />
                   </div>

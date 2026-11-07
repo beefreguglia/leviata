@@ -91,13 +91,20 @@ Como funciona: no login o painel confere se a pessoa está no servidor e pega os
 
 Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel.ver`, `economia.ver` (farm, fabricação, baú, metas, encomendas), `membros.gerenciar`, `hierarquia.gerenciar`, `regras.editar`, `conteudo.editar` (lore, facções, farm, fabricação, mural, mapa, lives), `operacoes.gerenciar` (agenda, escalações, perímetros), `financeiro.gerenciar` (baú, metas, encomendas — inclui ver a economia), `punicoes.gerenciar`, `ausencias.gerenciar` (inclui ver as ausências dos outros), `auditoria.ver` e `admin` (tudo).
 
-Padrão:
+**Estrutura da Leviatã** (`prisma/leviata-structure.ts`, ligada aos cargos do Discord):
 
-| Patente | Pode |
+- **Patente** (uma por pessoa): Recruta → Membro → Veterano → Hierarquia (Hierarquia = tudo; as outras veem o painel).
+- **Setor** (um por pessoa): Vanguarda (Ações), Propulsão (Corrida), Vigília (Investigativa), Comércio.
+- **Gerências** (somam permissões à patente; uma pessoa pode ter várias):
+
+| Gerência | Libera |
 | --- | --- |
-| Líder, Sub-líder | tudo |
-| Gerente | cria e edita operações, economia, cidade e comunicação. **Não** vê ausências dos outros, não pune, não edita regras, não vê auditoria nem cadastra membros |
-| Soldado, Recruta | só veem cidade, comunicação, operações, membros, hierarquia e regras; registram a própria ausência e votam nas enquetes |
+| G-Geral | operações, economia, cidade e comunicação |
+| G-Ação / G-Corrida | operações (agenda, escalações, perímetros) |
+| G-Investigativa | conteúdo (lore, facções, mapa, mural, farm, fabricação) |
+| G-Comércio | economia (baú, metas, encomendas, vendas) |
+
+Permissões de patentes e gerências são editáveis em **Hierarquia**. Com o servidor do Discord conectado, patente, setor e gerências seguem os cargos a cada login (o que não estiver ligado a um cargo fica como foi definido no painel).
 
 Ficha sem patente (quem entrou pelo Discord e ainda não foi promovido) só faz o **registro** (nome, número e ID) e lê as regras públicas.
 

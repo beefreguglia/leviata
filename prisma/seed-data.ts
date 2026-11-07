@@ -1,5 +1,6 @@
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { RANK_PALETTE } from "../src/lib/rank-colors";
+import { LEVIATA_MANAGEMENTS, LEVIATA_SECTORS } from "./leviata-structure";
 
 export const ALL = ["admin"];
 /** Gerente: cria e edita operações, economia, cidade e comunicação.
@@ -13,6 +14,19 @@ export async function seed(db: PrismaClient) {
   const rankByName = await seedRanks(db);
   await seedDevUsers(db, rankByName);
   await seedRules(db);
+  await seedSectors(db);
+}
+
+/** Setores e gerências da Leviatã (sem membros — a liderança/Discord distribui). */
+export async function seedSectors(db: PrismaClient) {
+  const byName: Record<string, string> = {};
+  for (const s of LEVIATA_SECTORS) {
+    const row = await db.sector.upsert({ where: { name: s.name }, create: s, update: {} });
+    byName[s.name] = row.id;
+  }
+  for (const { sector, ...g } of LEVIATA_MANAGEMENTS) {
+    await db.management.upsert({ where: { name: g.name }, create: { ...g, sectorId: sector ? byName[sector] : null }, update: {} });
+  }
 }
 
 /** Patentes padrão (ajuste nomes e IDs de cargo do Discord pelo painel → Hierarquia). */

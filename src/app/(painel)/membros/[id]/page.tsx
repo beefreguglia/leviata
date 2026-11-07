@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ArrowUpDownIcon, PencilIcon } from "@/components/icons";
+import { ArrowUpDownIcon, PencilIcon, UsersIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { ABSENCE_STATUS, ABSENT_BADGE, MEMBER_STATUS, presenceOf } from "@/lib/labels";
@@ -10,11 +10,11 @@ import { Field, NativeSelect } from "@/components/forms/fields";
 import { PresenceAvatar } from "@/components/presence-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RankBadge, StatusBadge } from "@/components/status-badge";
+import { RankBadge, SectorBadge, StatusBadge } from "@/components/status-badge";
 import { FadeIn } from "@/components/motion";
 import { MemberFields } from "../member-fields";
 import { PunishmentRows } from "../../punicoes/punishment-list";
-import { changeRank, updateMember } from "../actions";
+import { changeRank, setMemberSector, updateMember } from "../actions";
 
 export default async function MemberPage({ params }: PageProps<"/membros/[id]">) {
   const viewer = await requireViewer();
@@ -24,6 +24,8 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
     where: { id },
     include: {
       rank: true,
+      sector: true,
+      managements: { orderBy: [{ order: "asc" }, { name: "asc" }] },
       user: true,
       promotions: { include: { fromRank: true, toRank: true, by: true }, orderBy: { createdAt: "desc" } },
       absences: { orderBy: { startsAt: "desc" }, take: 10 },
@@ -32,13 +34,16 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
   if (!member) notFound();
 
   const canSeePunishments = viewer.can("punicoes.gerenciar") || viewer.member?.id === member.id;
-  const [ranks, punishments] = await Promise.all([
+  const [ranks, punishments, sectors, managements] = await Promise.all([
     db.rank.findMany({ orderBy: { order: "asc" } }),
     canSeePunishments
       ? db.punishment.findMany({ where: { memberId: member.id }, include: { member: true, createdBy: true }, orderBy: { createdAt: "desc" }, take: 20 })
       : Promise.resolve([]),
+    db.sector.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] }),
+    db.management.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] }),
   ]);
   const canManage = viewer.can("membros.gerenciar");
+  const canManageHierarchy = viewer.can("hierarquia.gerenciar");
   const now = new Date();
   const absentNow = member.absences.some(
     (a) => (a.status === "PENDENTE" || a.status === "APROVADA") && a.startsAt <= now && a.endsAt >= now,
@@ -59,6 +64,10 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
           <h1 className="type-h1 text-grey-100">{member.rpName}</h1>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5 sm:justify-start">
             <RankBadge name={member.rank?.name} color={member.rank?.color} />
+            {member.sector && <SectorBadge name={member.sector.name} color={member.sector.color} />}
+            {member.managements.map((g) => (
+              <StatusBadge key={g.id} label={g.name} className="bg-cyan-low text-cyan-light" />
+            ))}
             <StatusBadge {...MEMBER_STATUS[member.status]} />
             {absentNow && <StatusBadge {...ABSENT_BADGE} />}
           </div>
@@ -88,6 +97,42 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
               <Field label="Motivo" htmlFor="reason">
                 <Input id="reason" name="reason" placeholder="Ex.: bateu as metas do mês" />
               </Field>
+            </FormDialog>
+            <FormDialog
+              title="Setor e gerências"
+              description="Com o servidor do Discord conectado, o que estiver ligado a um cargo segue o Discord no próximo login."
+              action={setMemberSector.bind(null, member.id)}
+              trigger={
+                <Button variant="secondary">
+                  <UsersIcon /> Setor
+                </Button>
+              }
+            >
+              <Field label="Setor" htmlFor="sectorId">
+                <NativeSelect id="sectorId" name="sectorId" defaultValue={member.sectorId ?? ""}>
+                  <option value="">Sem setor</option>
+                  {sectors.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                      {s.description ? ` (${s.description})` : ""}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
+              {canManageHierarchy && managements.length > 0 && (
+                <fieldset className="flex flex-col gap-1.5">
+                  <legend className="mb-2 text-sm font-medium text-grey-200">Gerências</legend>
+                  <input type="hidden" name="managementsField" value="1" />
+                  <div className="overflow-hidden rounded-md bg-input [&>*+*]:border-t [&>*+*]:border-grey-700">
+                    {managements.map((g) => (
+                      <label key={g.id} className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 text-base">
+                        {g.name}
+                        <input type="checkbox" name="managementIds" value={g.id} defaultChecked={member.managements.some((x) => x.id === g.id)} className="size-5 accent-[var(--primary)]" />
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
             </FormDialog>
             <FormDialog
               title="Editar ficha"

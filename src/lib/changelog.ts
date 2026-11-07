@@ -15,6 +15,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-07-setores",
+    date: "2026-11-07",
+    title: "Setores e gerências",
+    items: [
+      "Patentes agora são **Recruta → Membro → Veterano → Hierarquia**, puxadas dos cargos do Discord",
+      "Cada membro tem um **setor**: Vanguarda (Ações), Propulsão (Corrida), Vigília (Investigativa) ou Comércio",
+      "**Gerências** (G-Geral, G-Ação, G-Corrida, G-Investigativa, G-Comércio) liberam as ferramentas de cada área",
+      "Em Hierarquia dá pra ver quem está em cada setor e quem gerencia; em Membros dá pra filtrar por setor",
+    ],
+  },
+  {
     id: "2026-11-07-visual-vendas",
     date: "2026-11-07",
     title: "Cara nova da Leviatã, vendas e enquetes",

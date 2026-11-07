@@ -26,3 +26,54 @@ export function parseRankForm(fd: FormData) {
     .filter((p) => (ALL_PERMISSIONS as string[]).includes(p));
   return { ...data, permissions: [...new Set(permissions)] };
 }
+
+const roleId = z
+  .string()
+  .trim()
+  .regex(/^\d*$/, "ID do cargo deve ter só números")
+  .transform((v) => v || null);
+
+/** Setor: nome, o que faz, cor, ordem e cargo do Discord. */
+export function parseSectorForm(fd: FormData) {
+  return z
+    .object({
+      name: z.string().trim().min(2, "Nome muito curto").max(40),
+      description: z
+        .string()
+        .trim()
+        .max(60)
+        .transform((v) => v || null),
+      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Cor inválida"),
+      order: z.coerce.number().int().min(0).max(99),
+      discordRoleId: roleId,
+    })
+    .parse({
+      name: fd.get("name"),
+      description: fd.get("description") ?? "",
+      color: fd.get("color") ?? "#06d4ec",
+      order: fd.get("order") || 0,
+      discordRoleId: fd.get("discordRoleId") ?? "",
+    });
+}
+
+/** Gerência: nome, setor (opcional), cargo do Discord e permissões que soma. */
+export function parseManagementForm(fd: FormData) {
+  const data = z
+    .object({
+      name: z.string().trim().min(2, "Nome muito curto").max(40),
+      order: z.coerce.number().int().min(0).max(99),
+      sectorId: z.string().transform((v) => v || null),
+      discordRoleId: roleId,
+    })
+    .parse({
+      name: fd.get("name"),
+      order: fd.get("order") || 0,
+      sectorId: fd.get("sectorId") ?? "",
+      discordRoleId: fd.get("discordRoleId") ?? "",
+    });
+  const permissions = fd
+    .getAll("permissions")
+    .map(String)
+    .filter((p) => (ALL_PERMISSIONS as string[]).includes(p));
+  return { ...data, permissions: [...new Set(permissions)] };
+}
