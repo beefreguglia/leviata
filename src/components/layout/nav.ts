@@ -1,6 +1,6 @@
 import type { Permission } from "@/lib/permissions";
 import {
-  BookOpenIcon, CalendarDaysIcon, SparklesIcon, CoinsIcon, ExternalLinkIcon, HomeIcon, IdCardIcon, LayoutListIcon, MegaphoneIcon,
+  BookOpenIcon, CalendarDaysIcon, CoinsIcon, ExternalLinkIcon, HomeIcon, IdCardIcon, LayoutListIcon, MegaphoneIcon,
   ScrollTextIcon, UsersIcon, type AppIcon,
 } from "@/components/icons";
 
@@ -81,7 +81,6 @@ export const CITY_RULES_URL = "https://regras.cdanjos.com/";
 
 export const NAV_SECONDARY: (NavLink & { icon: AppIcon })[] = [
   { href: "/registro", label: "Meu registro", icon: IdCardIcon },
-  { href: "/novidades", label: "Novidades", icon: SparklesIcon },
   { href: "/regras", label: "Regras da Leviatã", icon: ScrollTextIcon },
   { href: CITY_RULES_URL, label: "Regras da cidade", icon: ExternalLinkIcon, external: true },
   { href: "/auditoria", label: "Auditoria", icon: LayoutListIcon, perm: "auditoria.ver" },

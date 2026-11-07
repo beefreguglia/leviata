@@ -82,14 +82,3 @@ test.describe("barra de rolagem", () => {
     await expect.poll(() => viewport.evaluate((el) => el.scrollTop)).toBeGreaterThan(100);
   });
 });
-
-test.describe("novidades", () => {
-  test.use(as("soldado"));
-  test("página de novidades lista as mudanças (a mais nova marcada)", async ({ page }) => {
-    await page.goto("/novidades");
-    await expect(page.getByRole("heading", { name: "Novidades" })).toBeVisible();
-    const first = page.getByTestId("changelog-entry").filter({ visible: true }).first();
-    await expect(first).toContainText("Nova");
-    await expect(page.locator('[data-sidebar="sidebar"]').first().getByRole("link", { name: "Novidades" })).toBeVisible();
-  });
-});

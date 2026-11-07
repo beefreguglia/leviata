@@ -19,9 +19,9 @@ describe("novidades", () => {
     expect(pendingAnnouncements(list, ["a", "b", "c"])).toEqual([]);
   });
 
-  it("embed com itens e link para a página", () => {
+  it("embed com itens e o título apontando para o painel", () => {
     const e = changelogEmbed({ id: "x", date: "2026-11-07", title: "Vendas", items: ["Um", "Dois"] }, "https://leviata.vercel.app/");
-    expect(e.title).toBe("🆕 Vendas");
-    expect(e.description).toBe("• Um\n• Dois\n\n[Ver todas as novidades](https://leviata.vercel.app/novidades)");
+    expect(e).toEqual({ title: "🆕 Vendas", description: "• Um\n• Dois", url: "https://leviata.vercel.app" });
+    expect(changelogEmbed({ id: "x", date: "2026-11-07", title: "V", items: [] })).not.toHaveProperty("url");
   });
 });

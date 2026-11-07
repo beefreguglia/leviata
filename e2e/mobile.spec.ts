@@ -7,7 +7,7 @@ const PAGES = [
   "/agenda", "/escalacoes", "/perimetros", "/mapa",
   "/farm", "/fabricacao", "/bau", "/metas", "/encomendas",
   "/lore", "/faccoes", "/mural", "/mural?aba=flyers", "/lives",
-  "/regras/estatuto", "/regras/conduta", "/registro", "/auditoria", "/novidades",
+  "/regras/estatuto", "/regras/conduta", "/registro", "/auditoria",
   "/lore/novo", "/perimetros/novo", "/farm/novo", "/regras/nova",
 ];
 

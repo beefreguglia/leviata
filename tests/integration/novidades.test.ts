@@ -17,7 +17,7 @@ describe("anúncio de novidades no Discord", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     const body = JSON.parse(String((fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0][1].body));
     expect(body.embeds[0].title).toBe(`🆕 ${CHANGELOG[0].title}`);
-    expect(body.embeds[0].description).toContain("https://painel.test/novidades");
+    expect(body.embeds[0].url).toBe("https://painel.test");
 
     const saved = await db.setting.findUniqueOrThrow({ where: { key: "changelog.anunciados" } });
     expect(saved.value).toEqual(CHANGELOG.map((e) => e.id));

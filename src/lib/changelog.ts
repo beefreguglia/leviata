@@ -2,7 +2,7 @@
  * Novidades do painel — escritas para os membros (não para programadores).
  * Para anunciar uma mudança: adicione uma entrada NO TOPO com um `id` novo e faça o deploy.
  * No deploy de produção o painel posta a entrada mais nova no canal do Discord
- * (DISCORD_WEBHOOK_NOVIDADES) — cada `id` é anunciado uma vez só.
+ * (DISCORD_WEBHOOK_NOVIDADES) — cada `id` é anunciado uma vez só. Não há página no painel.
  */
 export type ChangelogEntry = {
   /** identificador único e estável (ex.: "2026-11-07-vendas") */
@@ -59,9 +59,8 @@ export function pendingAnnouncements(entries: ChangelogEntry[], announced: strin
   return entries.filter((e) => !done.has(e.id));
 }
 
-/** Texto do embed do Discord (markdown do Discord). */
+/** Texto do embed do Discord (markdown do Discord); com a URL, o título vira link para o painel. */
 export function changelogEmbed(entry: ChangelogEntry, panelUrl?: string) {
-  const lines = entry.items.map((i) => `• ${i}`);
-  if (panelUrl) lines.push("", `[Ver todas as novidades](${panelUrl.replace(/\/$/, "")}/novidades)`);
-  return { title: `🆕 ${entry.title}`, description: lines.join("\n").slice(0, 3900) };
+  const description = entry.items.map((i) => `• ${i}`).join("\n").slice(0, 3900);
+  return { title: `🆕 ${entry.title}`, description, ...(panelUrl ? { url: panelUrl.replace(/\/$/, "") } : {}) };
 }
