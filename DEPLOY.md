@@ -88,8 +88,7 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 | `AUTH_URL` | `https://SEU-PROJETO.vercel.app` |
 | `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET` | do passo 3 |
 | `DISCORD_GUILD_ID` | do passo 3 — **deixe de fora** enquanto o servidor não estiver conectado |
-| `BOOTSTRAP_ADMIN_DISCORD_IDS` | seu Discord ID (e de outro líder, separados por vírgula) |
-| `DEVELOPER_DISCORD_IDS` | (opcional) IDs com acesso total sem mudar a patente exibida |
+| `BOOTSTRAP_ADMIN_DISCORD_IDS` | seu Discord ID (separe por vírgula se tiver mais de um). Esses IDs têm **acesso total** sempre, mesmo com outra patente na ficha |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | do passo 2 |
 | `SUPABASE_BUCKET` | `leviata` |
 | `DISCORD_WEBHOOK_AVISOS` / `_ACOES` / `_LIVES` | do passo 3 (opcionais) |
@@ -108,7 +107,7 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 1. Entre no painel com o Discord. Como seu ID está em `BOOTSTRAP_ADMIN_DISCORD_IDS`, você entra como **Líder**.
 2. **Hierarquia** → edite cada patente: nome e cor. Com o servidor conectado, preencha também o **ID do cargo do Discord** (Configurações do servidor → Cargos → botão direito → Copiar ID).
 3. Peça para os membros entrarem. Sem servidor conectado, eles aparecem em **Membros** sem patente: abra a ficha e dê a patente. Com servidor, confira se a patente veio certa.
-4. Na Vercel, **apague o valor** de `BOOTSTRAP_ADMIN_DISCORD_IDS` e faça **Redeploy** (sua patente fica salva).
+4. `BOOTSTRAP_ADMIN_DISCORD_IDS` pode ficar: quem está nela tem acesso total mesmo que a ficha mostre outra patente (ex.: você aparecendo como Recruta). Só tire de lá quem não deve administrar o painel.
 5. **Mapa** → "Enviar imagem do mapa". Depois é só ir preenchendo regras, lore, facções, farm…
 
 ---

@@ -27,7 +27,7 @@ const inHours = (h: number) => new Date(Date.now() + h * 3600_000).toISOString()
 
 describe("permissões padrão das patentes", () => {
   afterEach(() => {
-    delete process.env.DEVELOPER_DISCORD_IDS;
+    delete process.env.BOOTSTRAP_ADMIN_DISCORD_IDS;
   });
 
   it("gerente cria em operações, economia, cidade e comunicação", async () => {
@@ -63,8 +63,8 @@ describe("permissões padrão das patentes", () => {
     expect(await allowed(createLore(form({ title: "Origem", content: "x" })))).toBe(false);
   });
 
-  it("desenvolvedor (DEVELOPER_DISCORD_IDS) pode tudo, mas continua aparecendo como Recruta", async () => {
-    process.env.DEVELOPER_DISCORD_IDS = "dev-recruta";
+  it("desenvolvedor (BOOTSTRAP_ADMIN_DISCORD_IDS) pode tudo, mas continua aparecendo como Recruta", async () => {
+    process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "dev-recruta";
     await actAs("dev-recruta");
     const v = await getViewer();
     expect(v?.member?.rank?.name).toBe("Recruta");

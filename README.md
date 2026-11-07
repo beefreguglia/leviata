@@ -101,7 +101,7 @@ Padrão:
 
 Ficha sem patente (quem entrou pelo Discord e ainda não foi promovido) só faz o **registro** (nome, número e ID) e lê as regras públicas.
 
-**Desenvolvedor:** IDs em `DEVELOPER_DISCORD_IDS` têm acesso total, mas a ficha continua mostrando a patente cadastrada (ex.: Recruta).
+**Acesso total (desenvolvedor):** os IDs em `BOOTSTRAP_ADMIN_DISCORD_IDS` entram como Líder no primeiro acesso e depois continuam podendo tudo, mesmo que a ficha mostre outra patente (ex.: Recruta). Tirar o ID da variável tira esse acesso.
 
 ## Personalizar
 

@@ -32,8 +32,11 @@ export function hasPermission(perms: readonly string[] | undefined | null, perm:
   return (IMPLIED_BY[perm] ?? []).some((p) => perms.includes(p));
 }
 
-/** Discord IDs com acesso total "fantasma" (DEVELOPER_DISCORD_IDS): a patente exibida não muda. */
-export function isDeveloper(discordId: string | null | undefined, raw = process.env.DEVELOPER_DISCORD_IDS) {
+/**
+ * Acesso total "fantasma": os Discord IDs de BOOTSTRAP_ADMIN_DISCORD_IDS podem tudo,
+ * mas a ficha continua mostrando a patente cadastrada (ex.: Recruta).
+ */
+export function isDeveloper(discordId: string | null | undefined, raw = process.env.BOOTSTRAP_ADMIN_DISCORD_IDS) {
   if (!discordId || !raw) return false;
   return raw
     .split(/[\s,;]+/)
