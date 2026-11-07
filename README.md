@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Painel Leviata
 
-## Getting Started
+Painel interno da Leviata (GTA RP · Cidade dos Anjos).
 
-First, run the development server:
+| Fase | Módulos | Status |
+| --- | --- | --- |
+| 1 · Base | Login Discord, membros, hierarquia, regras, ausências, auditoria | ✅ |
+| 2 · Conteúdo | Lore, facções, farm, fabricação (calculadoras), mural & flyers, lives, upload de imagens | ✅ |
+| 3 · Operações | Mapa com marcadores, perímetros, agenda (presença + relatório), escalações | ✅ |
+| 4 · Gestão | Baú/financeiro, metas de farm, encomendas, punições | — |
+| 5 · Deploy | Vercel + Supabase | — |
+
+**Stack:** Next.js 16 · TypeScript · Tailwind v4 · shadcn/ui (Base UI, sidebar-08) · design system Andromeda (ciano) · motion · Prisma 7 + PostgreSQL · Auth.js (Discord)
+
+## Rodar localmente
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env          # e gere AUTH_SECRET com: npx auth secret
+npm run db:start              # sobe um Postgres local (Prisma Dev)
+npx prisma migrate dev        # cria as tabelas
+npm run db:seed               # patentes, usuários de teste, regras e conteúdo de exemplo (mapa, facções, agenda…)
+npm run dev                   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> `npm run db:start` mostra a URL `postgres://…` (TCP). Ela deve estar em `DATABASE_URL` no `.env`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Com `AUTH_DEV_LOGIN="true"` a tela de login mostra botões para entrar como Líder/Gerente/Soldado/Recruta de teste, sem Discord. Isso é desligado automaticamente em produção.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Testes
 
-## Learn More
+Três camadas, todas em português e organizadas por módulo:
 
-To learn more about Next.js, take a look at the following resources:
+| Camada | Ferramenta | Onde | O que cobre |
+| --- | --- | --- | --- |
+| Unitários | Vitest | `tests/unit/` | permissões, datas (fuso de Brasília), validações dos formulários, Discord API/webhook, menu |
+| Integração | Vitest + Postgres de teste | `tests/integration/` | Server Actions de cada módulo e login do Discord rodando de verdade no banco (permissões, regras de negócio, auditoria) |
+| E2E | Playwright | `e2e/` | o painel no navegador: login, menu (desktop e celular), início, membros, hierarquia, regras, ausências, auditoria |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Primeira vez:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run test:db:start      # sobe o Postgres de teste (separado do de dev)
+npm run test:db:migrate    # cria as tabelas nele
+npx playwright install chromium
+```
 
-## Deploy on Vercel
+> Confira se a porta mostrada pelo `test:db:start` bate com `DATABASE_URL` em `.env.test`.
+> No Ubuntu 26.04 o Playwright ainda não reconhece o sistema: use
+> `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 npx playwright install chromium`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Rodar:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm test              # unitários + integração
+npm run test:unit     # só unitários (não precisa de banco)
+npm run test:cov      # com relatório de cobertura
+npm run test:e2e      # navegador (sobe um servidor próprio na porta 3100)
+npm run test:all      # tudo
+```
+
+Os testes de integração e e2e **apagam e recriam** o banco de teste — nunca aponte `.env.test` para o banco de dev ou produção.
+O e2e usa os usuários de teste do seed (Líder, Gerente, Soldado, Recruta) e roda em sequência porque compartilha o banco.
+
+## Configurar o login com Discord
+
+1. Acesse <https://discord.com/developers/applications> → **New Application** ("Painel Leviata").
+2. **OAuth2** → copie **Client ID** e **Client Secret** para `AUTH_DISCORD_ID` / `AUTH_DISCORD_SECRET`.
+3. **OAuth2 → Redirects**: adicione `http://localhost:3000/api/auth/callback/discord` (e depois a URL de produção).
+4. No Discord, ative **Configurações → Avançado → Modo desenvolvedor**.
+5. Botão direito no servidor da Leviata → **Copiar ID** → `DISCORD_GUILD_ID`.
+6. No painel, em **Hierarquia**, edite cada patente e cole o **ID do cargo** do Discord correspondente (Configurações do servidor → Cargos → botão direito → Copiar ID).
+7. (Opcional) Webhook do canal de avisos: Editar canal → Integrações → Webhooks → copiar URL → `DISCORD_WEBHOOK_AVISOS`.
+
+Como funciona: no login o painel confere se a pessoa está no servidor e pega os cargos dela. A patente mais alta mapeada vira a patente no painel (e a ficha de membro é criada na primeira vez). Quem não está no servidor é barrado; quem não tem cargo mapeado cai em "Acesso restrito".
+
+## Integrações opcionais (.env)
+
+| Variável | Para quê |
+| --- | --- |
+| `DISCORD_WEBHOOK_AVISOS` | Avisos do mural, ausências e (se os abaixo estiverem vazios) ações e lives |
+| `DISCORD_WEBHOOK_ACOES` | Novos eventos, escalações publicadas, cancelamentos |
+| `DISCORD_WEBHOOK_LIVES` | "Fulano entrou ao vivo" |
+| `AUTH_URL` | URL pública do painel (ex.: `https://leviata.vercel.app`) — usada nos links das mensagens do Discord |
+| `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | Status de live da Twitch ([dev.twitch.tv/console/apps](https://dev.twitch.tv/console/apps)) |
+| `YOUTUBE_API_KEY` | Status de live do YouTube (YouTube Data API v3) — Kick funciona sem chave |
+| `CRON_SECRET` | Protege `/api/cron/streams` (para um cron externo atualizar as lives) |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_BUCKET` | Imagens em produção (bucket **privado**). Sem isso, ficam em `.uploads/` |
+
+## Permissões
+
+Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel.ver`, `membros.gerenciar`, `hierarquia.gerenciar`, `regras.editar`, `conteudo.editar` (lore, facções, farm, fabricação, mural, mapa), `operacoes.gerenciar` (agenda, escalações, perímetros), `ausencias.gerenciar`, `auditoria.ver` e `admin` (tudo). Patente sem `painel.ver` (ex.: Recruta) só vê as regras marcadas como "visível para recrutas".
+
+## Personalizar
+
+- **Cores:** `src/app/globals.css` → bloco "Tema Leviata" (`--primary` é o ciano da fac).
+- **Logo:** `src/components/layout/logo.tsx` (marca provisória).
+- **Regras de UI (Andromeda + ciano):** `.claude/skills/leviata-ui/SKILL.md`.
+- **Menu lateral (shadcn sidebar-08):** itens em `src/components/layout/nav.ts`.
+
+## Estrutura
+
+```
+prisma/                 schema, migrations, seed
+src/auth.ts             Auth.js (Discord + login de teste)
+src/proxy.ts            redireciona para /login sem sessão
+src/lib/                db, session/permissões, discord, auditoria, datas
+src/components/         ui (shadcn), layout, forms, motion
+src/app/(painel)/       módulos: dashboard, membros, hierarquia, regras, ausencias, auditoria
+```
+Cada módulo: `page.tsx` + `actions.ts` (Server Actions com `assertPermission()` e `audit()`).

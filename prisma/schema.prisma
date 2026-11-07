@@ -1,0 +1,595 @@
+// Painel Leviata — schema do banco
+// Fase 1: usuários, membros, hierarquia, regras, ausências, auditoria.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Conta que fez login (via Discord). Um usuário pode ter (ou não) uma ficha de membro.
+model User {
+  id          String    @id @default(cuid())
+  discordId   String    @unique
+  username    String
+  avatarUrl   String?
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  member   Member?
+  auditLog AuditLog[]
+}
+
+enum MemberStatus {
+  ATIVO
+  INATIVO
+  AFASTADO
+  EXPULSO
+}
+
+/// Ficha do membro dentro da fac (personagem no RP).
+model Member {
+  id        String       @id @default(cuid())
+  rpName    String
+  passport  String?      @unique // ID / passaporte no jogo
+  phone     String?
+  status    MemberStatus @default(ATIVO)
+  joinedAt  DateTime     @default(now())
+  notes     String?
+  birthday  DateTime?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  rankId String?
+  rank   Rank?   @relation(fields: [rankId], references: [id], onDelete: SetNull)
+
+  promotions       Promotion[]   @relation("PromotionMember")
+  promotionsGiven  Promotion[]   @relation("PromotionBy")
+  absences         Absence[]     @relation("AbsenceMember")
+  absencesReviewed Absence[]     @relation("AbsenceReviewer")
+  ruleVersions     RuleVersion[]
+
+  uploads       Upload[]
+  loreArticles  LoreArticle[]   @relation("LoreAuthor")
+  factionEvents FactionEvent[]  @relation("FactionEventAuthor")
+  farmGuides    FarmGuide[]     @relation("FarmGuideAuthor")
+  notices       Notice[]        @relation("NoticeAuthor")
+  flyers        Flyer[]         @relation("FlyerAuthor")
+  streams       StreamChannel[]
+
+  mapPins       MapPin[]      @relation("MapPinAuthor")
+  perimeters    Perimeter[]   @relation("PerimeterAuthor")
+  eventsCreated Event[]       @relation("EventCreatedBy")
+  attendances   Attendance[]
+  lineupSlots   LineupSlot[]
+  eventReports  EventReport[] @relation("EventReportAuthor")
+}
+
+/// Patente/cargo da hierarquia. Pode ser ligada a um cargo do Discord.
+model Rank {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  order         Int      @unique // menor = mais alto na hierarquia
+  color         String   @default("#14b8a6")
+  discordRoleId String?  @unique
+  permissions   String[] // ver src/lib/permissions.ts
+  createdAt     DateTime @default(now())
+
+  members        Member[]
+  promotionsFrom Promotion[] @relation("PromotionFrom")
+  promotionsTo   Promotion[] @relation("PromotionTo")
+}
+
+/// Histórico de promoções / rebaixamentos.
+model Promotion {
+  id        String   @id @default(cuid())
+  reason    String?
+  createdAt DateTime @default(now())
+
+  memberId String
+  member   Member @relation("PromotionMember", fields: [memberId], references: [id], onDelete: Cascade)
+
+  fromRankId String?
+  fromRank   Rank?   @relation("PromotionFrom", fields: [fromRankId], references: [id], onDelete: SetNull)
+  toRankId   String?
+  toRank     Rank?   @relation("PromotionTo", fields: [toRankId], references: [id], onDelete: SetNull)
+
+  byId String?
+  by   Member? @relation("PromotionBy", fields: [byId], references: [id], onDelete: SetNull)
+}
+
+/// Página de regras (estatuto). O conteúdo atual fica em `content`; cada edição gera uma RuleVersion.
+model RulePage {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String // markdown
+  order     Int      @default(0)
+  isPublic  Boolean  @default(false) // visível para recrutas
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  versions RuleVersion[]
+}
+
+model RuleVersion {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  pageId String
+  page   RulePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  authorId String?
+  author   Member? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+enum AbsenceStatus {
+  PENDENTE
+  APROVADA
+  RECUSADA
+  CANCELADA
+}
+
+/// Aviso de ausência: o membro fica "ausente" entre startsAt e endsAt.
+model Absence {
+  id         String        @id @default(cuid())
+  startsAt   DateTime
+  endsAt     DateTime
+  reason     String
+  status     AbsenceStatus @default(PENDENTE)
+  reviewNote String?
+  createdAt  DateTime      @default(now())
+  reviewedAt DateTime?
+
+  memberId String
+  member   Member @relation("AbsenceMember", fields: [memberId], references: [id], onDelete: Cascade)
+
+  reviewerId String?
+  reviewer   Member? @relation("AbsenceReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([startsAt, endsAt])
+}
+
+/// Registro de quem fez o quê no painel.
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String // ex: "member.update"
+  entity    String // ex: "Member"
+  entityId  String?
+  summary   String
+  data      Json?
+  createdAt DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// Fase 2 — conteúdo: uploads, lore, facções, farm, fabricação,
+// mural & flyers, lives
+// ============================================================
+
+/// Arquivo enviado (imagens). O conteúdo fica no storage (pasta local ou Supabase).
+model Upload {
+  id        String   @id @default(cuid())
+  key       String   @unique // caminho no storage
+  name      String // nome original
+  mime      String
+  size      Int
+  createdAt DateTime @default(now())
+
+  uploaderId String?
+  uploader   Member? @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  loreCovers   LoreArticle[]
+  factionLogos Faction[]
+  flyers       Flyer[]
+}
+
+enum LoreCategory {
+  HISTORIA
+  EVENTO
+  PERSONAGEM
+  LUGAR
+  ALIANCA
+}
+
+/// Artigo de lore: a visão da Leviata sobre a cidade.
+model LoreArticle {
+  id         String       @id @default(cuid())
+  slug       String       @unique
+  title      String
+  summary    String?
+  content    String // markdown
+  category   LoreCategory @default(HISTORIA)
+  happenedAt DateTime? // quando aconteceu na cidade (linha do tempo)
+  tags       String[]
+  isPinned   Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  coverId  String?
+  cover    Upload? @relation(fields: [coverId], references: [id], onDelete: SetNull)
+  authorId String?
+  author   Member? @relation("LoreAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([happenedAt])
+}
+
+enum FactionRelation {
+  ALIADA
+  NEUTRA
+  TENSA
+  INIMIGA
+  GUERRA
+}
+
+/// Outra facção/organização da cidade e a relação dela com a Leviata.
+model Faction {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  tag         String? // sigla
+  color       String          @default("#8d8d99")
+  relation    FactionRelation @default(NEUTRA)
+  kind        String? // ex.: "Gangue", "Máfia", "MC", "Polícia"
+  territory   String?
+  leader      String?
+  description String? // markdown
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  logoId String?
+  logo   Upload? @relation(fields: [logoId], references: [id], onDelete: SetNull)
+
+  events  FactionEvent[]
+  mapPins MapPin[]
+}
+
+enum FactionEventKind {
+  ACORDO
+  CONFLITO
+  TRAICAO
+  NEGOCIO
+  RELACAO // mudança de relação (gerada automaticamente)
+  OUTRO
+}
+
+model FactionEvent {
+  id          String           @id @default(cuid())
+  kind        FactionEventKind @default(OUTRO)
+  title       String
+  description String?
+  happenedAt  DateTime         @default(now())
+  createdAt   DateTime         @default(now())
+
+  factionId String
+  faction   Faction @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    Member? @relation("FactionEventAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([factionId, happenedAt])
+}
+
+/// Item do jogo (matéria-prima ou produto fabricado).
+model Item {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  unit      String   @default("un")
+  isIllegal Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  producedBy Recipe[]      @relation("RecipeOutput")
+  usedIn     RecipeInput[]
+  farmGuides FarmGuide[]
+}
+
+enum Risk {
+  BAIXO
+  MEDIO
+  ALTO
+}
+
+/// Guia de farm: onde e como conseguir um item.
+model FarmGuide {
+  id            String   @id @default(cuid())
+  title         String
+  location      String
+  howTo         String // markdown
+  amountPerRun  Int? // quanto rende por rodada
+  minutesPerRun Int? // quanto tempo leva a rodada
+  risk          Risk     @default(BAIXO)
+  requirements  String?
+  imageIds      String[] // ids de Upload (prints do local)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  itemId   String?
+  item     Item?   @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  authorId String?
+  author   Member? @relation("FarmGuideAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  mapPins MapPin[]
+}
+
+/// Receita de fabricação: insumos → produto.
+model Recipe {
+  id        String   @id @default(cuid())
+  outputQty Int      @default(1)
+  minutes   Int?
+  location  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  outputItemId String
+  outputItem   Item          @relation("RecipeOutput", fields: [outputItemId], references: [id], onDelete: Cascade)
+  inputs       RecipeInput[]
+}
+
+model RecipeInput {
+  id       String @id @default(cuid())
+  quantity Int
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  itemId   String
+  item     Item   @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@unique([recipeId, itemId])
+}
+
+enum NoticePriority {
+  NORMAL
+  IMPORTANTE
+  URGENTE
+}
+
+/// Aviso interno do mural.
+model Notice {
+  id        String         @id @default(cuid())
+  title     String
+  content   String // markdown
+  priority  NoticePriority @default(NORMAL)
+  isPinned  Boolean        @default(false)
+  expiresAt DateTime?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  authorId String?
+  author   Member? @relation("NoticeAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([isPinned, createdAt])
+}
+
+/// Flyer (imagem de evento, recrutamento, corrida...).
+model Flyer {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  eventDate   DateTime?
+  createdAt   DateTime  @default(now())
+
+  imageId  String
+  image    Upload  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  authorId String?
+  author   Member? @relation("FlyerAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+enum StreamPlatform {
+  TWITCH
+  KICK
+  YOUTUBE
+}
+
+/// Canal de live de um membro (status atualizado periodicamente).
+model StreamChannel {
+  id           String         @id @default(cuid())
+  platform     StreamPlatform
+  handle       String // login da Twitch, slug da Kick ou ID do canal no YouTube
+  isLive       Boolean        @default(false)
+  title        String?
+  viewers      Int?
+  thumbnailUrl String?
+  category     String?
+  startedAt    DateTime?
+  checkedAt    DateTime?
+  lastError    String?
+  createdAt    DateTime       @default(now())
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([platform, handle])
+  @@index([isLive])
+}
+
+// ============================================================
+// Fase 3 — mapa, perímetros, agenda, presença, escalações, relatórios
+// ============================================================
+
+/// Configurações gerais (chave → JSON). Ex.: "mapa" = { imageId, width, height }.
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+enum MapPinCategory {
+  BASE
+  FARM
+  DESMANCHE
+  LAVAGEM
+  LOJA
+  FUGA
+  ESCONDERIJO
+  TERRITORIO
+  ALVO
+  OUTRO
+}
+
+/// Marcador no mapa. x/y em pixels da imagem do mapa.
+model MapPin {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  category    MapPinCategory @default(OUTRO)
+  x           Float
+  y           Float
+  imageIds    String[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  farmGuideId String?
+  farmGuide   FarmGuide? @relation(fields: [farmGuideId], references: [id], onDelete: SetNull)
+  factionId   String?
+  faction     Faction?   @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  authorId    String?
+  author      Member?    @relation("MapPinAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  perimeters Perimeter[]
+}
+
+/// Plano base de uma ação num alvo (banco, joalheria...): funções, rotas, prints.
+model Perimeter {
+  id           String   @id @default(cuid())
+  name         String
+  target       String
+  difficulty   Risk     @default(MEDIO)
+  minMembers   Int?
+  plan         String // markdown
+  escapeRoutes String? // markdown
+  imageIds     String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pinId    String?
+  pin      MapPin? @relation(fields: [pinId], references: [id], onDelete: SetNull)
+  authorId String?
+  author   Member? @relation("PerimeterAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  roles  PerimeterRole[]
+  events Event[]
+}
+
+model PerimeterRole {
+  id       String  @id @default(cuid())
+  name     String
+  quantity Int     @default(1)
+  notes    String?
+  order    Int     @default(0)
+
+  perimeterId String
+  perimeter   Perimeter @relation(fields: [perimeterId], references: [id], onDelete: Cascade)
+}
+
+enum EventKind {
+  ACAO
+  CORRIDA
+  REUNIAO
+  TREINO
+  EVENTO
+}
+
+enum EventStatus {
+  AGENDADO
+  CONCLUIDO
+  CANCELADO
+}
+
+/// Item da agenda (ação, corrida, reunião...).
+model Event {
+  id                String      @id @default(cuid())
+  title             String
+  kind              EventKind   @default(ACAO)
+  status            EventStatus @default(AGENDADO)
+  startsAt          DateTime
+  endsAt            DateTime?
+  location          String?
+  description       String?
+  lineupPublishedAt DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  perimeterId String?
+  perimeter   Perimeter? @relation(fields: [perimeterId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   Member?    @relation("EventCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  attendances Attendance[]
+  slots       LineupSlot[]
+  report      EventReport?
+
+  @@index([startsAt])
+}
+
+enum AttendanceStatus {
+  VOU
+  TALVEZ
+  NAO_VOU
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  status    AttendanceStatus
+  note      String?
+  updatedAt DateTime         @updatedAt
+
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, memberId])
+}
+
+/// Vaga da escalação: função + quem vai + veículo.
+model LineupSlot {
+  id      String  @id @default(cuid())
+  role    String
+  order   Int     @default(0)
+  vehicle String?
+  notes   String?
+
+  eventId  String
+  event    Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  memberId String?
+  member   Member? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+
+  @@index([eventId])
+}
+
+enum EventResult {
+  SUCESSO
+  PARCIAL
+  FALHA
+}
+
+/// Relatório pós-ação.
+model EventReport {
+  id         String      @id @default(cuid())
+  result     EventResult
+  loot       String?
+  money      Int?
+  casualties Int?
+  arrests    Int?
+  notes      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  eventId  String  @unique
+  event    Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  authorId String?
+  author   Member? @relation("EventReportAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+}

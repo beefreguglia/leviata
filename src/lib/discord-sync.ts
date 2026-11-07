@@ -1,0 +1,90 @@
+import { db } from "@/lib/db";
+import { discordAvatarUrl, getGuildMember } from "@/lib/discord";
+
+export type DiscordProfileLike = {
+  id?: string | number;
+  username?: string;
+  global_name?: string | null;
+  avatar?: string | null;
+};
+
+/**
+ * Sincroniza o usuário do Discord com o banco:
+ * - garante User;
+ * - escolhe a patente mais alta cujo cargo do Discord ele tem;
+ * - cria a ficha de membro na primeira vez (se tiver algum cargo mapeado).
+ */
+export async function syncDiscordUser(params: {
+  discordId: string;
+  username: string;
+  avatarUrl: string | null;
+  nick: string | null;
+  roles: string[];
+}) {
+  const user = await db.user.upsert({
+    where: { discordId: params.discordId },
+    create: {
+      discordId: params.discordId,
+      username: params.username,
+      avatarUrl: params.avatarUrl,
+      lastLoginAt: new Date(),
+    },
+    update: { username: params.username, avatarUrl: params.avatarUrl, lastLoginAt: new Date() },
+    include: { member: true },
+  });
+
+  const rank = await db.rank.findFirst({
+    where: { discordRoleId: { in: params.roles } },
+    orderBy: { order: "asc" },
+  });
+
+  if (user.member) {
+    // Cargo no Discord manda: se mudou lá, atualiza aqui (e registra promoção).
+    if (rank && user.member.rankId !== rank.id) {
+      await db.$transaction([
+        db.member.update({ where: { id: user.member.id }, data: { rankId: rank.id } }),
+        db.promotion.create({
+          data: {
+            memberId: user.member.id,
+            fromRankId: user.member.rankId,
+            toRankId: rank.id,
+            reason: "Sincronizado do cargo no Discord",
+          },
+        }),
+      ]);
+    }
+  } else if (rank) {
+    await db.member.create({
+      data: { rpName: params.nick ?? params.username, userId: user.id, rankId: rank.id },
+    });
+  }
+
+  return user;
+}
+
+
+/**
+ * Decide o login via Discord: confere config, se a pessoa está no servidor e sincroniza.
+ * Retorna true (entra) ou uma URL de /login com o erro.
+ */
+export async function discordSignIn(params: {
+  accessToken?: string;
+  guildId?: string;
+  profile?: DiscordProfileLike;
+}): Promise<true | string> {
+  const { accessToken, guildId, profile } = params;
+  if (!guildId || !accessToken || !profile?.id) return "/login?erro=config";
+
+  const guildMember = await getGuildMember(accessToken, guildId);
+  if (!guildMember) return "/login?erro=fora-do-servidor";
+
+  const discordId = String(profile.id);
+  await syncDiscordUser({
+    discordId,
+    username: profile.global_name || profile.username || "sem-nome",
+    avatarUrl: discordAvatarUrl(discordId, profile.avatar),
+    nick: guildMember.nick,
+    roles: guildMember.roles,
+  });
+  return true;
+}
