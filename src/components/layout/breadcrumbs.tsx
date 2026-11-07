@@ -25,7 +25,7 @@ const DETAIL: Record<string, string> = {
 /** Breadcrumb a partir da URL: Seção › Módulo › subpágina. */
 export function Breadcrumbs() {
   const pathname = usePathname();
-  // link do menu mais específico que contém a página (ex.: /design/tipografia)
+  // link do menu mais específico que contém a página
   const base = ALL_NAV_LINKS.filter((l) => pathname === l.href || pathname.startsWith(`${l.href}/`)).sort((a, b) => b.href.length - a.href.length)[0];
   if (!base) return null;
   const parts = pathname.slice(base.href.length).split("/").filter(Boolean);

@@ -25,7 +25,7 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 - Ciano só em: botão principal, foco, item ativo, links, indicadores. Badges de status = fundo `*-low` + texto `*-light`.
 - Separadores dentro de cards: `border-grey-700`. Inputs ficam em `bg-input` (grey-900) — dentro de card contrastam; na página use `bg-card`.
 
-## Tipografia (manual: `docs/TIPOGRAFIA.md` · ao vivo: `/design/tipografia`)
+## Tipografia (manual: `docs/TIPOGRAFIA.md`)
 - Famílias: **Bebas Neue** (títulos e números grandes, sempre maiúscula), **Barlow** (texto), **Barlow Condensed** (rótulos/seções em maiúscula), **Permanent Marker** (destaque grafitado, no máx. 1× por tela) e **Fira Code** (IDs/códigos). Carregadas em `src/app/layout.tsx`.
 - Use as classes `type-display`, `type-h1`, `type-h2`, `type-h3`, `type-body`, `type-small`, `type-caption`, `type-label`, `type-stat`, `type-accent`, `type-code` (em `globals.css`). A cor fica por conta de quem usa.
 - Título de página: `type-h1 text-grey-100` (o `PageHeader` já faz). Cabeçalho de seção: `type-h2 text-grey-300` (o `GroupedList` já faz). Número grande: `type-stat`. Selos/patentes já usam a fonte de rótulo.

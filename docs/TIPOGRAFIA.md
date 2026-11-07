@@ -2,8 +2,6 @@
 
 A tipografia segue o clima de GTA RP: **títulos condensados em caixa alta** (como as telas de missão e de carregamento do GTA V), **texto limpo de interface de jogo** e um **toque grafitado** que conversa com o logo do dragão. Tudo em fontes livres do Google Fonts, carregadas pelo `next/font` (sem pedir nada a servidor externo no navegador).
 
-Página ao vivo com todos os exemplos: **/design/tipografia** (só para quem tem acesso total).
-
 ## As 5 famílias
 
 | Papel | Fonte | Por quê | Onde |

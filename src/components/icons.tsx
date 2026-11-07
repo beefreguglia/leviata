@@ -69,7 +69,6 @@ import {
   SwordsIcon as H_SwordsIcon,
   Target02Icon as H_Target02Icon,
   TaskDaily01Icon as H_TaskDaily01Icon,
-  TextFontIcon as H_TextFontIcon,
   Tick02Icon as H_Tick02Icon,
   TruckDeliveryIcon as H_TruckDeliveryIcon,
   UnavailableIcon as H_UnavailableIcon,
@@ -168,7 +167,6 @@ export const TargetIcon = icon(H_Target02Icon, "TargetIcon");
 export const Trash2Icon = icon(H_Delete02Icon, "Trash2Icon");
 export const TriangleAlertIcon = icon(H_Alert02Icon, "TriangleAlertIcon");
 export const TruckIcon = icon(H_TruckDeliveryIcon, "TruckIcon");
-export const TypeIcon = icon(H_TextFontIcon, "TypeIcon");
 export const Undo2Icon = icon(H_Undo02Icon, "Undo2Icon");
 export const UndoIcon = icon(H_UndoIcon, "UndoIcon");
 export const UserIcon = icon(H_UserIcon, "UserIcon");
