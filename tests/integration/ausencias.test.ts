@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { cancelAbsence, createAbsence, reviewAbsence } from "@/app/(painel)/ausencias/actions";
-import { actAs, day, db, form, memberByName } from "../helpers/db";
+import { actAs, day, db, form, memberByName, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
+
+// estes testes cobrem as regras de cada ação para uma gerência com essas permissões
+// (as permissões padrão de cada patente estão em permissoes-padrao.test.ts)
+beforeEach(async () => {
+  await setRankPerms("Gerente", GERENCIA_COMPLETA);
+});
 
 let fetchSpy: MockInstance<typeof fetch>;
 beforeEach(() => {
@@ -42,6 +48,7 @@ describe("ausências: avisar", () => {
   });
 
   it("recruta (sem painel) não consegue avisar", async () => {
+    await setRankPerms("Recruta", []); // patente configurada sem acesso
     await actAs("dev-recruta");
     expect((await createAbsence(absence(0, 1))).ok).toBe(false);
   });

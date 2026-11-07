@@ -27,7 +27,7 @@ function Bar({ pct, complete }: { pct: number; complete: boolean }) {
 }
 
 export default async function MetasPage() {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("economia.ver");
   const canManage = viewer.can("financeiro.gerenciar");
   const [{ from, to, goals, items, rows }, allItems, ranks] = await Promise.all([
     weeklyGoals(),

@@ -49,48 +49,15 @@ export const mapConfigSchema = z.object({
 export type MapConfig = z.infer<typeof mapConfigSchema>;
 
 // ---------------- Perímetros ----------------
+/** Perímetro = título + foto vista de cima (tipo mapa). */
 export const perimeterSchema = z.object({
-  name: z.string().trim().min(3, "Nome muito curto").max(100),
-  target: z.string().trim().min(2, "Informe o alvo").max(100),
-  difficulty: z.enum(["BAIXO", "MEDIO", "ALTO"], { error: "Dificuldade inválida" }),
-  minMembers: optionalInt,
-  plan: z.string().trim().min(1, "Descreva o plano"),
-  escapeRoutes: optionalText(5000),
-  imageIds: z.array(z.string()).max(8, "Máximo de 8 prints"),
-  pinId: z.string().nullable(),
-  roles: z
-    .array(
-      z.object({
-        name: z.string().trim().min(2, "Nome da função muito curto").max(40),
-        quantity: z.number().int().min(1, "Quantidade da função deve ser 1 ou mais").max(20),
-        notes: z.string().trim().max(200).nullable(),
-      }),
-    )
-    .min(1, "Adicione pelo menos uma função"),
+  name: z.string().trim().min(2, "Título muito curto").max(100),
+  imageId: z.string().min(1, "Envie a imagem do perímetro"),
 });
 
 export function parsePerimeterForm(fd: FormData) {
-  const names = fd.getAll("roleName").map(String);
-  const qtys = fd.getAll("roleQty").map(String);
-  const notes = fd.getAll("roleNotes").map(String);
-  const roles = names
-    .map((name, i) => ({ name, quantity: Number(qtys[i] || 1), notes: notes[i]?.trim() || null }))
-    .filter((r) => r.name.trim() !== "");
-  return perimeterSchema.parse({
-    name: str(fd, "name"),
-    target: str(fd, "target"),
-    difficulty: str(fd, "difficulty") ?? "MEDIO",
-    minMembers: str(fd, "minMembers"),
-    plan: str(fd, "plan"),
-    escapeRoutes: str(fd, "escapeRoutes"),
-    imageIds: fd.getAll("imageIds").map(String).filter(Boolean),
-    pinId: str(fd, "pinId") || null,
-    roles,
-  });
+  return perimeterSchema.parse({ name: str(fd, "name"), imageId: str(fd, "imageId") ?? "" });
 }
-
-/** Total de vagas de um perímetro. */
-export const perimeterSlots = (roles: { quantity: number }[]) => roles.reduce((n, r) => n + r.quantity, 0);
 
 // ---------------- Agenda ----------------
 export const EVENT_KINDS = ["ACAO", "CORRIDA", "REUNIAO", "TREINO", "EVENTO"] as const;

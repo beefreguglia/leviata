@@ -14,7 +14,7 @@ import { LinkButton } from "@/components/ui/link-button";
 import { FadeIn } from "@/components/motion";
 
 export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("economia.ver");
   const { id } = await params;
   const guide = await db.farmGuide.findUnique({ where: { id }, include: { item: true, author: true } });
   if (!guide) notFound();

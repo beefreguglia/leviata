@@ -10,5 +10,4 @@ export type MapPinData = {
   imageIds: string[];
   farmGuide: { id: string; title: string } | null;
   faction: { id: string; name: string } | null;
-  perimeters: { id: string; name: string }[];
 };

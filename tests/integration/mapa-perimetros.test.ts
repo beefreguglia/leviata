@@ -52,27 +52,34 @@ describe("mapa", () => {
 });
 
 describe("perímetros", () => {
-  const base = { name: "Fleeca fundos", target: "Banco Fleeca", difficulty: "MEDIO", plan: "## Plano", roleName: ["Piloto", "Contenção"], roleQty: ["2", "3"], roleNotes: ["", "Portas"] };
-
-  it("cria com funções em ordem e redireciona", async () => {
+  it("cria com título e imagem e redireciona", async () => {
+    const upload = await makeUpload("Rafa Cardoso");
     await actAs("dev-gerente");
-    await expect(createPerimeter(form(base))).rejects.toMatchObject({ digest: expect.stringContaining("/perimetros/") });
-    const p = await db.perimeter.findFirstOrThrow({ include: { roles: { orderBy: { order: "asc" } } } });
-    expect(p.roles.map((r) => [r.name, r.quantity, r.order, r.notes])).toEqual([["Piloto", 2, 0, null], ["Contenção", 3, 1, "Portas"]]);
+    await expect(createPerimeter(form({ name: "Fleeca fundos", imageId: upload }))).rejects.toMatchObject({ digest: expect.stringContaining("/perimetros/") });
+    expect(await db.perimeter.findFirstOrThrow()).toMatchObject({ name: "Fleeca fundos", imageId: upload });
   });
 
-  it("editar substitui as funções", async () => {
+  it("exige imagem existente", async () => {
     await actAs("dev-gerente");
-    await createPerimeter(form(base)).catch(() => {});
+    expect(await createPerimeter(form({ name: "Fleeca fundos" }))).toMatchObject({ ok: false, error: "Envie a imagem do perímetro" });
+    expect(await createPerimeter(form({ name: "Fleeca fundos", imageId: "nao-existe" }))).toEqual({ ok: false, error: "Imagem não encontrada — envie de novo" });
+  });
+
+  it("editar troca título e imagem; soldado não cria", async () => {
+    const [a, b] = [await makeUpload("Rafa Cardoso"), await makeUpload("Rafa Cardoso")];
+    await actAs("dev-gerente");
+    await createPerimeter(form({ name: "Fleeca", imageId: a })).catch(() => {});
     const p = await db.perimeter.findFirstOrThrow();
-    await updatePerimeter(p.id, form({ ...base, roleName: ["Hacker"], roleQty: ["1"], roleNotes: [""] })).catch(() => {});
-    const roles = await db.perimeterRole.findMany({ where: { perimeterId: p.id } });
-    expect(roles.map((r) => r.name)).toEqual(["Hacker"]);
+    await updatePerimeter(p.id, form({ name: "Fleeca da praça", imageId: b })).catch(() => {});
+    expect(await db.perimeter.findUniqueOrThrow({ where: { id: p.id } })).toMatchObject({ name: "Fleeca da praça", imageId: b });
+    await actAs("dev-soldado");
+    expect((await createPerimeter(form({ name: "Outro", imageId: a }))).ok).toBe(false);
   });
 
   it("apagar mantém os eventos (sem o vínculo)", async () => {
+    const upload = await makeUpload("Rafa Cardoso");
     await actAs("dev-gerente");
-    await createPerimeter(form(base)).catch(() => {});
+    await createPerimeter(form({ name: "Fleeca", imageId: upload })).catch(() => {});
     const p = await db.perimeter.findFirstOrThrow();
     const ev = await db.event.create({ data: { title: "Ação", startsAt: new Date(), perimeterId: p.id } });
     await expect(deletePerimeter(p.id)).rejects.toMatchObject({ digest: expect.stringContaining(";/perimetros;") });
@@ -81,6 +88,6 @@ describe("perímetros", () => {
 
   it("precisa de operacoes.gerenciar (soldado não cria)", async () => {
     await actAs("dev-soldado");
-    expect((await createPerimeter(form(base))).ok).toBe(false);
+    expect((await createPerimeter(form({ name: "Fleeca", imageId: "x" }))).ok).toBe(false);
   });
 });

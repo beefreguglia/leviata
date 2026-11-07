@@ -3,7 +3,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { hasPermission, type Permission } from "@/lib/permissions";
+import { hasPermission, isDeveloper, type Permission } from "@/lib/permissions";
 
 /** Usuário logado + ficha de membro + permissões (lidas do banco a cada request). */
 export const getViewer = cache(async () => {
@@ -19,7 +19,9 @@ export const getViewer = cache(async () => {
 
   const member = user.member;
   const blocked = !member || member.status === "EXPULSO";
-  const permissions: string[] = blocked ? [] : (member.rank?.permissions ?? []);
+  // desenvolvedor: tudo liberado, mas a ficha continua mostrando a patente cadastrada
+  const permissions: string[] =
+    member && isDeveloper(user.discordId) ? ["admin"] : blocked ? [] : (member.rank?.permissions ?? []);
 
   return {
     user,

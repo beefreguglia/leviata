@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createRule, deleteRule, updateRule } from "@/app/(painel)/regras/actions";
-import { actAs, db, form } from "../helpers/db";
+import { actAs, db, form, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
+
+// estes testes cobrem as regras de cada ação para uma gerência com essas permissões
+// (as permissões padrão de cada patente estão em permissoes-padrao.test.ts)
+beforeEach(async () => {
+  await setRankPerms("Gerente", GERENCIA_COMPLETA);
+});
 
 const redirectTo = (path: string) => ({ digest: expect.stringContaining(`;${path};`) });
 

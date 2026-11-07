@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import {
-  createEvent, deleteEvent, generateLineup, publishLineup, saveLineup, saveReport, setAttendance, setEventStatus, updateEvent,
+  createEvent, deleteEvent, publishLineup, saveLineup, saveReport, setAttendance, setEventStatus, updateEvent,
 } from "@/app/(painel)/agenda/actions";
 import { toDateTimeInputBRT } from "@/lib/dates";
-import { actAs, db, form, memberByName } from "../helpers/db";
+import { actAs, db, form, memberByName, setRankPerms } from "../helpers/db";
 
 let fetchSpy: MockInstance<typeof fetch>;
 beforeEach(() => {
@@ -20,12 +20,6 @@ async function newEvent(extra: Record<string, string> = {}) {
   await actAs("dev-gerente");
   await createEvent(form({ title: "Fleeca da praça", kind: "ACAO", startsAt: inHours(24), ...extra })).catch(() => {});
   return db.event.findFirstOrThrow({ orderBy: { createdAt: "desc" } });
-}
-
-async function perimeterWithRoles() {
-  return db.perimeter.create({
-    data: { name: "Fleeca fundos", target: "Fleeca", plan: "x", roles: { create: [{ name: "Piloto", quantity: 2, order: 0 }, { name: "Hacker", quantity: 1, order: 1 }] } },
-  });
 }
 
 describe("agenda: eventos", () => {
@@ -83,6 +77,7 @@ describe("agenda: presença", () => {
   });
 
   it("recruta (sem painel) não responde", async () => {
+    await setRankPerms("Recruta", []); // patente configurada sem acesso
     const ev = await newEvent();
     await actAs("dev-recruta");
     expect((await setAttendance(ev.id, "VOU")).ok).toBe(false);
@@ -90,21 +85,6 @@ describe("agenda: presença", () => {
 });
 
 describe("agenda: escalação", () => {
-  it("gera vagas pelo perímetro mantendo quem já estava na função", async () => {
-    const p = await perimeterWithRoles();
-    const ev = await newEvent({ perimeterId: p.id });
-    const nina = await memberByName("Nina Torres");
-    await db.lineupSlot.create({ data: { eventId: ev.id, role: "Hacker", memberId: nina.id, order: 0 } });
-    expect(await generateLineup(ev.id)).toEqual({ ok: true, message: '3 vagas criadas a partir de "Fleeca fundos"' });
-    const slots = await db.lineupSlot.findMany({ where: { eventId: ev.id }, orderBy: { order: "asc" } });
-    expect(slots.map((s) => [s.role, s.memberId])).toEqual([["Piloto", null], ["Piloto", null], ["Hacker", nina.id]]);
-  });
-
-  it("evento sem perímetro não gera", async () => {
-    const ev = await newEvent();
-    expect(await generateLineup(ev.id)).toEqual({ ok: false, error: "Esse evento não tem perímetro" });
-  });
-
   it("salva escalação e bloqueia membro repetido", async () => {
     const ev = await newEvent();
     const [nina, rafa] = [await memberByName("Nina Torres"), await memberByName("Rafa Cardoso")];

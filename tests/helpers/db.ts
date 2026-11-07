@@ -27,6 +27,17 @@ export function form(data: Record<string, string | string[]>) {
   return fd;
 }
 
+/** Troca as permissões de uma patente (simula a liderança configurando em Hierarquia). */
+export async function setRankPerms(name: string, permissions: string[]) {
+  await db.rank.update({ where: { name }, data: { permissions } });
+}
+
+/** Gerência "completa" (configuração customizada) — usada nos testes das regras de cada ação. */
+export const GERENCIA_COMPLETA = [
+  "painel.ver", "economia.ver", "membros.gerenciar", "regras.editar", "conteudo.editar", "operacoes.gerenciar",
+  "financeiro.gerenciar", "punicoes.gerenciar", "ausencias.gerenciar", "auditoria.ver",
+];
+
 export const rankId = async (name: string) => (await db.rank.findUniqueOrThrow({ where: { name } })).id;
 export const memberByName = (rpName: string) => db.member.findFirstOrThrow({ where: { rpName }, include: { rank: true } });
 

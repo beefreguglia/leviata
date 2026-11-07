@@ -47,11 +47,11 @@ export const NAV_MAIN: NavSection[] = [
     label: "Economia",
     icon: CoinsIcon,
     items: [
-      { href: "/farm", label: "Farm", perm: "painel.ver" },
-      { href: "/fabricacao", label: "Fabricação", perm: "painel.ver" },
-      { href: "/bau", label: "Baú", perm: "painel.ver" },
-      { href: "/metas", label: "Metas de farm", perm: "painel.ver" },
-      { href: "/encomendas", label: "Encomendas", perm: "painel.ver" },
+      { href: "/farm", label: "Farm", perm: "economia.ver" },
+      { href: "/fabricacao", label: "Fabricação", perm: "economia.ver" },
+      { href: "/bau", label: "Baú", perm: "economia.ver" },
+      { href: "/metas", label: "Metas de farm", perm: "economia.ver" },
+      { href: "/encomendas", label: "Encomendas", perm: "economia.ver" },
     ],
   },
   {

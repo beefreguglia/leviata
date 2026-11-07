@@ -196,29 +196,11 @@ async function seedOperations(db: PrismaClient, authorId: string | undefined) {
     });
   }
 
-  let fleeca = await db.perimeter.findFirst({ where: { target: "Banco Fleeca" } });
+  let fleeca = await db.perimeter.findFirst({ where: { name: "Fleeca da praça" } });
   if (!fleeca) {
-    const pin = await db.mapPin.findFirst({ where: { title: "Banco Fleeca da praça" } });
-    fleeca = await db.perimeter.create({
-      data: {
-        name: "Fleeca da praça — entrada pelos fundos",
-        target: "Banco Fleeca",
-        difficulty: "MEDIO",
-        minMembers: 5,
-        plan: "## Chegada\nDois carros pelos fundos, um de vigia na esquina.\n\n## Dentro\n- Negociador segura os reféns\n- Hacker abre o cofre (~3 min)",
-        escapeRoutes: "- **Rota 1:** túnel norte → rodovia\n- **Rota 2:** canal → porto",
-        pinId: pin?.id,
-        authorId,
-        roles: {
-          create: [
-            { name: "Piloto", quantity: 2, order: 0, notes: "Carros rápidos" },
-            { name: "Negociador", quantity: 1, order: 1 },
-            { name: "Hacker", quantity: 1, order: 2 },
-            { name: "Contenção", quantity: 2, order: 3, notes: "Portas da frente" },
-          ],
-        },
-      },
-    });
+    // usa o recorte do mapa de exemplo como "vista de cima"
+    const mapUpload = await db.upload.findFirst({ where: { key: "exemplos/mapa-exemplo.png" } });
+    fleeca = await db.perimeter.create({ data: { name: "Fleeca da praça", imageId: mapUpload?.id ?? null, authorId } });
   }
 
   if (!(await db.event.count())) {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   BanIcon, CalendarIcon, CarIcon, CheckIcon, ClipboardListIcon, FileTextIcon, MapPinIcon, PencilIcon, RotateCcwIcon,
-  SendIcon, TargetIcon, Trash2Icon, WandSparklesIcon,
+  SendIcon, TargetIcon, Trash2Icon,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
@@ -16,6 +16,7 @@ import { ConfirmButton } from "@/components/forms/confirm-button";
 import { FormDialog } from "@/components/forms/form-dialog";
 import { Field, NativeSelect } from "@/components/forms/fields";
 import { StatusBadge } from "@/components/status-badge";
+import { UploadImage } from "@/components/upload-image";
 import { PresenceAvatar } from "@/components/presence-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,7 @@ import { FadeIn } from "@/components/motion";
 import { EventFields } from "../event-fields";
 import { LineupEditor } from "../lineup-editor";
 import {
-  deleteEvent, generateLineup, publishLineup, saveLineup, saveReport, setAttendance, setEventStatus, updateEvent,
+  deleteEvent, publishLineup, saveLineup, saveReport, setAttendance, setEventStatus, updateEvent,
 } from "../actions";
 
 export async function generateMetadata({ params }: PageProps<"/agenda/[id]">) {
@@ -40,7 +41,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
   const ev = await db.event.findUnique({
     where: { id },
     include: {
-      perimeter: { include: { roles: true } },
+      perimeter: true,
       createdBy: true,
       attendances: { include: { member: { include: { rank: true, user: true } } }, orderBy: { updatedAt: "asc" } },
       slots: { include: { member: { include: { user: true } } }, orderBy: { order: "asc" } },
@@ -58,7 +59,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
 
   const [perimeters, members, unavailable] = canManage
     ? await Promise.all([
-        db.perimeter.findMany({ select: { id: true, name: true, target: true }, orderBy: { target: "asc" } }),
+        db.perimeter.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
         db.member.findMany({ where: { status: { not: "EXPULSO" } }, include: { rank: true }, orderBy: { rpName: "asc" } }),
         unavailableMembers(ev.startsAt),
       ])
@@ -87,7 +88,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
             )}
             {ev.perimeter && (
               <Link href={`/perimetros/${ev.perimeter.id}`} className="flex items-center gap-1.5 text-cyan-light hover:underline">
-                <TargetIcon className="size-4" /> {ev.perimeter.target} — {ev.perimeter.name}
+                <TargetIcon className="size-4" /> {ev.perimeter.name}
               </Link>
             )}
           </div>
@@ -195,6 +196,15 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
         </div>
       </section>
 
+      {ev.perimeter?.imageId && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-bold text-grey-200">Perímetro · {ev.perimeter.name}</h2>
+          <Link href={`/perimetros/${ev.perimeter.id}`} className="overflow-hidden rounded-card bg-input">
+            <UploadImage id={ev.perimeter.imageId} alt={`Vista de cima: ${ev.perimeter.name}`} className="max-h-[60svh] w-full" />
+          </Link>
+        </section>
+      )}
+
       {/* Escalação */}
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -203,13 +213,6 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
           </h2>
           {canManage && open && (
             <div className="flex flex-wrap gap-2">
-              {ev.perimeter && (
-                <ActionForm action={async () => { "use server"; return generateLineup(ev.id); }}>
-                  <SubmitButton variant="secondary" size="sm">
-                    <WandSparklesIcon /> Gerar pelo perímetro
-                  </SubmitButton>
-                </ActionForm>
-              )}
               {ev.slots.length > 0 && (
                 <ActionForm action={async () => { "use server"; return publishLineup(ev.id); }}>
                   <SubmitButton size="sm">

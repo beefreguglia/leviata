@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { changeRank, createMember, updateMember } from "@/app/(painel)/membros/actions";
-import { actAs, db, form, memberByName, rankId } from "../helpers/db";
+import { actAs, db, form, memberByName, rankId, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
+
+// estes testes cobrem as regras de cada ação para uma gerência com essas permissões
+// (as permissões padrão de cada patente estão em permissoes-padrao.test.ts)
+beforeEach(async () => {
+  await setRankPerms("Gerente", GERENCIA_COMPLETA);
+});
 
 describe("membros: cadastrar", () => {
   it("gerente cadastra membro com patente, promoção inicial e auditoria", async () => {

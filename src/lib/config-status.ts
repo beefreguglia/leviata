@@ -11,6 +11,7 @@ export function configStatus(env: Record<string, string | undefined> = process.e
     webhooks: { avisos: has("DISCORD_WEBHOOK_AVISOS"), acoes: has("DISCORD_WEBHOOK_ACOES"), lives: has("DISCORD_WEBHOOK_LIVES") },
     lives: { twitch: has("TWITCH_CLIENT_ID") && has("TWITCH_CLIENT_SECRET"), youtube: has("YOUTUBE_API_KEY"), cron: has("CRON_SECRET") },
     bootstrapAdmins: has("BOOTSTRAP_ADMIN_DISCORD_IDS"),
+    developers: has("DEVELOPER_DISCORD_IDS"),
     devLoginOn: env.AUTH_DEV_LOGIN === "true" && env.NODE_ENV !== "production",
   };
 }

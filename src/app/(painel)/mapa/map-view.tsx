@@ -188,11 +188,6 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
                   Facção: {selected.faction.name}
                 </Link>
               )}
-              {selected.perimeters.map((p) => (
-                <Link key={p.id} href={`/perimetros/${p.id}`} className="text-cyan-light hover:underline">
-                  Perímetro: {p.name}
-                </Link>
-              ))}
             </div>
             {canEdit && (
               <div className="mt-auto flex gap-2 pt-2">

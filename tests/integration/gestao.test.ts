@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { cancelMyDelivery, confirmMove, deliverFarm, registerMove, reverseMove } from "@/app/(painel)/bau/actions";
 import { createGoal, deleteGoal, updateGoalQuantity } from "@/app/(painel)/metas/actions";
 import { createOrder, deleteOrder, deliverOrder, moveOrder } from "@/app/(painel)/encomendas/actions";
@@ -7,7 +7,13 @@ import { saveLineup } from "@/app/(painel)/agenda/actions";
 import { allBalances } from "@/lib/vault";
 import { weeklyGoals } from "@/lib/goals";
 import { getViewer } from "@/lib/session";
-import { actAs, db, form, memberByName, rankId } from "../helpers/db";
+import { actAs, db, form, memberByName, rankId, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
+
+// estes testes cobrem as regras de cada ação para uma gerência com essas permissões
+// (as permissões padrão de cada patente estão em permissoes-padrao.test.ts)
+beforeEach(async () => {
+  await setRankPerms("Gerente", GERENCIA_COMPLETA);
+});
 
 async function metal() {
   return db.item.upsert({ where: { name: "Metal" }, create: { name: "Metal" }, update: {} });
@@ -38,6 +44,7 @@ describe("baú", () => {
   });
 
   it("soldado entrega farm → pendente (não conta) → gerência confere (conta)", async () => {
+    await setRankPerms("Soldado", ["painel.ver", "economia.ver"]);
     const m = await metal();
     await actAs("dev-soldado");
     expect(await deliverFarm(form({ itemId: m.id, quantity: "40" }))).toEqual({ ok: true, message: "Entrega enviada — a gerência confere e ela entra na sua meta" });
@@ -73,6 +80,7 @@ describe("baú", () => {
   });
 
   it("membro cancela só a própria entrega pendente", async () => {
+    await setRankPerms("Soldado", ["painel.ver", "economia.ver"]);
     const m = await metal();
     await actAs("dev-soldado");
     await deliverFarm(form({ itemId: m.id, quantity: "3" }));
@@ -87,6 +95,7 @@ describe("baú", () => {
 
 describe("metas de farm", () => {
   it("progresso da semana conta só entregas conferidas; meta da patente vence a geral", async () => {
+    await setRankPerms("Soldado", ["painel.ver", "economia.ver"]);
     const m = await metal();
     await actAs("dev-gerente");
     expect(await createGoal(form({ itemId: m.id, quantity: "100" }))).toEqual({ ok: true, message: "Meta criada" });
@@ -113,6 +122,7 @@ describe("metas de farm", () => {
   });
 
   it("entrega de semana passada não conta", async () => {
+    await setRankPerms("Soldado", ["painel.ver", "economia.ver"]);
     const m = await metal();
     const nina = await memberByName("Nina Torres");
     await db.farmGoal.create({ data: { itemId: m.id, quantity: 10 } });

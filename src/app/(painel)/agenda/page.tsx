@@ -37,7 +37,7 @@ export default async function AgendaPage({ searchParams }: PageProps<"/agenda">)
       orderBy: { startsAt: "asc" },
       take: 8,
     }),
-    canManage ? db.perimeter.findMany({ select: { id: true, name: true, target: true }, orderBy: { target: "asc" } }) : Promise.resolve([]),
+    canManage ? db.perimeter.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
   ]);
   const byDay = groupByDay(monthEvents);
   const [py, pm] = shiftMonth(y, m, -1);

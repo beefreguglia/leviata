@@ -17,7 +17,7 @@ import { Stagger, StaggerItem } from "@/components/motion";
 export const metadata = { title: "Farm" };
 
 export default async function FarmPage({ searchParams }: PageProps<"/farm">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("economia.ver");
   const sp = await searchParams;
   const risk = typeof sp.risco === "string" && sp.risco in RISK ? (sp.risco as Risk) : null;
   const item = typeof sp.item === "string" && sp.item ? sp.item : null;

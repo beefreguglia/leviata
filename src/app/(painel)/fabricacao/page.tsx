@@ -39,7 +39,7 @@ function ItemFields({ item }: { item?: Item }) {
 }
 
 export default async function FabricacaoPage() {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("economia.ver");
   const canEdit = viewer.can("conteudo.editar");
   const [items, recipes] = await Promise.all([
     db.item.findMany({ orderBy: { name: "asc" }, include: { farmGuides: { select: { id: true }, take: 1 }, _count: { select: { usedIn: true } } } }),

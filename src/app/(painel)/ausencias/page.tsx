@@ -27,13 +27,16 @@ export default async function AusenciasPage() {
   const include = { member: true } as const;
 
   const [current, upcoming, pending, mine, silent] = await Promise.all([
-    db.absence.findMany({ where: activeAbsenceWhere(now), include, orderBy: { endsAt: "asc" } }),
-    db.absence.findMany({
-      where: { status: { in: ["PENDENTE", "APROVADA"] }, startsAt: { gt: now } },
-      include,
-      orderBy: { startsAt: "asc" },
-      take: 20,
-    }),
+    // ausências dos outros: só quem gerencia (os demais veem só os próprios avisos)
+    canManage ? db.absence.findMany({ where: activeAbsenceWhere(now), include, orderBy: { endsAt: "asc" } }) : Promise.resolve([]),
+    canManage
+      ? db.absence.findMany({
+          where: { status: { in: ["PENDENTE", "APROVADA"] }, startsAt: { gt: now } },
+          include,
+          orderBy: { startsAt: "asc" },
+          take: 20,
+        })
+      : Promise.resolve([]),
     canManage
       ? db.absence.findMany({ where: { status: "PENDENTE", endsAt: { gte: now } }, include, orderBy: { startsAt: "asc" } })
       : Promise.resolve([]),
@@ -100,19 +103,21 @@ export default async function AusenciasPage() {
           </StaggerItem>
         )}
 
-        <StaggerItem>
-          {current.length === 0 ? (
-            <GroupedList header="Fora agora">
-              <p className="px-5 py-4 text-base text-muted-foreground">Todo mundo na ativa.</p>
-            </GroupedList>
-          ) : (
-            <GroupedList header={`Fora agora · ${current.length}`}>
-              {current.map((a) => (
-                <AbsenceRow key={a.id} absence={a} canCancel={canManage || a.memberId === viewer.member?.id} />
-              ))}
-            </GroupedList>
-          )}
-        </StaggerItem>
+        {canManage && (
+          <StaggerItem>
+            {current.length === 0 ? (
+              <GroupedList header="Fora agora">
+                <p className="px-5 py-4 text-base text-muted-foreground">Todo mundo na ativa.</p>
+              </GroupedList>
+            ) : (
+              <GroupedList header={`Fora agora · ${current.length}`}>
+                {current.map((a) => (
+                  <AbsenceRow key={a.id} absence={a} canCancel />
+                ))}
+              </GroupedList>
+            )}
+          </StaggerItem>
+        )}
 
         {upcoming.length > 0 && (
           <StaggerItem>

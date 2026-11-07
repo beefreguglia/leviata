@@ -108,33 +108,6 @@ export async function setAttendance(eventId: string, status: "VOU" | "TALVEZ" | 
   });
 }
 
-/** Preenche as vagas a partir das funções do perímetro (mantém quem já estava escalado na mesma função). */
-export async function generateLineup(eventId: string) {
-  return runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
-    const ev = await db.event.findUniqueOrThrow({
-      where: { id: eventId },
-      include: { perimeter: { include: { roles: { orderBy: { order: "asc" } } } }, slots: { orderBy: { order: "asc" } } },
-    });
-    if (!ev.perimeter) throw new Error("Esse evento não tem perímetro");
-    const pool = [...ev.slots];
-    const slots = ev.perimeter.roles.flatMap((r) =>
-      Array.from({ length: r.quantity }, () => {
-        const idx = pool.findIndex((s) => s.role === r.name);
-        const keep = idx >= 0 ? pool.splice(idx, 1)[0] : null;
-        return { role: r.name, memberId: keep?.memberId ?? null, vehicle: keep?.vehicle ?? null, notes: keep?.notes ?? r.notes };
-      }),
-    );
-    await db.$transaction([
-      db.lineupSlot.deleteMany({ where: { eventId } }),
-      db.lineupSlot.createMany({ data: slots.map((s, i) => ({ ...s, eventId, order: i })) }),
-    ]);
-    await audit({ userId: viewer.user.id, action: "lineup.generate", entity: "Event", entityId: eventId, summary: `Gerou a escalação de "${ev.title}" pelo perímetro` });
-    revalidate(eventId);
-    return `${slots.length} vagas criadas a partir de "${ev.perimeter.name}"`;
-  });
-}
-
 export async function saveLineup(eventId: string, fd: FormData) {
   return runAction(async () => {
     const viewer = await assertPermission("operacoes.gerenciar");

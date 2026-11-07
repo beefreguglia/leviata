@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getViewer, requireViewer, assertPermission } from "@/lib/session";
-import { actAs, db } from "../helpers/db";
+import { actAs, db, setRankPerms } from "../helpers/db";
 
 describe("sessão e permissões", () => {
   it("sem login → viewer null e assertPermission falha", async () => {
@@ -18,7 +18,8 @@ describe("sessão e permissões", () => {
     await actAs("dev-gerente");
     const v = await getViewer();
     expect(v?.member?.rank?.name).toBe("Gerente");
-    expect(v?.can("membros.gerenciar")).toBe(true);
+    expect(v?.can("operacoes.gerenciar")).toBe(true);
+    expect(v?.can("membros.gerenciar")).toBe(false);
     expect(v?.can("hierarquia.gerenciar")).toBe(false);
   });
 
@@ -30,6 +31,7 @@ describe("sessão e permissões", () => {
   });
 
   it("recruta sem painel.ver é mandado para /sem-acesso", async () => {
+    await setRankPerms("Recruta", []); // patente configurada sem acesso
     await actAs("dev-recruta");
     await expect(requireViewer()).rejects.toMatchObject({ digest: expect.stringContaining("/sem-acesso") });
   });

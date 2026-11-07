@@ -51,7 +51,7 @@ function MoveLine({ m, actions }: { m: MoveRow; actions?: React.ReactNode }) {
 }
 
 export default async function BauPage() {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("economia.ver");
   const canManage = viewer.can("financeiro.gerenciar");
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
 

@@ -28,7 +28,7 @@ const COLUMNS: OrderStatus[] = ["ABERTA", "PRODUCAO", "PRONTA"];
 const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { PRODUCAO: "Começar produção", PRONTA: "Marcar pronta", ABERTA: "Voltar para aberta" };
 
 export default async function EncomendasPage() {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("economia.ver");
   const canManage = viewer.can("financeiro.gerenciar");
   const now = new Date();
 

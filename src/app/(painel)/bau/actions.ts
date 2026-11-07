@@ -54,7 +54,7 @@ export async function registerMove(fd: FormData) {
 /** Membro entrega farm no baú (fica pendente até a gerência conferir). */
 export async function deliverFarm(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("painel.ver");
+    const viewer = await assertPermission("economia.ver");
     if (!viewer.member) throw new Error("Você não tem ficha de membro");
     const data = parseDeliveryForm(fd);
     if (!(await db.item.findUnique({ where: { id: data.itemId } }))) throw new Error("Item inválido");
@@ -132,7 +132,7 @@ export async function reverseMove(id: string) {
 /** Membro cancela a própria entrega ainda pendente. */
 export async function cancelMyDelivery(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("painel.ver");
+    const viewer = await assertPermission("economia.ver");
     const move = await db.vaultTransaction.findUniqueOrThrow({ where: { id } });
     if (move.memberId !== viewer.member?.id || move.createdById !== viewer.member?.id) throw new Error("Sem permissão");
     if (move.status !== "PENDENTE") throw new Error("Só dá para cancelar entregas ainda não conferidas");

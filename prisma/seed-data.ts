@@ -2,17 +2,10 @@ import type { PrismaClient } from "../src/generated/prisma/client";
 import { RANK_PALETTE } from "../src/lib/rank-colors";
 
 export const ALL = ["admin"];
-export const GERENCIA = [
-  "painel.ver",
-  "membros.gerenciar",
-  "regras.editar",
-  "conteudo.editar",
-  "operacoes.gerenciar",
-  "financeiro.gerenciar",
-  "punicoes.gerenciar",
-  "ausencias.gerenciar",
-  "auditoria.ver",
-];
+/** Gerente: cria e edita operações, economia, cidade e comunicação.
+ *  Não vê ausências dos outros, não pune, não edita regras nem vê auditoria. */
+export const GERENCIA = ["painel.ver", "economia.ver", "conteudo.editar", "operacoes.gerenciar", "financeiro.gerenciar"];
+/** Soldado e Recruta: só veem cidade, comunicação, operações, membros e hierarquia. */
 export const MEMBRO = ["painel.ver"];
 
 /** Tudo para dev e testes: patentes, regras e usuários de teste. */
@@ -29,7 +22,7 @@ export async function seedRanks(db: PrismaClient) {
     { name: "Sub-líder", order: 2, color: RANK_PALETTE[1], permissions: ALL },
     { name: "Gerente", order: 3, color: RANK_PALETTE[2], permissions: GERENCIA },
     { name: "Soldado", order: 4, color: RANK_PALETTE[3], permissions: MEMBRO },
-    { name: "Recruta", order: 5, color: RANK_PALETTE[4], permissions: [] as string[] },
+    { name: "Recruta", order: 5, color: RANK_PALETTE[4], permissions: MEMBRO },
   ];
   const rankByName: Record<string, string> = {};
   for (const r of ranks) {

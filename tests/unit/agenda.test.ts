@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { groupByDay, monthGrid, monthKey, monthRange, parseMonth, shiftMonth } from "@/lib/agenda";
 import { fromDateTimeInputBRT, toDateTimeInputBRT, fmtTime } from "@/lib/dates";
-import { lineupProblems, parseEventForm, parseLineupForm, parsePerimeterForm, parsePinForm, parseReportForm, perimeterSlots } from "@/lib/schemas/ops";
+import { lineupProblems, parseEventForm, parseLineupForm, parsePerimeterForm, parsePinForm, parseReportForm } from "@/lib/schemas/ops";
 
 const fd = (data: Record<string, string | string[]>) => {
   const f = new FormData();
@@ -65,14 +65,10 @@ describe("validações da Fase 3", () => {
     expect(() => parseEventForm(fd({ title: "Fleeca" }))).toThrow("Informe a data e hora");
   });
 
-  it("perímetro: funções com quantidade", () => {
-    const p = parsePerimeterForm(fd({ name: "Fleeca fundos", target: "Fleeca", plan: "x", roleName: ["Piloto", "Contenção", ""], roleQty: ["1", "3", "1"], roleNotes: ["", "Na porta", ""] }));
-    expect(p.roles).toEqual([
-      { name: "Piloto", quantity: 1, notes: null },
-      { name: "Contenção", quantity: 3, notes: "Na porta" },
-    ]);
-    expect(perimeterSlots(p.roles)).toBe(4);
-    expect(() => parsePerimeterForm(fd({ name: "Fleeca fundos", target: "Fleeca", plan: "x" }))).toThrow("pelo menos uma função");
+  it("perímetro: título e imagem", () => {
+    expect(parsePerimeterForm(fd({ name: "Fleeca", imageId: "img1" }))).toEqual({ name: "Fleeca", imageId: "img1" });
+    expect(() => parsePerimeterForm(fd({ name: "Fleeca" }))).toThrow("Envie a imagem do perímetro");
+    expect(() => parsePerimeterForm(fd({ name: "F", imageId: "img1" }))).toThrow("Título muito curto");
   });
 
   it("marcador: posição numérica e categoria", () => {

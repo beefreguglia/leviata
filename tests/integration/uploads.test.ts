@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { POST } from "@/app/api/uploads/route";
 import { GET } from "@/app/api/uploads/[id]/route";
-import { PNG_BYTES, actAs, db } from "../helpers/db";
+import { PNG_BYTES, actAs, db, setRankPerms } from "../helpers/db";
 
 function uploadRequest(bytes: Uint8Array<ArrayBuffer>, name = "print.png") {
   const fd = new FormData();
@@ -46,6 +46,7 @@ describe("upload de imagens", () => {
   });
 
   it("recruta (sem painel) não envia, mas consegue ver imagens", async () => {
+    await setRankPerms("Recruta", []); // patente configurada sem acesso
     await actAs("dev-soldado");
     const { id } = await (await POST(uploadRequest(PNG_BYTES))).json();
     await actAs("dev-recruta");

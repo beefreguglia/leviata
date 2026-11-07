@@ -1,8 +1,14 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { addStreamChannel, refreshStreamsNow, removeStreamChannel } from "@/app/(painel)/lives/actions";
 import { GET as cron } from "@/app/api/cron/streams/route";
 import { refreshStreams, refreshStreamsIfStale } from "@/lib/stream-refresh";
-import { actAs, db, form, memberByName } from "../helpers/db";
+import { actAs, db, form, memberByName, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
+
+// estes testes cobrem as regras de cada ação para uma gerência com essas permissões
+// (as permissões padrão de cada patente estão em permissoes-padrao.test.ts)
+beforeEach(async () => {
+  await setRankPerms("Gerente", GERENCIA_COMPLETA);
+});
 
 afterEach(() => {
   vi.restoreAllMocks();

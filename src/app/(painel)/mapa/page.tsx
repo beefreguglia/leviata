@@ -17,18 +17,21 @@ export default async function MapaPage() {
   const canEdit = viewer.can("conteudo.editar");
   const map = await getMapConfig();
 
-  const [pins, farmGuides, factions] = await Promise.all([
+  const canEconomy = viewer.can("economia.ver");
+  const [allPins, farmGuides, factions] = await Promise.all([
     db.mapPin.findMany({
       include: {
         farmGuide: { select: { id: true, title: true } },
         faction: { select: { id: true, name: true } },
-        perimeters: { select: { id: true, name: true } },
       },
       orderBy: { title: "asc" },
     }),
-    canEdit ? db.farmGuide.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }) : Promise.resolve([]),
+    canEdit && canEconomy ? db.farmGuide.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }) : Promise.resolve([]),
     canEdit ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
   ]);
+
+  // sem acesso à economia: o pin aparece, mas sem o link para o guia de farm
+  const pins = canEconomy ? allPins : allPins.map((p) => ({ ...p, farmGuide: null }));
 
   return (
     <>

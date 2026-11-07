@@ -471,41 +471,21 @@ model MapPin {
   faction     Faction?   @relation(fields: [factionId], references: [id], onDelete: SetNull)
   authorId    String?
   author      Member?    @relation("MapPinAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-
-  perimeters Perimeter[]
 }
 
-/// Plano base de uma ação num alvo (banco, joalheria...): funções, rotas, prints.
+/// Perímetro de uma ação: título + foto vista de cima (tipo mapa).
 model Perimeter {
-  id           String   @id @default(cuid())
-  name         String
-  target       String
-  difficulty   Risk     @default(MEDIO)
-  minMembers   Int?
-  plan         String // markdown
-  escapeRoutes String? // markdown
-  imageIds     String[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  // foto vista de cima (tipo mapa)
+  imageId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  pinId    String?
-  pin      MapPin? @relation(fields: [pinId], references: [id], onDelete: SetNull)
   authorId String?
   author   Member? @relation("PerimeterAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
-  roles  PerimeterRole[]
   events Event[]
-}
-
-model PerimeterRole {
-  id       String  @id @default(cuid())
-  name     String
-  quantity Int     @default(1)
-  notes    String?
-  order    Int     @default(0)
-
-  perimeterId String
-  perimeter   Perimeter @relation(fields: [perimeterId], references: [id], onDelete: Cascade)
 }
 
 enum EventKind {

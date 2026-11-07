@@ -88,7 +88,7 @@ export default async function EscalacoesPage() {
                         </Link>
                         <p className="text-sm text-muted-foreground first-letter:uppercase">
                           {fmtWeekday(e.startsAt)} · {fmtTime(e.startsAt)}
-                          {e.perimeter && ` · ${e.perimeter.target}`}
+                          {e.perimeter && ` · ${e.perimeter.name}`}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1">

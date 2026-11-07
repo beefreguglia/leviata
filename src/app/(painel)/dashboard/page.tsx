@@ -68,7 +68,9 @@ export default async function DashboardPage() {
   const canFinance = viewer.can("financeiro.gerenciar");
   const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents, balances, myGoals, pendingDeliveries] = await Promise.all([
     db.member.count({ where: { status: "ATIVO" } }),
-    db.absence.findMany({ where: activeAbsenceWhere(now), include: { member: true }, orderBy: { endsAt: "asc" } }),
+    canManage
+      ? db.absence.findMany({ where: activeAbsenceWhere(now), include: { member: true }, orderBy: { endsAt: "asc" } })
+      : Promise.resolve([]),
     canManage ? db.absence.count({ where: { status: "PENDENTE", endsAt: { gte: now } } }) : Promise.resolve(0),
     viewer.can("auditoria.ver")
       ? db.auditLog.findMany({ include: { user: { include: { member: true } } }, orderBy: { createdAt: "desc" }, take: 6 })
@@ -112,9 +114,11 @@ export default async function DashboardPage() {
         <StaggerItem>
           <Stat label="Membros ativos" value={activeCount} icon={UsersIcon} href="/membros" />
         </StaggerItem>
-        <StaggerItem>
-          <Stat label="Fora agora" value={absentNow.length} icon={UserXIcon} href="/ausencias" tone="warning" />
-        </StaggerItem>
+        {canManage && (
+          <StaggerItem>
+            <Stat label="Fora agora" value={absentNow.length} icon={UserXIcon} href="/ausencias" tone="warning" />
+          </StaggerItem>
+        )}
         {canManage && (
           <StaggerItem>
             <Stat label="Aguardando aprovação" value={pendingCount} icon={ClockIcon} href="/ausencias" tone="warning" />
@@ -216,6 +220,7 @@ export default async function DashboardPage() {
           </GroupedList>
         </FadeIn>
 
+{canManage && (
         <FadeIn delay={0.15}>
           <GroupedList header="Fora agora">
             {absentNow.length === 0 ? (
@@ -236,6 +241,7 @@ export default async function DashboardPage() {
             )}
           </GroupedList>
         </FadeIn>
+        )}
 
         <FadeIn delay={0.18}>
           <GroupedList header={`Ao vivo agora · ${liveNow.length}`}>

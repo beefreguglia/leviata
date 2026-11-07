@@ -13,10 +13,7 @@ export const metadata = { title: "Editar perímetro" };
 export default async function EditarPerimetroPage({ params }: PageProps<"/perimetros/[id]/editar">) {
   await requireViewer("operacoes.gerenciar");
   const { id } = await params;
-  const [perimeter, pins] = await Promise.all([
-    db.perimeter.findUnique({ where: { id }, include: { roles: { orderBy: { order: "asc" } } } }),
-    db.mapPin.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }),
-  ]);
+  const perimeter = await db.perimeter.findUnique({ where: { id } });
   if (!perimeter) notFound();
   return (
     <div className="mx-auto max-w-3xl">
@@ -37,7 +34,7 @@ export default async function EditarPerimetroPage({ params }: PageProps<"/perime
           />
         }
       />
-      <PerimeterForm action={updatePerimeter.bind(null, perimeter.id)} perimeter={perimeter} pins={pins} submitLabel="Salvar alterações" />
+      <PerimeterForm action={updatePerimeter.bind(null, perimeter.id)} perimeter={perimeter} submitLabel="Salvar alterações" />
     </div>
   );
 }

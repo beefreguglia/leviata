@@ -12,7 +12,7 @@ export function EventFields({
   defaultStart,
 }: {
   event?: Event;
-  perimeters: { id: string; name: string; target: string }[];
+  perimeters: { id: string; name: string }[];
   defaultPerimeterId?: string;
   defaultStart?: string;
 }) {
@@ -49,7 +49,7 @@ export function EventFields({
             <option value="">Nenhum</option>
             {perimeters.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.target} — {p.name}
+                {p.name}
               </option>
             ))}
           </NativeSelect>
