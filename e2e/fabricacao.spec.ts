@@ -69,15 +69,17 @@ test.describe("calculadora rápida", () => {
     await page.goto("/fabricacao");
     const c = page.getByTestId("quick-calc");
     await c.getByRole("button", { name: "Limpar" }).click();
-    await c.getByLabel("Quero fazer").fill("25");
-    await c.getByLabel("Cada fabricação rende").fill("10");
+    await c.getByLabel("Item", { exact: true }).fill("Munição");
+    await c.getByLabel("Quanto rende cada fabricação").fill("10");
     await c.getByLabel("Material 1", { exact: true }).fill("Pólvora");
     await c.getByLabel("Quantidade do material 1").fill("20");
     await c.getByLabel("Já tenho do material 1").fill("45");
     await c.getByLabel("Material 2", { exact: true }).fill("Cápsula");
     await c.getByLabel("Quantidade do material 2").fill("10");
 
-    await expect(c).toContainText("3 fabricações");
+    await c.getByLabel("Quantidade de Munição").fill("25");
+
+    await expect(c).toContainText("Para fazer 25 Munição: 3 fabricações");
     await expect(c).toContainText("sobram 5");
     const result = c.getByTestId("quick-calc-result");
     await expect(result.getByRole("listitem").filter({ hasText: "Pólvora" })).toContainText("60");
@@ -93,5 +95,6 @@ test.describe("calculadora rápida", () => {
     // continua lá depois de recarregar
     await page.reload();
     await expect(page.getByTestId("quick-calc").getByLabel("Material 1", { exact: true })).toHaveValue("Pólvora");
+    await expect(page.getByTestId("quick-calc").getByLabel("Item", { exact: true })).toHaveValue("Munição");
   });
 });

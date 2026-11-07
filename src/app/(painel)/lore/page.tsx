@@ -134,7 +134,7 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
               <h2 className="flex items-center gap-2 text-sm font-bold text-grey-200">
                 <PinIcon className="size-4 text-primary" /> Em destaque
               </h2>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
                 {pinned.map((a) => (
                   <LoreCard key={a.id} article={a} large />
                 ))}

@@ -57,7 +57,7 @@ export function CraftCalculator({ items, recipes }: { items: ItemLite[]; recipes
 
       {plan === "ciclo" && <p className="text-sm text-danger-light">As receitas formam um ciclo — revise-as.</p>}
       {plan && plan !== "ciclo" && (
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2 [&>*]:min-w-0">
           <section className="flex flex-col gap-3">
             <h3 className="flex items-center gap-2 text-sm font-bold text-grey-200">
               <SproutIcon className="size-4 text-success" /> Precisa juntar

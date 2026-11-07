@@ -89,7 +89,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
           description={all.length ? undefined : "Cadastre as facções da cidade para acompanhar alianças e conflitos."}
         />
       ) : (
-        <Stagger className="grid gap-4 md:grid-cols-2">
+        <Stagger className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
           {visible.map((f) => (
             <StaggerItem key={f.id}>
               <Link

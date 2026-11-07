@@ -54,6 +54,7 @@ export const NAV_MAIN: NavSection[] = [
       { href: "/bau", label: "Baú", perm: "economia.ver" },
       { href: "/metas", label: "Metas de farm", perm: "economia.ver" },
       { href: "/encomendas", label: "Encomendas", perm: "economia.ver" },
+      { href: "/vendas", label: "Vendas", perm: "economia.ver" },
     ],
   },
   {

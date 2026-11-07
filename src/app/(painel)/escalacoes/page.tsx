@@ -75,7 +75,7 @@ export default async function EscalacoesPage() {
         {withLineup.length === 0 ? (
           <EmptyState icon={ClipboardListIcon} title="Nenhuma escalação montada" description="As escalações das próximas ações aparecem aqui." />
         ) : (
-          <Stagger className="grid gap-4 md:grid-cols-2">
+          <Stagger className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
             {withLineup.map((e) => {
               const filled = e.slots.filter((s) => s.member).length;
               return (

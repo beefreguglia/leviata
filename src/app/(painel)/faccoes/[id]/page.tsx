@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CrownIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
 import { db } from "@/lib/db";
+import { money } from "@/lib/finance";
 import { requireViewer } from "@/lib/session";
 import { FACTION_EVENT_KIND, FACTION_RELATION } from "@/lib/labels";
-import { fmtDate, toDateInputBRT } from "@/lib/dates";
+import { fmtAgo, fmtDate, toDateInputBRT } from "@/lib/dates";
 import { FACTION_EVENT_KINDS } from "@/lib/schemas/content";
 import { cn } from "@/lib/utils";
 import { GroupedList } from "@/components/layout/grouped-list";
@@ -29,6 +31,11 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
   });
   if (!faction) notFound();
   const canEdit = viewer.can("conteudo.editar");
+  // negócios com a facção: só quem vê a economia
+  const sales = viewer.can("economia.ver")
+    ? await db.sale.findMany({ where: { factionId: id, cancelledAt: null }, include: { item: true }, orderBy: { createdAt: "desc" }, take: 10 })
+    : null;
+  const salesTotal = sales?.reduce((n, s) => n + s.quantity * s.unitPrice, 0) ?? 0;
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -174,6 +181,33 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
           )}
         </section>
       </div>
+
+      {sales && (
+        <section className="mt-10" data-testid="faction-sales">
+          <GroupedList
+            header={`Vendas para ${faction.name}${sales.length ? ` · ${money(salesTotal)}` : ""}`}
+            action={
+              <Link href="/vendas?comprador=faccao" className="text-sm text-cyan-light hover:underline">
+                Ver todas
+              </Link>
+            }
+          >
+            {sales.length === 0 ? (
+              <p className="px-5 py-4 text-base text-muted-foreground">Nenhuma venda para essa facção ainda.</p>
+            ) : (
+              sales.map((s) => (
+                <div key={s.id} className="flex min-h-12 items-center justify-between gap-3 px-5 py-3 text-base">
+                  <span className="text-grey-100">
+                    {s.quantity.toLocaleString("pt-BR")}× {s.item.name}
+                    <span className="text-sm text-muted-foreground"> · {fmtAgo(s.createdAt)}</span>
+                  </span>
+                  <strong className="tabular-nums text-grey-100">{money(s.quantity * s.unitPrice)}</strong>
+                </div>
+              ))
+            )}
+          </GroupedList>
+        </section>
+      )}
     </div>
   );
 }

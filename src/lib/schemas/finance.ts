@@ -89,6 +89,45 @@ export function parseOrderForm(fd: FormData) {
     });
 }
 
+/** Venda direta para uma facção ou um player. */
+export const saleSchema = z
+  .object({
+    buyerKind: z.enum(["FACCAO", "PLAYER"], { error: "Escolha se o comprador é facção ou player" }),
+    factionId: z.string().nullable(),
+    buyerName: z.string().trim().max(80).nullable(),
+    buyerPassport: z
+      .string()
+      .trim()
+      .regex(/^\d{1,10}$/, "ID do player inválido — só números")
+      .nullable(),
+    itemId: z.string({ error: "Escolha o item" }).min(1, "Escolha o item"),
+    quantity: positiveInt("Quantidade deve ser um número inteiro maior que zero"),
+    unitPrice: z.coerce.number({ error: "Preço inválido" }).int("Preço inválido").min(0, "Preço inválido").max(1_000_000_000, "Valor alto demais"),
+    payment: z.enum(["DINHEIRO_SUJO", "DINHEIRO_LIMPO"], { error: "Escolha como foi pago" }),
+    fromVault: z.boolean(),
+    sellerId: z.string().nullable(),
+    notes: optionalText(500),
+  })
+  .refine((v) => v.buyerKind !== "FACCAO" || v.factionId, { message: "Escolha a facção", path: ["factionId"] })
+  .refine((v) => v.buyerKind !== "PLAYER" || (v.buyerName && v.buyerName.length >= 2), { message: "Informe o nome do player", path: ["buyerName"] });
+
+export function parseSaleForm(fd: FormData) {
+  const buyerKind = str(fd, "buyerKind") ?? "PLAYER";
+  return saleSchema.parse({
+    buyerKind,
+    factionId: buyerKind === "FACCAO" ? str(fd, "factionId") || null : null,
+    buyerName: buyerKind === "PLAYER" ? str(fd, "buyerName") ?? null : null,
+    buyerPassport: buyerKind === "PLAYER" ? str(fd, "buyerPassport")?.trim() || null : null,
+    itemId: str(fd, "itemId"),
+    quantity: str(fd, "quantity"),
+    unitPrice: str(fd, "unitPrice") || 0,
+    payment: str(fd, "payment") ?? "DINHEIRO_SUJO",
+    fromVault: fd.get("fromVault") === "on",
+    sellerId: str(fd, "sellerId") || null,
+    notes: str(fd, "notes"),
+  });
+}
+
 export const PUNISHMENT_KINDS = ["ADVERTENCIA", "MULTA", "SUSPENSAO", "REBAIXAMENTO", "EXPULSAO"] as const;
 
 export function parsePunishmentForm(fd: FormData) {

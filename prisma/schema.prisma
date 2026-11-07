@@ -78,6 +78,8 @@ model Member {
   ordersCreated    Order[]            @relation("OrderCreatedBy")
   punishments      Punishment[]       @relation("PunishmentMember")
   punishmentsGiven Punishment[]       @relation("PunishmentCreatedBy")
+  salesMade        Sale[]             @relation("SaleSeller")
+  salesCreated     Sale[]             @relation("SaleCreatedBy")
 }
 
 /// Patente/cargo da hierarquia. Pode ser ligada a um cargo do Discord.
@@ -266,6 +268,7 @@ model Faction {
   events  FactionEvent[]
   mapPins MapPin[]
   orders  Order[]
+  sales   Sale[]
 }
 
 enum FactionEventKind {
@@ -308,6 +311,7 @@ model Item {
   vaultMoves VaultTransaction[]
   farmGoals  FarmGoal[]
   orders     Order[]
+  sales      Sale[]
 }
 
 enum Risk {
@@ -661,6 +665,8 @@ model VaultTransaction {
   confirmedBy   Member? @relation("VaultConfirmedBy", fields: [confirmedById], references: [id], onDelete: SetNull)
   orderId       String?
   order         Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  saleId        String?
+  sale          Sale?   @relation(fields: [saleId], references: [id], onDelete: SetNull)
 
   @@index([status, asset, itemId])
   @@index([memberId, createdAt])
@@ -748,4 +754,42 @@ model Punishment {
   createdBy   Member? @relation("PunishmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([memberId, status])
+}
+
+enum BuyerKind {
+  FACCAO
+  PLAYER
+}
+
+/// Venda direta (sem produção): sai do estoque do baú e o pagamento entra na hora.
+model Sale {
+  id            String     @id @default(cuid())
+  buyerKind     BuyerKind
+  /// nome do player, ou o nome da facção no momento da venda
+  buyerName     String
+  /// ID (passaporte) do player, se souber
+  buyerPassport String?
+  quantity      Int
+  unitPrice     Int
+  payment       VaultAsset
+  /// tirou o item do estoque do baú?
+  fromVault     Boolean    @default(true)
+  notes         String?
+  createdAt     DateTime   @default(now())
+  cancelledAt   DateTime?
+  cancelReason  String?
+
+  itemId      String
+  item        Item     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  factionId   String?
+  faction     Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  sellerId    String?
+  seller      Member?  @relation("SaleSeller", fields: [sellerId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   Member?  @relation("SaleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  vaultTransactions VaultTransaction[]
+
+  @@index([createdAt])
+  @@index([factionId, createdAt])
 }

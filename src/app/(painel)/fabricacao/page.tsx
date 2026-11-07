@@ -127,7 +127,7 @@ export default async function FabricacaoPage() {
               description={items.length < 2 ? "Cadastre os itens primeiro (o produto e os insumos)." : "Cadastre a primeira receita."}
             />
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
               {recipes.map((r) => (
                 <article key={r.id} data-testid="recipe" className="flex flex-col gap-4 rounded-card bg-card p-5">
                   <header className="flex items-start justify-between gap-3">

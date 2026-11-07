@@ -148,7 +148,7 @@ export default async function DashboardPage() {
       </Stagger>
 
       {(balances || myRow?.hasGoals) && (
-        <FadeIn delay={0.03} className="mt-10 grid gap-4 lg:grid-cols-2">
+        <FadeIn delay={0.03} className="mt-10 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           {balances && (
             <Link href="/bau" className="flex flex-col gap-3 rounded-card bg-card p-6 transition-colors hover:bg-grey-700" data-testid="dashboard-vault">
               <span className="flex items-center gap-2 text-sm font-bold text-grey-200">
@@ -202,7 +202,7 @@ export default async function DashboardPage() {
             <h2 className="text-sm font-bold text-grey-200">Mural</h2>
             <Link href="/mural" className="text-sm text-cyan-light hover:underline">Ver todos</Link>
           </div>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
             {pinnedNotices.map((n) => (
               <NoticeCard key={n.id} notice={n} compact />
             ))}
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
         </FadeIn>
       )}
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-2">
+      <div className="mt-10 grid gap-10 lg:grid-cols-2 [&>*]:min-w-0">
         <FadeIn delay={0.1}>
           <GroupedList header="Próximas ações e corridas">
             {nextEvents.length === 0 ? (

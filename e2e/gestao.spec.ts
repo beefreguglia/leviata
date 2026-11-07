@@ -174,3 +174,73 @@ test.describe("punições (soldado)", () => {
     }
   });
 });
+
+test.describe("vendas", () => {
+  test.use(as("gerente"));
+
+  test("vende para player e para facção, total na hora, estoque cai e cancelar devolve", async ({ page }) => {
+    test.slow();
+    const s = uid();
+    const item = `Pistola ${s}`;
+    const faction = `Ballas ${s}`;
+    await newItem(page, item);
+    await page.goto("/bau");
+    await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
+    const d = page.getByRole("dialog");
+    await d.getByLabel("O quê").selectOption("ITEM");
+    await d.getByLabel("Item").selectOption({ label: `${item} (un)` });
+    await d.getByLabel("Quantidade").fill("10");
+    await d.getByRole("button", { name: "Registrar" }).click();
+    await expectToast(page, "Entrada registrada");
+
+    await page.goto("/faccoes");
+    await page.getByRole("button", { name: "Nova facção" }).click();
+    await page.getByRole("dialog").getByLabel("Nome").fill(faction);
+    await page.getByRole("dialog").getByRole("button", { name: "Cadastrar" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    // player
+    await page.goto("/vendas");
+    await page.getByRole("button", { name: "Nova venda" }).click();
+    let v = page.getByRole("dialog");
+    await v.getByLabel("Nome do player").fill(`João ${s}`);
+    await v.getByLabel("ID (opcional)").fill("5555");
+    await v.getByLabel("Item", { exact: true }).selectOption({ label: item });
+    await expect(v.getByText("No baú: 10")).toBeVisible();
+    await v.getByLabel("Quantidade").fill("3");
+    await v.getByLabel("Preço unitário (R$)").fill("2000");
+    await expect(v.getByTestId("sale-total")).toContainText("R$ 6.000");
+    await v.getByRole("button", { name: "Registrar venda" }).click();
+    await expectToast(page, "Venda registrada: R$ 6.000 no baú");
+
+    // facção
+    await page.getByRole("button", { name: "Nova venda" }).click();
+    v = page.getByRole("dialog");
+    await v.getByText("Facção", { exact: true }).click();
+    await v.getByRole("combobox", { name: "Facção" }).selectOption({ label: faction });
+    await v.getByLabel("Item", { exact: true }).selectOption({ label: item });
+    await v.getByLabel("Quantidade").fill("2");
+    await v.getByLabel("Preço unitário (R$)").fill("1500");
+    await v.getByLabel("Pagamento entrou como").selectOption("DINHEIRO_LIMPO");
+    await v.getByRole("button", { name: "Registrar venda" }).click();
+    await expectToast(page, "Venda registrada: R$ 3.000 no baú");
+
+    await page.getByRole("navigation", { name: "Filtrar por comprador" }).getByRole("link", { name: "Facções" }).click();
+    await expect(page).toHaveURL(/comprador=faccao/);
+    await expect(page.getByTestId("sale-row").filter({ hasText: faction })).toBeVisible();
+    await expect(page.getByTestId("sale-row").filter({ hasText: `João ${s}` })).toHaveCount(0);
+
+    await page.goto("/bau");
+    await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("5");
+
+    // cancelar a do player devolve 3
+    await page.goto("/vendas");
+    await page.getByRole("button", { name: `Cancelar venda para João ${s}` }).click();
+    await page.getByRole("dialog").getByLabel("Motivo (opcional)").fill("lançado errado");
+    await page.getByRole("dialog").getByRole("button", { name: "Cancelar venda" }).click();
+    await expectToast(page, "Venda cancelada e desfeita no baú");
+    await expect(page.getByTestId("sale-row").filter({ hasText: `João ${s}` })).toContainText("Cancelada");
+    await page.goto("/bau");
+    await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("8");
+  });
+});

@@ -40,7 +40,7 @@ export function AbsenceRow({
         </p>
         <p className="text-sm text-muted-foreground">{absence.reason}</p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <StatusBadge {...ABSENCE_STATUS[absence.status]} />
         {canReview && absence.status === "PENDENTE" && (
           <>
