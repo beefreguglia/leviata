@@ -41,12 +41,12 @@ describe("sendWebhook", () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it("envia embed com a cor ciano da Leviata e timestamp", async () => {
+  it("envia embed com a cor ciano da Leviatã e timestamp", async () => {
     const spy = mockFetch(async () => new Response(null, { status: 204 }));
     await sendWebhook("https://hook", { title: "Aviso", description: "oi" });
     const body = JSON.parse((spy.mock.calls[0][1] as RequestInit).body as string);
-    expect(body.username).toBe("Painel Leviata");
-    expect(body.embeds[0]).toMatchObject({ title: "Aviso", description: "oi", color: 0x00d9ff });
+    expect(body.username).toBe("Painel Leviatã");
+    expect(body.embeds[0]).toMatchObject({ title: "Aviso", description: "oi", color: 0x06d4ec });
     expect(body.embeds[0].timestamp).toBeTruthy();
   });
 

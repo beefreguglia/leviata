@@ -68,7 +68,7 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
     <>
       <PageHeader
         title="Lore"
-        description="A história da Cidade dos Anjos contada pela Leviata."
+        description="A história da Cidade dos Anjos contada pela Leviatã."
         actions={
           viewer.can("conteudo.editar") && (
             <LinkButton href="/lore/novo">

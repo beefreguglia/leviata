@@ -112,8 +112,8 @@ describe("parseAbsenceForm", () => {
 import { RANK_PALETTE, suggestRankColor } from "@/lib/rank-colors";
 
 describe("cores das patentes", () => {
-  it("topo é o ciano da Leviata e a base é azul escuro", () => {
-    expect(suggestRankColor(1)).toBe("#00d9ff");
+  it("topo é o ciano da Leviatã e a base é azul escuro", () => {
+    expect(suggestRankColor(1)).toBe("#06d4ec");
     expect(suggestRankColor(5)).toBe(RANK_PALETTE[4]);
   });
 

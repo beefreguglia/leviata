@@ -53,7 +53,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
     <>
       <PageHeader
         title="Membros"
-        description={`${total} ${total === 1 ? "membro" : "membros"} na Leviata`}
+        description={`${total} ${total === 1 ? "membro" : "membros"} na Leviatã`}
         actions={
           canManage && (
             <FormDialog

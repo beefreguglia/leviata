@@ -14,6 +14,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // tudo menos login, api, arquivos estáticos e assets
-  matcher: ["/((?!login|sem-acesso|api|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|webp|ico)$).*)"],
+  // tudo menos login, api, arquivos estáticos e a identidade visual (ícones, manifest e a
+  // imagem da prévia de link precisam abrir sem login para o Discord/celular conseguirem ler)
+  matcher: [
+    "/((?!login|sem-acesso|api|_next/static|_next/image|favicon.ico|manifest.webmanifest|opengraph-image|apple-icon|icon|brand/|.*\\.(?:png|jpg|jpeg|svg|webp|ico)$).*)",
+  ],
 };

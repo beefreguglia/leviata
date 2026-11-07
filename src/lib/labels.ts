@@ -45,7 +45,7 @@ export const LORE_CATEGORY: Record<LoreCategory, { label: string; className: str
   ALIANCA: { label: "Aliança", className: "bg-warning-low text-warning" },
 };
 
-/** Relação com a Leviata: verde (aliada) → vermelho (guerra). */
+/** Relação com a Leviatã: verde (aliada) → vermelho (guerra). */
 export const FACTION_RELATION: Record<FactionRelation, { label: string; className: string; dot: string }> = {
   ALIADA: { label: "Aliada", className: "bg-success-low text-success", dot: "bg-success" },
   NEUTRA: { label: "Neutra", className: "bg-grey-600 text-grey-100", dot: "bg-grey-400" },
@@ -85,12 +85,12 @@ export const STREAM_PLATFORM: Record<StreamPlatform, { label: string; className:
 
 /** Cor de cada categoria de marcador (hex usado também no mapa Leaflet). */
 export const PIN_CATEGORY: Record<MapPinCategory, { label: string; color: string }> = {
-  BASE: { label: "Base", color: "#00d9ff" },
+  BASE: { label: "Base", color: "#06d4ec" },
   FARM: { label: "Farm", color: "#04d361" },
   DESMANCHE: { label: "Desmanche", color: "#fba94c" },
   LAVAGEM: { label: "Lavagem", color: "#c4c4cc" },
   LOJA: { label: "Loja", color: "#6a80ff" },
-  FUGA: { label: "Rota de fuga", color: "#66e8ff" },
+  FUGA: { label: "Rota de fuga", color: "#5cf0fa" },
   ESCONDERIJO: { label: "Esconderijo", color: "#9aa8ff" },
   TERRITORIO: { label: "Território", color: "#eb8a1d" },
   ALVO: { label: "Alvo de ação", color: "#f75a68" },

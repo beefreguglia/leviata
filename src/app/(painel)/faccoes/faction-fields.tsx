@@ -20,7 +20,7 @@ export function FactionFields({ faction }: { faction?: Faction }) {
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Relação com a Leviata" htmlFor="f-relation">
+        <Field label="Relação com a Leviatã" htmlFor="f-relation">
           <NativeSelect id="f-relation" name="relation" defaultValue={faction?.relation ?? "NEUTRA"}>
             {Object.entries(FACTION_RELATION).map(([v, { label }]) => (
               <option key={v} value={v}>

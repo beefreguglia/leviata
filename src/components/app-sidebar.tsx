@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import {
-  Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  Sidebar, SidebarContent, SidebarFooter, SidebarHeader,
 } from "@/components/ui/sidebar";
-import { LeviataMark } from "@/components/layout/logo";
+import { BrandLogo } from "@/components/layout/logo";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser, type SidebarUser } from "@/components/nav-user";
@@ -23,19 +23,13 @@ export function AppSidebar({
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <LeviataMark className="size-5" />
-              </div>
-              <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate text-base font-bold">Leviata</span>
-                <span className="truncate text-xs text-muted-foreground">Cidade dos Anjos</span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Link
+          href="/dashboard"
+          aria-label="Leviatã — ir para o início"
+          className="group/brand flex items-center justify-center rounded-md px-3 py-2 outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <BrandLogo alt="" className="w-40 transition-[filter] duration-300 group-hover/brand:drop-shadow-[0_0_12px_rgba(6,212,236,0.45)]" />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <NavMain permissions={permissions} />

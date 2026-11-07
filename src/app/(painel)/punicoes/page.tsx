@@ -42,7 +42,7 @@ export default async function PunicoesPage() {
     <>
       <PageHeader
         title="Punições"
-        description={canManage ? "Advertências, multas, suspensões, rebaixamentos e expulsões." : "Suas punições na Leviata."}
+        description={canManage ? "Advertências, multas, suspensões, rebaixamentos e expulsões." : "Suas punições na Leviatã."}
         actions={
           canManage && (
             <FormDialog

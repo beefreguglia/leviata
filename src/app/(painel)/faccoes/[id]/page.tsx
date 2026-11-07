@@ -104,7 +104,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
 
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-bold text-grey-200">Histórico com a Leviata</h2>
+            <h2 className="text-sm font-bold text-grey-200">Histórico com a Leviatã</h2>
             {canEdit && (
               <FormDialog
                 title="Registrar no histórico"

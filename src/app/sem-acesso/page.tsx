@@ -19,10 +19,10 @@ export default async function SemAcessoPage() {
   const expelled = viewer?.member?.status === "EXPULSO";
 
   const description = expelled
-    ? "Sua ficha está como expulso da Leviata. Se acha que é um engano, fale com a liderança."
+    ? "Sua ficha está como expulso da Leviatã. Se acha que é um engano, fale com a liderança."
     : inPanel
       ? "Essa área é só para quem tem a patente certa. Se precisa dela, fale com a liderança."
-      : "Sua conta ainda não tem ficha na Leviata. Fale com a liderança para liberar seu acesso.";
+      : "Sua conta ainda não tem ficha na Leviatã. Fale com a liderança para liberar seu acesso.";
 
   return (
     <StatusScreen

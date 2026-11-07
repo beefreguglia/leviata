@@ -3,7 +3,7 @@
  * quanto mais baixo, mais azul escuro (ainda legível sobre o fundo #202024).
  */
 export const RANK_PALETTE = [
-  "#00d9ff", // 1 · Líder (ciano Leviata)
+  "#06d4ec", // 1 · Líder (ciano da marca)
   "#13b6f2", // 2 · Sub-líder
   "#2593e3", // 3 · Gerente
   "#3471d2", // 4 · Soldado

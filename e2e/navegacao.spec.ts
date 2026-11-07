@@ -10,8 +10,8 @@ test.describe("menu lateral", () => {
   test("líder vê os grupos, links do rodapé e o próprio usuário", async ({ page }) => {
     await page.goto("/dashboard");
     const nav = sidebar(page);
-    await expect(nav.getByRole("link", { name: "Leviata Cidade dos Anjos" })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "Início" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Leviatã — ir para o início" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Início", exact: true })).toBeVisible();
     for (const group of ["Fac", "Operações", "Economia", "Cidade", "Comunicação"]) {
       await expect(nav.getByRole("button", { name: group })).toBeVisible();
     }

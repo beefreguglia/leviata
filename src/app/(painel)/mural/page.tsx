@@ -51,7 +51,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
     <>
       <PageHeader
         title="Mural & Flyers"
-        description="Avisos da liderança e os flyers da Leviata."
+        description="Avisos da liderança e os flyers da Leviatã."
         actions={
           canEdit && (
             <>

@@ -12,7 +12,7 @@ test.describe("facções (gerência)", () => {
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Nome").fill(name);
     await dialog.getByLabel("Sigla").fill("BL");
-    await dialog.getByLabel("Relação com a Leviata").selectOption("TENSA");
+    await dialog.getByLabel("Relação com a Leviatã").selectOption("TENSA");
     await dialog.getByLabel("Território").fill("Grove Street");
     await dialog.getByRole("button", { name: "Cadastrar" }).click();
     await expectToast(page, `${name} cadastrada`);
@@ -25,7 +25,7 @@ test.describe("facções (gerência)", () => {
     await expect(page.getByRole("heading", { name: new RegExp(name) })).toBeVisible();
 
     await page.getByRole("button", { name: "Editar" }).click();
-    await page.getByRole("dialog").getByLabel("Relação com a Leviata").selectOption("GUERRA");
+    await page.getByRole("dialog").getByLabel("Relação com a Leviatã").selectOption("GUERRA");
     await page.getByRole("dialog").getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Facção atualizada");
     const timeline = page.getByTestId("faction-timeline");

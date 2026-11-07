@@ -11,7 +11,7 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 
 | Andromeda | Leviata (Tailwind) | Uso |
 |---|---|---|
-| rocketseat-light / mid / dark / low | `cyan-light` #66E8FF · `cyan-mid` = `primary` #00D9FF · `cyan-dark` #00A6C7 · `cyan-low` #07303A | hover · ação principal/foco/ativo · pressionado · fundo tingido |
+| rocketseat-light / mid / dark / low | `cyan-light` #5cf0fa · `cyan-mid` = `primary` #06d4ec · `cyan-dark` #0aa5b9 · `cyan-low` #06303a | hover · ação principal/foco/ativo · pressionado · fundo tingido |
 | color-background (grey-900) | `bg-background` #121214 | fundo do conteúdo |
 | shape-primary (grey-800) | `bg-card` #202024 | cards, listas, modais |
 | shape-secondary (grey-700) | `bg-secondary`/`bg-muted`/`bg-grey-700` #29292E | botão secundário, chips, hover de linha |
@@ -21,7 +21,7 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 | success / danger / warning (light, base, low) | `text-success` + `bg-success-low`, `text-danger-light` + `bg-danger-low`, `text-warning` + `bg-warning-low` | status |
 
 - Nunca use hex solto em componentes; use os tokens acima.
-- **Cores de patente**: escala `RANK_PALETTE` (`src/lib/rank-colors.ts`) — topo = ciano #00D9FF, descendo até azul escuro #3D52BD. Nova patente sugere a cor pela ordem (`suggestRankColor`). A cor fica salva em `Rank.color` (editável em Hierarquia).
+- **Cores de patente**: escala `RANK_PALETTE` (`src/lib/rank-colors.ts`) — topo = ciano #06d4ec, descendo até azul escuro #3D52BD. Nova patente sugere a cor pela ordem (`suggestRankColor`). A cor fica salva em `Rank.color` (editável em Hierarquia).
 - Ciano só em: botão principal, foco, item ativo, links, indicadores. Badges de status = fundo `*-low` + texto `*-light`.
 - Separadores dentro de cards: `border-grey-700`. Inputs ficam em `bg-input` (grey-900) — dentro de card contrastam; na página use `bg-card`.
 
@@ -64,3 +64,9 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 - [ ] Inputs 48px, botões bold, raios 12px/20px
 - [ ] Vazio / carregando / erro tratados
 - [ ] 375px ok; testes e2e do módulo atualizados
+
+## Identidade visual (marca)
+- Fontes da marca em `brand/` (PNG transparentes): `leviata-logo.png` (dragão + "LEVIATÃ") e `lvt.png` (monograma). Depois de trocar, rode `npm run brand` — gera `public/brand/*.webp`, `src/app/{icon.png,favicon.ico,apple-icon.png,opengraph-image.png}` e os ícones do app instalado.
+- Use `BrandLogo` (menu lateral, login) e `BrandMark` (telas cheias de 404/403, espaços pequenos) de `components/layout/logo.tsx`. Não redesenhe o logo em SVG nem aplique outra cor: é preto com contorno ciano, feito para fundo escuro.
+- O nome é **Leviatã** (com til) em todo texto visível.
+- Ciano da marca = contorno do logo: `cyan-mid` #06D4EC; brilho do olho = `cyan-light` #5CF0FA. Brilho decorativo: `drop-shadow-[0_0_12px_rgba(6,212,236,0.45)]` só no hover do logo/destaques, nunca em texto corrido.

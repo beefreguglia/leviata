@@ -81,12 +81,14 @@
 /*
  * ===== Tema Leviata =====
  * Base: design system Andromeda (Rocketseat) — mesma escala de cinzas, espaçamento,
- * tipografia e raios — com o roxo "rocketseat" trocado pela escala CIANO da Leviata.
+ * tipografia e raios — com o roxo "rocketseat" trocado pela escala CIANO da Leviatã.
+ * Identidade visual (brand/): logo do dragão e monograma LVT, preto com contorno ciano.
+ * O ciano vem do contorno do logo (#06D4EC); o brilho do olho do dragão dá o cyan-light.
  *
- *   cyan-light  #66E8FF   hover, links, destaques em texto
- *   cyan-mid    #00D9FF   cor principal (botões, foco, item ativo)
- *   cyan-dark   #00A6C7   pressionado / bordas fortes
- *   cyan-low    #07303A   fundos tingidos (badges, seleção)
+ *   cyan-light  #5cf0fa   hover, links, destaques em texto
+ *   cyan-mid    #06d4ec   cor principal (botões, foco, item ativo)
+ *   cyan-dark   #0aa5b9   pressionado / bordas fortes
+ *   cyan-low    #06303a   fundos tingidos (badges, seleção)
  *
  * Cinzas (Andromeda): 100 #E1E1E6 · 200 #C4C4CC · 300 #8D8D99 · 400 #7C7C8A · 500 #505059
  *                     600 #323238 · 700 #29292E · 800 #202024 · 900 #121214 · 950 #09090A
@@ -94,10 +96,10 @@
 :root,
 .dark {
   /* paleta crua */
-  --cyan-light: #66e8ff;
-  --cyan-mid: #00d9ff;
-  --cyan-dark: #00a6c7;
-  --cyan-low: #07303a;
+  --cyan-light: #5cf0fa;
+  --cyan-mid: #06d4ec;
+  --cyan-dark: #0aa5b9;
+  --cyan-low: #06303a;
   --grey-100: #e1e1e6;
   --grey-200: #c4c4cc;
   --grey-300: #8d8d99;

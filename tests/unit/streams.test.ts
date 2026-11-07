@@ -10,7 +10,7 @@ describe("Twitch", () => {
           {
             user_login: "NinaRP",
             type: "live",
-            title: "Patrulha da Leviata",
+            title: "Patrulha da Leviatã",
             viewer_count: 42,
             thumbnail_url: "https://cdn/x-{width}x{height}.jpg",
             game_name: "Grand Theft Auto V",
@@ -22,7 +22,7 @@ describe("Twitch", () => {
     );
     expect(res.get("ninarp")).toEqual({
       isLive: true,
-      title: "Patrulha da Leviata",
+      title: "Patrulha da Leviatã",
       viewers: 42,
       thumbnailUrl: "https://cdn/x-640x360.jpg",
       category: "Grand Theft Auto V",

@@ -36,7 +36,7 @@ export default async function LoreArticlePage({ params }: PageProps<"/lore/[slug
           <h1 className="text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]">{article.title}</h1>
           {article.summary && <p className="text-lg text-grey-300">{article.summary}</p>}
           <p className="text-sm text-muted-foreground">
-            Por {article.author?.rpName ?? "Leviata"} · atualizado {fmtAgo(article.updatedAt)}
+            Por {article.author?.rpName ?? "Leviatã"} · atualizado {fmtAgo(article.updatedAt)}
           </p>
         </div>
         {viewer.can("conteudo.editar") && (

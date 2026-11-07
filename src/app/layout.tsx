@@ -10,8 +10,15 @@ const body = Roboto({ variable: "--font-body", subsets: ["latin"], weight: ["400
 const mono = Fira_Code({ variable: "--font-mono-face", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Painel Leviata", template: "%s · Leviata" },
-  description: "Painel interno da Leviata — Cidade dos Anjos RP",
+  // URL pública: deixa as imagens da prévia de link (Discord/WhatsApp) com endereço completo
+  metadataBase: new URL(process.env.AUTH_URL || "http://localhost:3000"),
+  applicationName: "Painel Leviatã",
+  title: { default: "Painel Leviatã", template: "%s · Leviatã" },
+  description: "Painel interno da Leviatã — Cidade dos Anjos RP",
+  openGraph: { siteName: "Leviatã", title: "Painel Leviatã", description: "Painel interno da Leviatã — Cidade dos Anjos RP", locale: "pt_BR", type: "website" },
+  // painel privado: fora dos buscadores
+  robots: { index: false, follow: false },
+  appleWebApp: { capable: true, title: "Leviatã", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = { themeColor: "#09090a", colorScheme: "dark" };

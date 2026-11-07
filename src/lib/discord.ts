@@ -7,7 +7,7 @@ export type GuildMember = {
 };
 
 /**
- * Busca a ficha do usuário logado dentro do servidor da Leviata usando o token OAuth
+ * Busca a ficha do usuário logado dentro do servidor da Leviatã usando o token OAuth
  * (scope `guilds.members.read`). Retorna null se ele não estiver no servidor.
  */
 export async function getGuildMember(accessToken: string, guildId: string): Promise<GuildMember | null> {
@@ -41,8 +41,8 @@ export async function sendWebhook(url: string | undefined, embed: WebhookEmbed) 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: "Painel Leviata",
-        embeds: [{ color: 0x00d9ff, timestamp: new Date().toISOString(), ...embed }],
+        username: "Painel Leviatã",
+        embeds: [{ color: 0x06d4ec, timestamp: new Date().toISOString(), ...embed }],
       }),
     });
     if (!res.ok) console.error("Webhook Discord falhou:", res.status, await res.text());

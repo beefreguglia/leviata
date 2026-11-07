@@ -3,13 +3,13 @@ import { devLoginEnabled, signIn } from "@/auth";
 import { getViewer } from "@/lib/session";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { LeviataMark } from "@/components/layout/logo";
+import { BrandLogo } from "@/components/layout/logo";
 import { FadeIn } from "@/components/motion";
 
 export const metadata = { title: "Entrar" };
 
 const ERRORS: Record<string, string> = {
-  "fora-do-servidor": "Você precisa estar no servidor do Discord da Leviata para entrar.",
+  "fora-do-servidor": "Você precisa estar no servidor do Discord da Leviatã para entrar.",
   config: "Login com Discord ainda não configurado (faltam variáveis no .env).",
   CredentialsSignin: "Usuário de teste não encontrado.",
   AccessDenied: "Acesso negado.",
@@ -52,10 +52,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       />
       <div className="relative w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <span className="flex size-20 items-center justify-center rounded-card bg-card shadow-[0_0_60px_-10px_var(--primary)]">
-            <LeviataMark className="size-12 text-primary" />
-          </span>
-          <h1 className="mt-5 text-[2rem] font-bold leading-shorter">Leviata</h1>
+          <h1 className="sr-only">Leviatã</h1>
+          <BrandLogo alt="" className="w-72 drop-shadow-[0_0_40px_rgba(6,212,236,0.25)] sm:w-80" />
           <p className="mt-1 text-base text-muted-foreground">Cidade dos Anjos · Painel interno</p>
         </div>
 
@@ -77,7 +75,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             </Button>
           </form>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Só membros do servidor da Leviata têm acesso.
+            Só membros do servidor da Leviatã têm acesso.
           </p>
 
           {devLoginEnabled && (

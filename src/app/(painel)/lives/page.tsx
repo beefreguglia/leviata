@@ -49,7 +49,7 @@ export default async function LivesPage() {
       <AutoRefresh seconds={60} />
       <PageHeader
         title="Ao vivo"
-        description={`Quem da Leviata está em live agora${lastCheck ? ` · verificado ${fmtAgo(lastCheck)}` : ""}.`}
+        description={`Quem da Leviatã está em live agora${lastCheck ? ` · verificado ${fmtAgo(lastCheck)}` : ""}.`}
         actions={
           canManage && (
             <ActionForm action={async () => { "use server"; return refreshStreamsNow(); }}>

@@ -18,7 +18,7 @@ function revalidate() {
 /** Expira no FIM do dia escolhido. */
 const expiry = (d: Date | null) => (d ? endOfDayBRT(toDateInputBRT(d)) : null);
 
-const PRIORITY_COLOR = { NORMAL: 0x00d9ff, IMPORTANTE: 0xfba94c, URGENTE: 0xf75a68 } as const;
+const PRIORITY_COLOR = { NORMAL: 0x06d4ec, IMPORTANTE: 0xfba94c, URGENTE: 0xf75a68 } as const;
 
 export async function createNotice(fd: FormData) {
   return runAction(async () => {

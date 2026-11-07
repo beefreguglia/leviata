@@ -31,7 +31,7 @@ export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">)
           </div>
           <h1 className="text-2xl font-bold leading-shorter text-grey-100 md:text-[2rem]">{guide.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Por {guide.author?.rpName ?? "Leviata"} · atualizado {fmtAgo(guide.updatedAt)}
+            Por {guide.author?.rpName ?? "Leviatã"} · atualizado {fmtAgo(guide.updatedAt)}
           </p>
         </div>
         {viewer.can("conteudo.editar") && (

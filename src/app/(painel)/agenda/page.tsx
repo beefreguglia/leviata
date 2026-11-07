@@ -48,7 +48,7 @@ export default async function AgendaPage({ searchParams }: PageProps<"/agenda">)
     <>
       <PageHeader
         title="Agenda"
-        description="Ações, corridas, reuniões e treinos da Leviata."
+        description="Ações, corridas, reuniões e treinos da Leviatã."
         actions={
           canManage && (
             <FormDialog

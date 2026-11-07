@@ -5,13 +5,14 @@ test.describe("login e acesso", () => {
   test("sem login, qualquer página manda para /login", async ({ page }) => {
     await page.goto("/membros");
     await expect(page).toHaveURL(/\/login$/);
-    await expect(page.getByRole("heading", { name: "Leviata" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Leviatã" })).toBeAttached();
+    await expect(page.locator("main img[src='/brand/leviata.webp']")).toBeVisible();
     await expect(page.getByRole("button", { name: "Entrar com Discord" })).toBeVisible();
   });
 
   test("mostra o erro de quem não está no servidor", async ({ page }) => {
     await page.goto("/login?erro=fora-do-servidor");
-    await expect(page.getByText("Você precisa estar no servidor do Discord da Leviata")).toBeVisible();
+    await expect(page.getByText("Você precisa estar no servidor do Discord da Leviatã")).toBeVisible();
   });
 
   test("login de teste lista os usuários do seed", async ({ page }) => {
@@ -73,5 +74,24 @@ test.describe("sessão de usuário que não existe mais", () => {
     expect(res?.ok()).toBe(true);
     await expect(page).toHaveURL(/\/login$/);
     await expect(page.getByRole("button", { name: "Entrar com Discord" })).toBeVisible();
+  });
+});
+
+test.describe("identidade visual (sem login)", () => {
+  test("favicon, ícones, manifest e prévia de link abrem sem sessão", async ({ request, page }) => {
+    for (const path of ["/favicon.ico", "/icon.png", "/apple-icon.png", "/brand/leviata.webp", "/brand/lvt.webp", "/manifest.webmanifest"]) {
+      const res = await request.get(path, { maxRedirects: 0 });
+      expect(res.status(), path).toBe(200);
+    }
+    const manifest = await (await request.get("/manifest.webmanifest")).json();
+    expect(manifest).toMatchObject({ name: "Painel Leviatã", start_url: "/dashboard" });
+
+    await page.goto("/login");
+    const og = await page.locator('meta[property="og:image"]').getAttribute("content");
+    expect(og).toContain("/opengraph-image");
+    const res = await request.get(new URL(og!).pathname + (new URL(og!).search ?? ""), { maxRedirects: 0 });
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toContain("image/png");
+    await expect(page.getByRole("heading", { name: "Leviatã" })).toBeAttached();
   });
 });

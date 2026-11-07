@@ -24,6 +24,7 @@
     "test:all": "vitest run && playwright test",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "db:seed:prod": "tsx prisma/seed-prod.ts",
+    "brand": "node scripts/brand-assets.mjs",
     "setup:storage": "node scripts/setup-storage.mjs"
   },
   "dependencies": {
