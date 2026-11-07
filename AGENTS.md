@@ -25,3 +25,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Ação que redireciona depois de salvar usa `redirectWithToast(path, "criado" | "salvo" | "apagado")` (`lib/flash.ts`) para o toast aparecer no destino.
 - `seed-prod` só cria patentes e regras. Nunca rode `npm run db:seed` (cria usuários de teste) em produção.
 - Uploads em produção vão direto ao Supabase por link assinado (`/api/uploads/sign` → PUT → `/api/uploads/finish`).
+- Novidades: toda mudança que o membro percebe ganha uma entrada no topo de `src/lib/changelog.ts` (texto para membros, `id` novo). O build de produção posta a mais nova no Discord (`DISCORD_WEBHOOK_NOVIDADES`) via `scripts/announce-changelog.ts`; a página `/novidades` mostra todas.

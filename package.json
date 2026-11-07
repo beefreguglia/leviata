@@ -22,7 +22,8 @@
     "test:db:start": "prisma dev -d -n leviata-test",
     "test:db:migrate": "DOTENV_CONFIG_PATH=.env.test prisma migrate deploy",
     "test:all": "vitest run && playwright test",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build && tsx scripts/announce-changelog.ts",
+    "novidades:anunciar": "tsx scripts/announce-changelog.ts --force",
     "db:seed:prod": "tsx prisma/seed-prod.ts",
     "brand": "node scripts/brand-assets.mjs",
     "setup:storage": "node scripts/setup-storage.mjs"

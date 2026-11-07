@@ -69,20 +69,27 @@ test.describe("créditos", () => {
 
 test.describe("barra de rolagem", () => {
   test.use(as("lider"));
-  test("setinhas ciano rolam o conteúdo; a de cima fica apagada no topo", async ({ page }) => {
+  test("barrinha preta com borda ciano, sem setinhas; rola com a roda do mouse", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 600 });
     await page.goto("/regras/estatuto");
-    const viewport = page.locator("#conteudo");
     await expect(page.getByRole("heading", { name: "Regras da Leviatã" })).toBeVisible();
-    const down = page.getByRole("button", { name: "Rolar para baixo" });
-    await expect(down).toBeVisible();
-    expect(await viewport.evaluate((el) => el.scrollTop)).toBe(0);
-    await down.click();
-    await expect.poll(() => viewport.evaluate((el) => el.scrollTop)).toBeGreaterThan(50);
-    await page.getByRole("button", { name: "Rolar para cima" }).click();
-    await expect.poll(() => viewport.evaluate((el) => el.scrollTop)).toBe(0);
-    // o polegar tem a borda ciano
-    const border = await page.locator('[data-slot="scroll-area-thumb"]').evaluate((el) => getComputedStyle(el).borderTopColor);
-    expect(border).toMatch(/rgb\(6, 212, 236\)|oklch|color/);
+    await expect(page.getByRole("button", { name: /Rolar para/ })).toHaveCount(0);
+    const thumb = page.locator('[data-slot="scroll-area-thumb"]');
+    expect(await thumb.evaluate((el) => getComputedStyle(el).borderTopColor)).toMatch(/rgb\(6, 212, 236\)|oklch|color/);
+    const viewport = page.locator("#conteudo");
+    await viewport.hover();
+    await page.mouse.wheel(0, 400);
+    await expect.poll(() => viewport.evaluate((el) => el.scrollTop)).toBeGreaterThan(100);
+  });
+});
+
+test.describe("novidades", () => {
+  test.use(as("soldado"));
+  test("página de novidades lista as mudanças (a mais nova marcada)", async ({ page }) => {
+    await page.goto("/novidades");
+    await expect(page.getByRole("heading", { name: "Novidades" })).toBeVisible();
+    const first = page.getByTestId("changelog-entry").filter({ visible: true }).first();
+    await expect(first).toContainText("Nova");
+    await expect(page.locator('[data-sidebar="sidebar"]').first().getByRole("link", { name: "Novidades" })).toBeVisible();
   });
 });

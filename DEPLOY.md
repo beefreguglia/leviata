@@ -70,6 +70,7 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
    - canal de avisos → `DISCORD_WEBHOOK_AVISOS`
    - canal de ações → `DISCORD_WEBHOOK_ACOES`
    - canal de lives → `DISCORD_WEBHOOK_LIVES`
+   - canal de novidades do painel → `DISCORD_WEBHOOK_NOVIDADES`
 
 ---
 
@@ -92,6 +93,7 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | do passo 2 |
 | `SUPABASE_BUCKET` | `leviata` |
 | `DISCORD_WEBHOOK_AVISOS` / `_ACOES` / `_LIVES` | do passo 3 (opcionais) |
+| `DISCORD_WEBHOOK_NOVIDADES` | (opcional) canal onde o painel posta o que mudou a cada deploy |
 | `CRON_SECRET` | gere com `openssl rand -hex 24` |
 | `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` / `YOUTUBE_API_KEY` | opcionais (lives) |
 

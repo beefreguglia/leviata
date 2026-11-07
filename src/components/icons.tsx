@@ -67,6 +67,7 @@ import {
   SidebarLeftIcon as H_SidebarLeftIcon,
   SquareLock02Icon as H_SquareLock02Icon,
   SwordsIcon as H_SwordsIcon,
+  SparklesIcon as H_SparklesIcon,
   Target02Icon as H_Target02Icon,
   TaskDaily01Icon as H_TaskDaily01Icon,
   Tick02Icon as H_Tick02Icon,
@@ -162,6 +163,7 @@ export const SearchIcon = icon(H_Search01Icon, "SearchIcon");
 export const SearchXIcon = icon(H_SearchRemoveIcon, "SearchXIcon");
 export const SendIcon = icon(H_SentIcon, "SendIcon");
 export const SproutIcon = icon(H_Plant01Icon, "SproutIcon");
+export const SparklesIcon = icon(H_SparklesIcon, "SparklesIcon");
 export const SwordsIcon = icon(H_SwordsIcon, "SwordsIcon");
 export const TargetIcon = icon(H_Target02Icon, "TargetIcon");
 export const Trash2Icon = icon(H_Delete02Icon, "Trash2Icon");
