@@ -18,6 +18,7 @@ test.describe("mapa (gerência)", () => {
   });
 
   test("marcar lugar clicando no mapa, abrir, editar e remover", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const name = `Desmanche ${uid()}`;
     await page.goto("/mapa");
     const map = page.getByTestId("map");

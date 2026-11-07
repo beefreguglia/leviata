@@ -14,6 +14,16 @@ export type DiscordProfileLike = {
  * - escolhe a patente mais alta cujo cargo do Discord ele tem;
  * - cria a ficha de membro na primeira vez (se tiver algum cargo mapeado).
  */
+/** Discord IDs que recebem a patente mais alta no primeiro acesso (ver DEPLOY.md). */
+export function isBootstrapAdmin(discordId: string, raw = process.env.BOOTSTRAP_ADMIN_DISCORD_IDS) {
+  if (!raw) return false;
+  return raw
+    .split(/[\s,;]+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .includes(discordId);
+}
+
 export async function syncDiscordUser(params: {
   discordId: string;
   username: string;
@@ -33,10 +43,17 @@ export async function syncDiscordUser(params: {
     include: { member: true },
   });
 
-  const rank = await db.rank.findFirst({
+  let rank = await db.rank.findFirst({
     where: { discordRoleId: { in: params.roles } },
     orderBy: { order: "asc" },
   });
+
+  // Primeiro acesso em produção: IDs listados em BOOTSTRAP_ADMIN_DISCORD_IDS entram com a patente
+  // mais alta enquanto ainda não têm patente (para poderem configurar os cargos do Discord).
+  const needsBootstrap = isBootstrapAdmin(params.discordId) && !rank && !user.member?.rankId;
+  if (needsBootstrap) {
+    rank = await db.rank.findFirst({ orderBy: { order: "asc" } });
+  }
 
   if (user.member) {
     // Cargo no Discord manda: se mudou lá, atualiza aqui (e registra promoção).
@@ -48,7 +65,7 @@ export async function syncDiscordUser(params: {
             memberId: user.member.id,
             fromRankId: user.member.rankId,
             toRankId: rank.id,
-            reason: "Sincronizado do cargo no Discord",
+            reason: needsBootstrap ? "Acesso inicial (BOOTSTRAP_ADMIN_DISCORD_IDS)" : "Sincronizado do cargo no Discord",
           },
         }),
       ]);

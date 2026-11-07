@@ -8,6 +8,8 @@ export interface StorageDriver {
   put(key: string, data: Buffer, mime: string): Promise<void>;
   get(key: string): Promise<Buffer | null>;
   delete(key: string): Promise<void>;
+  /** Supabase: link assinado para o navegador enviar direto (sem passar pela Vercel). */
+  createSignedUpload?(key: string): Promise<string>;
 }
 
 function safeLocalPath(root: string, key: string) {
@@ -57,6 +59,16 @@ export function supabaseDriver(opts: { url: string; serviceKey: string; bucket: 
       if (res.status === 404 || res.status === 400) return null;
       if (!res.ok) throw new Error(`Supabase Storage falhou ao ler (${res.status})`);
       return Buffer.from(await res.arrayBuffer());
+    },
+    async createSignedUpload(key) {
+      const res = await fetch(`${opts.url.replace(/\/$/, "")}/storage/v1/object/upload/sign/${opts.bucket}/${key}`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: "{}",
+      });
+      if (!res.ok) throw new Error(`Supabase Storage recusou o link de upload (${res.status})`);
+      const json = (await res.json()) as { url: string };
+      return `${opts.url.replace(/\/$/, "")}/storage/v1${json.url}`;
     },
     async delete(key) {
       await fetch(base, {

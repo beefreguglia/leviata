@@ -10,6 +10,8 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Migrações usam a conexão DIRETA (Supabase: "Session pooler"/porta 5432) quando houver;
+    // o app usa DATABASE_URL (Supabase: "Transaction pooler"/porta 6543).
+    url: process.env["DIRECT_URL"] || process.env["DATABASE_URL"],
   },
 });

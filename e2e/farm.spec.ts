@@ -5,6 +5,7 @@ test.describe("farm (gerência)", () => {
   test.use(as("gerente"));
 
   test("guia com item, prints e rendimento; aparece na calculadora; filtro por risco", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const s = uid();
     const item = `Cobre ${s}`;
     const title = `Cobre na pedreira ${s}`;

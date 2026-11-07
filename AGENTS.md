@@ -16,3 +16,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Testes: `npm test` (unit + integração no banco de teste) e `npm run test:e2e` (Playwright). Cada módulo novo ganha `tests/integration/<modulo>.test.ts` e `e2e/<modulo>.spec.ts`.
 - `cacheComponents` está desligado de propósito (painel todo autenticado).
 - Depois de criar rotas, rode `npx next typegen` antes de `tsc`.
+
+## Produção
+- Guia completo: `DEPLOY.md`. Build da Vercel = `npm run vercel-build` (gera client + `prisma migrate deploy` + build).
+- Migrações novas: gere com `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script` numa pasta nova em `prisma/migrations/` (o `migrate dev` falha no banco sombra do Prisma Dev local).
+- `seed-prod` só cria patentes e regras. Nunca rode `npm run db:seed` (cria usuários de teste) em produção.
+- Uploads em produção vão direto ao Supabase por link assinado (`/api/uploads/sign` → PUT → `/api/uploads/finish`).

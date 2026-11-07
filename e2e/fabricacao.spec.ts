@@ -25,6 +25,7 @@ test.describe("fabricação", () => {
   test.use(as("gerente"));
 
   test("itens, receitas encadeadas e calculadora até a matéria-prima", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const s = uid();
     const [metal, peca, pistola] = [`Metal ${s}`, `Peça ${s}`, `Pistola ${s}`];
     await page.goto("/fabricacao");

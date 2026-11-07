@@ -5,6 +5,7 @@ test.describe("facções (gerência)", () => {
   test.use(as("gerente"));
 
   test("cadastrar, filtrar por relação, mudar relação (vai pro histórico), registrar evento e apagar", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const name = `Ballas ${uid()}`;
     await page.goto("/faccoes");
     await page.getByRole("button", { name: "Nova facção" }).click();

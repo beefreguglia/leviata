@@ -15,8 +15,15 @@ export const GERENCIA = [
 ];
 export const MEMBRO = ["painel.ver"];
 
+/** Tudo para dev e testes: patentes, regras e usuários de teste. */
 export async function seed(db: PrismaClient) {
-  // Patentes (ajuste nomes e IDs de cargo do Discord pelo painel → Hierarquia)
+  const rankByName = await seedRanks(db);
+  await seedDevUsers(db, rankByName);
+  await seedRules(db);
+}
+
+/** Patentes padrão (ajuste nomes e IDs de cargo do Discord pelo painel → Hierarquia). */
+export async function seedRanks(db: PrismaClient) {
   const ranks = [
     { name: "Líder", order: 1, color: RANK_PALETTE[0], permissions: ALL },
     { name: "Sub-líder", order: 2, color: RANK_PALETTE[1], permissions: ALL },
@@ -29,8 +36,11 @@ export async function seed(db: PrismaClient) {
     const rank = await db.rank.upsert({ where: { name: r.name }, create: r, update: {} });
     rankByName[r.name] = rank.id;
   }
+  return rankByName;
+}
 
-  // Usuários de teste (só para login de desenvolvimento)
+/** Usuários de teste (SÓ desenvolvimento/testes — nunca em produção). */
+export async function seedDevUsers(db: PrismaClient, rankByName: Record<string, string>) {
   const people = [
     { discordId: "dev-lider", username: "lider.dev", rpName: "Dante Moretti", passport: "1001", rank: "Líder" },
     { discordId: "dev-gerente", username: "gerente.dev", rpName: "Rafa Cardoso", passport: "1024", rank: "Gerente" },
@@ -50,7 +60,10 @@ export async function seed(db: PrismaClient) {
     });
   }
 
-  // Regras iniciais
+}
+
+/** Regras iniciais de exemplo (a liderança edita pelo painel). */
+export async function seedRules(db: PrismaClient) {
   const rules = [
     {
       slug: "estatuto",

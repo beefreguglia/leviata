@@ -5,6 +5,7 @@ test.describe("lore (gerência)", () => {
   test.use(as("gerente"));
 
   test("escrever com capa, achar na linha do tempo, filtrar por tag, editar e apagar", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const title = `A noite do porto ${uid()}`;
     const tag = `tag${uid()}`;
     await page.goto("/lore");

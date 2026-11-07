@@ -5,6 +5,7 @@ test.describe("mural (gerência)", () => {
   test.use(as("gerente"));
 
   test("publicar aviso fixado, aparecer no início, editar, desafixar e apagar", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const title = `Reunião ${uid()}`;
     await page.goto("/mural");
     await page.getByRole("button", { name: "Novo aviso" }).click();

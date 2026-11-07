@@ -48,6 +48,7 @@ test.describe("baú e metas", () => {
   });
 
   test("meta semanal: soldado entrega → gerência confere → progresso aparece", async ({ page, browser }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const item = `Cobre ${uid()}`;
     await newItem(page, item);
     await page.goto("/metas");
@@ -85,6 +86,7 @@ test.describe("encomendas", () => {
   test.use(as("gerente"));
 
   test("criar, produzir, marcar pronta e entregar tirando do baú com pagamento", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const s = uid();
     const item = `Colete ${s}`;
     const customer = `Cliente ${s}`;
@@ -131,6 +133,7 @@ test.describe("punições", () => {
   test.use(as("gerente"));
 
   test("advertência, alerta de 3, expulsão tira o acesso e revogar devolve", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const name = `Alvo ${uid()}`;
     await newMember(page, name);
     await page.goto("/punicoes");

@@ -80,3 +80,41 @@ describe("login com Discord", () => {
     expect(await db.promotion.count()).toBe(0);
   });
 });
+
+import { isBootstrapAdmin } from "@/lib/discord-sync";
+
+describe("acesso inicial (BOOTSTRAP_ADMIN_DISCORD_IDS)", () => {
+  afterEach(() => {
+    delete process.env.BOOTSTRAP_ADMIN_DISCORD_IDS;
+  });
+
+  it("lê a lista separada por vírgula/espaço", () => {
+    expect(isBootstrapAdmin("2", "1, 2;3")).toBe(true);
+    expect(isBootstrapAdmin("4", "1, 2;3")).toBe(false);
+    expect(isBootstrapAdmin("1", undefined)).toBe(false);
+  });
+
+  it("listado e sem cargo mapeado → entra com a patente mais alta", async () => {
+    process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "999";
+    guildReturns({ roles: [], nick: "Chefe" });
+    await expect(discordSignIn({ accessToken: "t", guildId: "g", profile })).resolves.toBe(true);
+    const m = await db.member.findFirstOrThrow({ where: { user: { discordId: "999" } }, include: { rank: true } });
+    expect(m.rank?.name).toBe("Líder");
+  });
+
+  it("não listado e sem cargo → sem ficha (como antes)", async () => {
+    process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "123";
+    guildReturns({ roles: [], nick: null });
+    await discordSignIn({ accessToken: "t", guildId: "g", profile });
+    expect(await db.member.count({ where: { user: { discordId: "999" } } })).toBe(0);
+  });
+
+  it("cargo mapeado tem prioridade sobre o bootstrap", async () => {
+    process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "999";
+    await linkRole("Soldado", "111");
+    guildReturns({ roles: ["111"], nick: null });
+    await discordSignIn({ accessToken: "t", guildId: "g", profile });
+    const m = await db.member.findFirstOrThrow({ where: { user: { discordId: "999" } }, include: { rank: true } });
+    expect(m.rank?.name).toBe("Soldado");
+  });
+});

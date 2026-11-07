@@ -27,6 +27,7 @@ test.describe("perímetros, agenda e escalação", () => {
   test.use(as("gerente"));
 
   test("perímetro → agendar ação → presença → gerar e salvar escalação → publicar → relatório indisponível no futuro", async ({ page }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const s = uid();
     const name = `Fleeca fundos ${s}`;
     await createPerimeter(page, name);
@@ -73,6 +74,7 @@ test.describe("perímetros, agenda e escalação", () => {
   });
 
   test("membro ausente aparece bloqueado na escalação", async ({ page, browser }) => {
+    test.slow(); // fluxo longo: mais tempo quando a suíte inteira roda
     const s = uid();
     // Nina avisa ausência de hoje até amanhã+2
     const nina = await (await browser.newContext({ storageState: ROLES.soldado.file })).newPage();

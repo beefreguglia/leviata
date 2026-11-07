@@ -8,7 +8,7 @@ Painel interno da Leviata (GTA RP · Cidade dos Anjos).
 | 2 · Conteúdo | Lore, facções, farm, fabricação (calculadoras), mural & flyers, lives, upload de imagens | ✅ |
 | 3 · Operações | Mapa com marcadores, perímetros, agenda (presença + relatório), escalações | ✅ |
 | 4 · Gestão | Baú (sujo/limpo/itens, entregas conferidas), metas semanais de farm, encomendas, punições | ✅ |
-| 5 · Deploy | Vercel + Supabase | — |
+| 5 · Deploy | Vercel + Supabase — passo a passo em [DEPLOY.md](DEPLOY.md) | ✅ pronto para publicar |
 
 **Stack:** Next.js 16 · TypeScript · Tailwind v4 · shadcn/ui (Base UI, sidebar-08) · design system Andromeda (ciano) · motion · Prisma 7 + PostgreSQL · Auth.js (Discord)
 

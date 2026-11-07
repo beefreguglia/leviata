@@ -21,7 +21,10 @@
     "test:e2e": "playwright test",
     "test:db:start": "prisma dev -d -n leviata-test",
     "test:db:migrate": "DOTENV_CONFIG_PATH=.env.test prisma migrate deploy",
-    "test:all": "vitest run && playwright test"
+    "test:all": "vitest run && playwright test",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "db:seed:prod": "tsx prisma/seed-prod.ts",
+    "setup:storage": "node scripts/setup-storage.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

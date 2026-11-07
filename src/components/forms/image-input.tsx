@@ -8,6 +8,42 @@ import { cn } from "@/lib/utils";
 import { MAX_IMAGE_BYTES, uploadUrl } from "@/lib/images";
 
 type Item = { id: string; name: string };
+type Uploaded = { id: string; url: string; name: string };
+
+async function readJson(res: Response) {
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.error ?? "Falha no upload");
+  return json;
+}
+
+/**
+ * Envia um arquivo. Em produção (Supabase) vai direto ao storage por link assinado
+ * — não passa pelo limite de 4,5 MB da Vercel — e depois o painel confere e registra.
+ * Em desenvolvimento envia para /api/uploads.
+ */
+async function sendFile(file: File): Promise<Uploaded> {
+  const plan = await readJson(
+    await fetch("/api/uploads/sign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: file.type, size: file.size }),
+    }),
+  );
+  if (plan.mode === "signed") {
+    const put = await fetch(plan.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+    if (!put.ok) throw new Error("O storage recusou o arquivo");
+    return readJson(
+      await fetch("/api/uploads/finish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: plan.key, name: file.name }),
+      }),
+    );
+  }
+  const body = new FormData();
+  body.append("file", file);
+  return readJson(await fetch("/api/uploads", { method: "POST", body }));
+}
 
 /**
  * Campo de imagem: envia na hora para /api/uploads e guarda só os ids
@@ -45,11 +81,7 @@ export function ImageInput({
       }
       setBusy((n) => n + 1);
       try {
-        const body = new FormData();
-        body.append("file", file);
-        const res = await fetch("/api/uploads", { method: "POST", body });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? "Falha no upload");
+        const json = await sendFile(file);
         setItems((prev) => (multiple ? [...prev, { id: json.id, name: json.name }] : [{ id: json.id, name: json.name }]));
       } catch (err) {
         toast.error(`${file.name}: ${err instanceof Error ? err.message : "falha no upload"}`);
