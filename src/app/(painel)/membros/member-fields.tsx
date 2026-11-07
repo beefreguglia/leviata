@@ -4,19 +4,23 @@ import { Field, NativeSelect } from "@/components/forms/fields";
 import { MEMBER_STATUS } from "@/lib/labels";
 import { toDateInputBRT } from "@/lib/dates";
 import type { Member, Rank } from "@/generated/prisma/client";
+import { PhoneInput } from "@/components/forms/masked-inputs";
 
 /** Campos da ficha de membro (usados no cadastro e na edição). */
-export function MemberFields({ member, ranks }: { member?: Member; ranks?: Rank[] }) {
+export function MemberFields({ member, ranks, canEditContact = true }: { member?: Member; ranks?: Rank[]; canEditContact?: boolean }) {
+  // número e ID já preenchidos: só o dev altera (o servidor também confere)
+  const passportLocked = !canEditContact && Boolean(member?.passport);
+  const phoneLocked = !canEditContact && Boolean(member?.phone);
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Nome no RP" htmlFor="rpName" className="sm:col-span-2">
         <Input id="rpName" name="rpName" required defaultValue={member?.rpName} placeholder="Ex.: Dante Moretti" />
       </Field>
-      <Field label="Passaporte / ID" htmlFor="passport">
-        <Input id="passport" name="passport" defaultValue={member?.passport ?? ""} inputMode="numeric" />
+      <Field label="Passaporte / ID" htmlFor="passport" hint={passportLocked ? "Só o dev do painel altera." : undefined}>
+        <Input id="passport" name="passport" defaultValue={member?.passport ?? ""} inputMode="numeric" readOnly={passportLocked} aria-readonly={passportLocked} className={passportLocked ? "opacity-60" : undefined} />
       </Field>
-      <Field label="Telefone no jogo" htmlFor="phone">
-        <Input id="phone" name="phone" defaultValue={member?.phone ?? ""} />
+      <Field label="Telefone no jogo" htmlFor="phone" hint={phoneLocked ? "Só o dev do painel altera." : undefined}>
+        <PhoneInput id="phone" name="phone" defaultValue={member?.phone} readOnly={phoneLocked} aria-readonly={phoneLocked} className={phoneLocked ? "opacity-60" : undefined} />
       </Field>
       {ranks && (
         <Field label="Patente" htmlFor="rankId">

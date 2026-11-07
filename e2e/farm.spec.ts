@@ -28,7 +28,7 @@ test.describe("farm (gerência)", () => {
     await page.getByRole("button", { name: "Publicar" }).click();
 
     await expect(page.getByRole("heading", { name: title })).toBeVisible();
-    await expect(page.getByText("~120 un/hora")).toBeVisible();
+    await expect(page.getByText("~120/hora")).toBeVisible();
     const imgs = page.getByTestId("farm-images").getByRole("img");
     await expect(imgs).toHaveCount(2);
     await expectImageLoaded(imgs.first());

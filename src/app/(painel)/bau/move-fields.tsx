@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Field, NativeSelect } from "@/components/forms/fields";
+import { MoneyInput } from "@/components/forms/masked-inputs";
 
 /** Campos de movimentação: o seletor de item só aparece quando o tipo é "Item". */
 export function MoveFields({
@@ -36,7 +37,7 @@ export function MoveFields({
             <option value="">Escolha…</option>
             {items.map((i) => (
               <option key={i.id} value={i.id}>
-                {i.name} ({i.unit})
+                {i.name}
               </option>
             ))}
           </NativeSelect>
@@ -44,7 +45,11 @@ export function MoveFields({
       )}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={asset === "ITEM" ? "Quantidade" : "Valor (R$)"} htmlFor="mv-qty">
-          <Input id="mv-qty" name="quantity" type="number" min={1} required inputMode="numeric" />
+          {asset === "ITEM" ? (
+            <Input id="mv-qty" name="quantity" type="number" min={1} required inputMode="numeric" />
+          ) : (
+            <MoneyInput key="money" id="mv-qty" name="quantity" required placeholder="0" />
+          )}
         </Field>
         <Field label="Responsável (opcional)" htmlFor="mv-member">
           <NativeSelect id="mv-member" name="memberId" defaultValue="">

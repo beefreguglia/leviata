@@ -6,6 +6,7 @@ import { getViewer } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { runAction } from "@/lib/actions";
 import { parseRegistrationForm } from "@/lib/schemas/member";
+import { assertCanChangeContact } from "@/lib/contact-lock";
 
 /** O próprio membro preenche nome, número e ID (qualquer patente, até sem patente). */
 export async function saveMyRegistration(fd: FormData) {
@@ -16,6 +17,7 @@ export async function saveMyRegistration(fd: FormData) {
     if (!member || member.status === "EXPULSO") throw new Error("Sem permissão para esta ação");
 
     const input = parseRegistrationForm(fd);
+    assertCanChangeContact(viewer.isDev, member, input);
     const other = await db.member.findUnique({ where: { passport: input.passport } });
     if (other && other.id !== member.id) throw new Error(`O ID ${input.passport} já está na ficha de ${other.rpName} — fale com a liderança`);
 

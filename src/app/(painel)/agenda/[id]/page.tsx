@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FadeIn } from "@/components/motion";
 import { EventFields } from "../event-fields";
 import { LineupEditor } from "../lineup-editor";
+import { MoneyInput } from "@/components/forms/masked-inputs";
 import {
   deleteEvent, publishLineup, saveLineup, saveReport, setAttendance, setEventStatus, updateEvent,
 } from "../actions";
@@ -302,7 +303,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
             </Field>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Dinheiro" htmlFor="rp-money">
-                <Input id="rp-money" name="money" type="number" min={0} defaultValue={ev.report?.money ?? ""} />
+                <MoneyInput id="rp-money" name="money" defaultValue={ev.report?.money ?? ""} placeholder="0" />
               </Field>
               <Field label="Baixas" htmlFor="rp-cas">
                 <Input id="rp-cas" name="casualties" type="number" min={0} defaultValue={ev.report?.casualties ?? ""} />

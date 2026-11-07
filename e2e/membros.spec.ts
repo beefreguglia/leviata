@@ -48,11 +48,13 @@ test.describe("membros (gerência)", () => {
 
     // editar
     await page.getByRole("button", { name: "Editar" }).click();
-    await page.getByRole("dialog").getByLabel("Telefone no jogo").fill("555-0101");
+    // telefone vazio pode ser preenchido; a máscara formata enquanto digita
+    await page.getByRole("dialog").getByLabel("Telefone no jogo").pressSequentially("055123456");
+    await expect(page.getByRole("dialog").getByLabel("Telefone no jogo")).toHaveValue("(055) 123-456");
     await page.getByRole("dialog").getByLabel("Status").selectOption("AFASTADO");
     await page.getByRole("dialog").getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Ficha atualizada");
-    await expect(page.getByText("555-0101")).toBeVisible();
+    await expect(page.getByText("(055) 123-456")).toBeVisible();
     await expect(page.getByRole("main").locator("span", { hasText: /^Afastado$/ })).toBeVisible();
     await expect(page.getByRole("main").getByRole("img", { name: "Afastado" })).toBeVisible();
 
@@ -82,7 +84,9 @@ test.describe("membros (gerência)", () => {
     await page.getByLabel("Filtrar por status").selectOption("EXPULSO");
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/status=EXPULSO/);
-    await expect(page.getByText("Nenhum membro encontrado")).toBeVisible();
+    // membros ativos somem da lista (outros testes podem ter deixado alguém expulso)
+    await expect(page.getByRole("heading", { name: "Membros", exact: true })).toBeVisible();
+    await expect(page.getByRole("main").getByRole("link", { name: /Dante Moretti/ })).toHaveCount(0);
   });
 });
 

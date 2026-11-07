@@ -22,14 +22,9 @@ export const metadata = { title: "Fabricação" };
 function ItemFields({ item }: { item?: Item }) {
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-[1fr_100px]">
-        <Field label="Nome" htmlFor="i-name">
-          <Input id="i-name" name="name" required defaultValue={item?.name} placeholder="Ex.: Pólvora" />
-        </Field>
-        <Field label="Unidade" htmlFor="i-unit">
-          <Input id="i-unit" name="unit" defaultValue={item?.unit ?? "un"} />
-        </Field>
-      </div>
+      <Field label="Nome" htmlFor="i-name">
+        <Input id="i-name" name="name" required defaultValue={item?.name} placeholder="Ex.: Pólvora" />
+      </Field>
       <label className="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-md bg-input px-4 text-base">
         Item ilegal
         <input type="checkbox" name="isIllegal" defaultChecked={item?.isIllegal} className="size-5 accent-[var(--primary)]" />
@@ -190,7 +185,6 @@ export default async function FabricacaoPage() {
               <div key={it.id} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="text-base text-grey-100">{it.name}</span>
-                  <span className="text-xs text-muted-foreground">({it.unit})</span>
                   {it.isIllegal && <StatusBadge label="Ilegal" className="bg-danger-low text-danger-light" />}
                   {it.farmGuides.length > 0 && <StatusBadge label="Tem guia de farm" className="bg-success-low text-success" />}
                 </div>

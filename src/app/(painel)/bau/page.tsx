@@ -28,7 +28,7 @@ type MoveRow = Prisma.VaultTransactionGetPayload<{ include: typeof include }>;
 
 function MoveLine({ m, actions }: { m: MoveRow; actions?: React.ReactNode }) {
   const isIn = m.kind === "ENTRADA";
-  const what = m.asset === "ITEM" ? `${m.quantity.toLocaleString("pt-BR")} ${m.item?.unit ?? "un"} ${m.item?.name ?? ""}` : `${money(m.quantity)} ${VAULT_ASSET[m.asset].short.toLowerCase()}`;
+  const what = m.asset === "ITEM" ? `${m.quantity.toLocaleString("pt-BR")}× ${m.item?.name ?? ""}` : `${money(m.quantity)} ${VAULT_ASSET[m.asset].short.toLowerCase()}`;
   return (
     <div className="flex min-h-14 items-center gap-3 px-5 py-3" data-testid="vault-move">
       <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", isIn ? "bg-success-low text-success" : "bg-danger-low text-danger-light")}>
@@ -81,7 +81,7 @@ export default async function BauPage() {
           <option value="">Escolha…</option>
           {items.map((i) => (
             <option key={i.id} value={i.id}>
-              {i.name} ({i.unit})
+              {i.name}
             </option>
           ))}
         </NativeSelect>
@@ -183,7 +183,7 @@ export default async function BauPage() {
                 <div key={i.id} className="flex min-h-12 items-center justify-between px-5 py-3" data-testid="stock-row">
                   <span className="text-base text-grey-100">{i.name}</span>
                   <span className="text-base font-bold tabular-nums text-grey-100">
-                    {i.qty.toLocaleString("pt-BR")} <span className="text-xs font-normal text-muted-foreground">{i.unit}</span>
+                    {i.qty.toLocaleString("pt-BR")}
                   </span>
                 </div>
               ))

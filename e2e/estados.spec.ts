@@ -45,17 +45,15 @@ test.describe("toast depois de salvar e redirecionar", () => {
 
 test.describe("registro", () => {
   test.use(as("recruta"));
-  test("membro atualiza nome, número e ID", async ({ page }) => {
+  test("membro muda o nome; número e ID já cadastrados ficam travados", async ({ page }) => {
     await page.goto("/registro");
     await expect(page.getByRole("heading", { name: "Meu registro" })).toBeVisible();
-    await page.getByLabel("Número").fill("abc");
-    await page.getByRole("button", { name: "Salvar" }).click();
-    await expectToast(page, "Número inválido");
-    await page.getByLabel("Número").fill("(055) 130-999");
+    await expect(page.getByLabel("Número")).toHaveAttribute("readonly", "");
+    await expect(page.getByLabel("ID", { exact: true })).toHaveAttribute("readonly", "");
+    await expect(page.getByText("Já cadastrado — para mudar, fale com a liderança.").first()).toBeVisible();
+    await page.getByLabel("Nome").fill("Léo Vieira");
     await page.getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Registro atualizado");
-    await page.reload();
-    await expect(page.getByLabel("Número")).toHaveValue("(055) 130-999");
   });
 });
 

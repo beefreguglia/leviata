@@ -27,6 +27,8 @@ export const getViewer = cache(async () => {
     user,
     member,
     permissions,
+    /** membro dev (BOOTSTRAP_ADMIN_DISCORD_IDS): acesso total e pode alterar número/ID de fichas */
+    isDev: isDeveloper(user.discordId),
     can: (perm: Permission) => hasPermission(permissions, perm),
   };
 });

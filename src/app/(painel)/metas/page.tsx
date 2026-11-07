@@ -61,7 +61,7 @@ export default async function MetasPage() {
                   <option value="">Escolha…</option>
                   {allItems.map((i) => (
                     <option key={i.id} value={i.id}>
-                      {i.name} ({i.unit})
+                      {i.name}
                     </option>
                   ))}
                 </NativeSelect>
@@ -101,7 +101,7 @@ export default async function MetasPage() {
                       <div className="flex items-center justify-between gap-3 text-base">
                         <span className="text-grey-100">{item.name}</span>
                         <span className="tabular-nums text-grey-200">
-                          <strong className="text-grey-100">{c.done.toLocaleString("pt-BR")}</strong> / {c.target.toLocaleString("pt-BR")} {item.unit}
+                          <strong className="text-grey-100">{c.done.toLocaleString("pt-BR")}</strong> / {c.target.toLocaleString("pt-BR")}
                           {c.complete ? <span className="ml-2 text-success">✓ batida</span> : <span className="ml-2 text-muted-foreground">faltam {c.missing.toLocaleString("pt-BR")}</span>}
                         </span>
                       </div>
@@ -118,7 +118,7 @@ export default async function MetasPage() {
               {goals.map((g) => (
                 <div key={g.id} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3" data-testid="goal-row">
                   <span className="text-base text-grey-100">
-                    <strong>{g.quantity.toLocaleString("pt-BR")}</strong> {g.item.unit} de {g.item.name}
+                    <strong>{g.quantity.toLocaleString("pt-BR")}</strong>× {g.item.name}
                     <span className="text-sm text-muted-foreground"> · {g.rank ? `só ${g.rank.name}` : "todos"}</span>
                   </span>
                   <div className="flex">

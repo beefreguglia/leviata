@@ -3,6 +3,8 @@ import { as, expectToast, uid } from "./helpers";
 
 async function newItem(page: Page, name: string) {
   await page.getByRole("button", { name: "Novo item" }).click();
+  // item não pede unidade (tudo é contado em unidades)
+  await expect(page.getByRole("dialog").getByLabel("Unidade")).toHaveCount(0);
   await page.getByRole("dialog").getByLabel("Nome").fill(name);
   await page.getByRole("dialog").getByRole("button", { name: "Cadastrar" }).click();
   await expectToast(page, `${name} cadastrado`);

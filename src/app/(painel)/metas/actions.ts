@@ -29,7 +29,7 @@ export async function createGoal(fd: FormData) {
       action: "goal.create",
       entity: "FarmGoal",
       entityId: goal.id,
-      summary: `Criou meta semanal: ${data.quantity} ${item.unit} de ${item.name}${rank ? ` (${rank.name})` : ""}`,
+      summary: `Criou meta semanal: ${data.quantity}× ${item.name}${rank ? ` (${rank.name})` : ""}`,
     });
     revalidate();
     return "Meta criada";

@@ -93,7 +93,7 @@ export default async function EncomendasPage() {
                 <li key={m.itemId} className="flex justify-between text-grey-300">
                   <span>{itemName.get(m.itemId)?.name}</span>
                   <span className="tabular-nums">
-                    {m.quantity.toLocaleString("pt-BR")} {itemName.get(m.itemId)?.unit}
+                    {m.quantity.toLocaleString("pt-BR")}
                   </span>
                 </li>
               ))}

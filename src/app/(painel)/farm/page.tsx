@@ -95,7 +95,7 @@ export default async function FarmPage({ searchParams }: PageProps<"/farm">) {
                     {perHour != null && (
                       <p className="mt-auto flex items-center gap-1.5 pt-1 text-sm text-grey-200">
                         <ClockIcon className="size-4 text-muted-foreground" />
-                        <strong className="text-grey-100">~{perHour.toLocaleString("pt-BR")}</strong> {g.item?.unit ?? "un"}/hora
+                        <strong className="text-grey-100">~{perHour.toLocaleString("pt-BR")}</strong>/hora
                       </p>
                     )}
                   </div>

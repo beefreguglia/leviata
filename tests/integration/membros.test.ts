@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { changeRank, createMember, updateMember } from "@/app/(painel)/membros/actions";
 import { actAs, db, form, memberByName, rankId, setRankPerms, GERENCIA_COMPLETA } from "../helpers/db";
 
@@ -51,7 +51,7 @@ describe("membros: editar", () => {
   it("atualiza a ficha e registra mudança de status na auditoria", async () => {
     await actAs("dev-gerente");
     const nina = await memberByName("Nina Torres");
-    const r = await updateMember(nina.id, form({ rpName: "Nina T.", passport: "1187", status: "AFASTADO", notes: "Licença" }));
+    const r = await updateMember(nina.id, form({ rpName: "Nina T.", passport: "1187", phone: "(055) 118-787", status: "AFASTADO", notes: "Licença" }));
     expect(r.ok).toBe(true);
     const after = await db.member.findUniqueOrThrow({ where: { id: nina.id } });
     expect(after).toMatchObject({ rpName: "Nina T.", status: "AFASTADO", notes: "Licença" });
@@ -62,8 +62,8 @@ describe("membros: editar", () => {
   it("pode manter o próprio passaporte, mas não usar o de outro", async () => {
     await actAs("dev-gerente");
     const nina = await memberByName("Nina Torres");
-    expect((await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "1187" }))).ok).toBe(true);
-    expect(await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "1001" }))).toMatchObject({ ok: false });
+    expect((await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "1187", phone: "(055) 118-787" }))).ok).toBe(true);
+    expect(await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "1001", phone: "(055) 118-787" }))).toMatchObject({ ok: false });
   });
 
   it("soldado não edita", async () => {
@@ -113,5 +113,32 @@ describe("membros: patente", () => {
     const leo = await memberByName("Léo Vieira");
     expect((await changeRank(leo.id, form({ rankId: "" }))).ok).toBe(true);
     expect((await memberByName("Léo Vieira")).rankId).toBeNull();
+  });
+});
+
+describe("membros: número e ID travados", () => {
+  afterEach(() => {
+    delete process.env.BOOTSTRAP_ADMIN_DISCORD_IDS;
+  });
+
+  it("depois de preenchidos, só o dev altera (nem o líder)", async () => {
+    const nina = await memberByName("Nina Torres");
+    await actAs("dev-lider");
+    expect(await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "9999", phone: "(055) 118-787" }))).toEqual({
+      ok: false,
+      error: "Número e ID já cadastrados só podem ser alterados pelo dev do painel",
+    });
+    expect((await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "1187", phone: "" }))).ok).toBe(false);
+
+    process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "dev-lider";
+    expect((await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "9999", phone: "(055) 000-111" }))).ok).toBe(true);
+    expect(await db.member.findUniqueOrThrow({ where: { id: nina.id } })).toMatchObject({ passport: "9999", phone: "(055) 000-111" });
+  });
+
+  it("campo vazio pode ser preenchido pela liderança", async () => {
+    const nina = await memberByName("Nina Torres");
+    await db.member.update({ where: { id: nina.id }, data: { phone: null } });
+    await actAs("dev-lider");
+    expect((await updateMember(nina.id, form({ rpName: "Nina Torres", passport: "1187", phone: "(055) 222-333" }))).ok).toBe(true);
   });
 });

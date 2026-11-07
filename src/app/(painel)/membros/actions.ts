@@ -6,6 +6,7 @@ import { assertPermission } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { formToObject, runAction } from "@/lib/actions";
 import { memberInputToData as toData, memberSchema } from "@/lib/schemas/member";
+import { assertCanChangeContact } from "@/lib/contact-lock";
 
 async function ensurePassportFree(passport: string | null | undefined, exceptId?: string) {
   if (!passport) return;
@@ -45,6 +46,7 @@ export async function updateMember(id: string, fd: FormData) {
     await ensurePassportFree(input.passport, id);
 
     const before = await db.member.findUniqueOrThrow({ where: { id } });
+    assertCanChangeContact(viewer.isDev, before, input);
     const member = await db.member.update({ where: { id }, data: toData(input) });
     await audit({
       userId: viewer.user.id,

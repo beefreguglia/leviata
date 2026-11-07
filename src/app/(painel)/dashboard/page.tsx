@@ -184,7 +184,7 @@ export default async function DashboardPage() {
                     <span className="flex justify-between text-sm text-grey-200">
                       {item.name}
                       <span className="tabular-nums">
-                        {c.done} / {c.target} {item.unit}
+                        {c.done} / {c.target}
                       </span>
                     </span>
                     <span className="block h-2 overflow-hidden rounded-full bg-grey-700">

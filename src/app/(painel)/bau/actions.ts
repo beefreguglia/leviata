@@ -19,7 +19,7 @@ function revalidate() {
 async function describe(asset: keyof typeof VAULT_ASSET, itemId: string | null, quantity: number) {
   if (asset !== "ITEM") return `${money(quantity)} (${VAULT_ASSET[asset].short.toLowerCase()})`;
   const item = itemId ? await db.item.findUnique({ where: { id: itemId } }) : null;
-  return `${quantity.toLocaleString("pt-BR")} ${item?.unit ?? "un"} de ${item?.name ?? "item"}`;
+  return `${quantity.toLocaleString("pt-BR")}× ${item?.name ?? "item"}`;
 }
 
 /** Gerência registra entrada ou saída (já confirmada). */

@@ -34,7 +34,8 @@ export default async function PainelLayout({ children }: LayoutProps<"/">) {
     // altura travada na tela: o header fica fixo e só o conteúdo do card rola
     <SidebarProvider defaultOpen={sidebarState !== "false"} className="h-svh overflow-hidden">
       <AppSidebar user={user} permissions={viewer.permissions} signOutAction={signOutAction} />
-      <SidebarInset className="min-h-0 overflow-hidden">
+      {/* com o menu aberto, o card do conteúdo ganha a borda ciano da marca */}
+      <SidebarInset className="min-h-0 overflow-hidden border border-transparent transition-[border-color,box-shadow] duration-300 md:peer-data-[state=expanded]:border-cyan-mid/50 md:peer-data-[state=expanded]:shadow-[0_0_28px_-10px_rgba(6,212,236,0.45)]">
         <header className="z-10 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4 md:px-6">
           <SidebarTrigger className="-ml-1 size-10" aria-label="Abrir menu" />
           <Separator orientation="vertical" className="mr-2 data-vertical:h-4 data-vertical:self-auto" />

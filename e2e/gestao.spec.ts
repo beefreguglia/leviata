@@ -53,14 +53,14 @@ test.describe("baú e metas", () => {
     await newItem(page, item);
     await page.goto("/metas");
     await page.getByRole("button", { name: "Nova meta" }).click();
-    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: `${item} (un)` });
+    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: item });
     await page.getByRole("dialog").getByLabel("Quantidade por semana").fill("50");
     await page.getByRole("dialog").getByRole("button", { name: "Criar meta" }).click();
     await expectToast(page, "Meta criada");
 
     await page.goto("/bau");
     await page.getByRole("button", { name: "Entregar farm" }).click();
-    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: `${item} (un)` });
+    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: item });
     await page.getByRole("dialog").getByLabel("Quantidade").fill("30");
     await page.getByRole("dialog").getByRole("button", { name: "Entregar" }).click();
     await expectToast(page, "Entrega registrada");
@@ -88,7 +88,7 @@ test.describe("encomendas", () => {
     await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
     const d = page.getByRole("dialog");
     await d.getByLabel("O quê").selectOption("ITEM");
-    await d.getByLabel("Item").selectOption({ label: `${item} (un)` });
+    await d.getByLabel("Item").selectOption({ label: item });
     await d.getByLabel("Quantidade").fill("4");
     await d.getByRole("button", { name: "Registrar" }).click();
     await expectToast(page, "Entrada registrada");
@@ -147,6 +147,8 @@ test.describe("punições", () => {
     await expect(d.getByText("perde o acesso ao painel")).toBeVisible();
     await d.getByLabel("Motivo").fill("Quarta falta grave");
     await d.getByRole("button", { name: "Aplicar" }).click();
+    // o diálogo só fecha quando a ação termina (toasts anteriores iguais ainda podem estar na tela)
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     await expectToast(page, "Punição aplicada");
 
     await page.goto("/membros?status=EXPULSO");
@@ -188,7 +190,7 @@ test.describe("vendas", () => {
     await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
     const d = page.getByRole("dialog");
     await d.getByLabel("O quê").selectOption("ITEM");
-    await d.getByLabel("Item").selectOption({ label: `${item} (un)` });
+    await d.getByLabel("Item").selectOption({ label: item });
     await d.getByLabel("Quantidade").fill("10");
     await d.getByRole("button", { name: "Registrar" }).click();
     await expectToast(page, "Entrada registrada");

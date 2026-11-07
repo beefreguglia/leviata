@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Field, NativeSelect } from "@/components/forms/fields";
 import { money } from "@/lib/finance";
 import { cn } from "@/lib/utils";
+import { MoneyInput } from "@/components/forms/masked-inputs";
 
 type Opt = { id: string; name: string };
 
@@ -25,7 +26,7 @@ export function SaleFields({
   const [kind, setKind] = useState<"PLAYER" | "FACCAO">("PLAYER");
   const [itemId, setItemId] = useState("");
   const [qty, setQty] = useState("1");
-  const [price, setPrice] = useState("0");
+  const [price, setPrice] = useState("");
   const total = (Number(qty) || 0) * (Number(price) || 0);
   const stock = items.find((i) => i.id === itemId)?.stock;
 
@@ -91,7 +92,7 @@ export function SaleFields({
           <Input id="s-qty" name="quantity" type="number" min={1} required value={qty} onChange={(e) => setQty(e.target.value)} />
         </Field>
         <Field label="Preço unitário (R$)" htmlFor="s-price">
-          <Input id="s-price" name="unitPrice" type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} />
+          <MoneyInput id="s-price" name="unitPrice" value={price} onValueChange={setPrice} placeholder="0" />
         </Field>
       </div>
 

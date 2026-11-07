@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Field, NativeSelect } from "@/components/forms/fields";
 import { toDateInputBRT } from "@/lib/dates";
 import type { Order } from "@/generated/prisma/client";
+import { MoneyInput } from "@/components/forms/masked-inputs";
 
 export function OrderFields({
   order,
@@ -47,7 +48,7 @@ export function OrderFields({
           <Input id="o-qty" name="quantity" type="number" min={1} required defaultValue={order?.quantity ?? 1} />
         </Field>
         <Field label="Preço unitário (R$)" htmlFor="o-price">
-          <Input id="o-price" name="unitPrice" type="number" min={0} defaultValue={order?.unitPrice ?? 0} />
+          <MoneyInput id="o-price" name="unitPrice" defaultValue={order?.unitPrice ?? ""} placeholder="0" />
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

@@ -19,7 +19,6 @@ export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">)
   const guide = await db.farmGuide.findUnique({ where: { id }, include: { item: true, author: true } });
   if (!guide) notFound();
   const perHour = yieldPerHour(guide.amountPerRun, guide.minutesPerRun);
-  const unit = guide.item?.unit ?? "un";
 
   return (
     <FadeIn className="mx-auto flex max-w-3xl flex-col gap-10">
@@ -44,12 +43,12 @@ export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">)
       <GroupedList header="Resumo">
         <GroupedRow label={<span className="flex items-center gap-2"><MapPinIcon className="size-4 text-muted-foreground" /> Local</span>}>{guide.location}</GroupedRow>
         <GroupedRow label={<span className="flex items-center gap-2"><PackageIcon className="size-4 text-muted-foreground" /> Rende por rodada</span>}>
-          {guide.amountPerRun != null ? `${guide.amountPerRun} ${unit}` : "—"}
+          {guide.amountPerRun != null ? guide.amountPerRun.toLocaleString("pt-BR") : "—"}
         </GroupedRow>
         <GroupedRow label={<span className="flex items-center gap-2"><ClockIcon className="size-4 text-muted-foreground" /> Tempo por rodada</span>}>
           {guide.minutesPerRun != null ? `${guide.minutesPerRun} min` : "—"}
         </GroupedRow>
-        {perHour != null && <GroupedRow label="Rendimento estimado">~{perHour.toLocaleString("pt-BR")} {unit}/hora</GroupedRow>}
+        {perHour != null && <GroupedRow label="Rendimento estimado">~{perHour.toLocaleString("pt-BR")}/hora</GroupedRow>}
         {guide.requirements && (
           <GroupedRow label={<span className="flex items-center gap-2"><WrenchIcon className="size-4 text-muted-foreground" /> Precisa de</span>}>
             {guide.requirements}

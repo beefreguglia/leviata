@@ -98,7 +98,7 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
                 </Button>
               }
             >
-              <MemberFields member={member} />
+              <MemberFields member={member} canEditContact={viewer.isDev} />
             </FormDialog>
           </div>
         )}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, NativeSelect } from "@/components/forms/fields";
+import { MoneyInput } from "@/components/forms/masked-inputs";
 
 const KINDS = [
   ["ADVERTENCIA", "Advertência (vale 30 dias)"],
@@ -50,7 +51,7 @@ export function PunishmentFields({
       </div>
       {kind === "MULTA" && (
         <Field label="Valor da multa (R$)" htmlFor="pn-fine">
-          <Input id="pn-fine" name="fineAmount" type="number" min={1} required />
+          <MoneyInput id="pn-fine" name="fineAmount" required placeholder="0" />
         </Field>
       )}
       {kind === "SUSPENSAO" && (

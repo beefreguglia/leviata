@@ -76,7 +76,7 @@ export function CraftCalculator({ items, recipes }: { items: ItemLite[]; recipes
                       )}
                     </span>
                     <span className="text-base font-bold tabular-nums text-grey-100">
-                      {r.quantity.toLocaleString("pt-BR")} <span className="text-xs font-normal text-muted-foreground">{it?.unit}</span>
+                      {r.quantity.toLocaleString("pt-BR")}
                     </span>
                   </li>
                 );
@@ -97,7 +97,7 @@ export function CraftCalculator({ items, recipes }: { items: ItemLite[]; recipes
                       {it?.name} <span className="text-sm text-muted-foreground">× {s.runs} rodada{s.runs > 1 ? "s" : ""}</span>
                     </span>
                     <span className="text-right text-xs text-muted-foreground">
-                      {s.produced} {it?.unit}
+                      {s.produced}
                       {s.leftover > 0 && <span className="block text-warning">sobra {s.leftover}</span>}
                     </span>
                   </li>
