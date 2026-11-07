@@ -70,3 +70,10 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 - Use `BrandLogo` (menu lateral, login) e `BrandMark` (telas cheias de 404/403, espaços pequenos) de `components/layout/logo.tsx`. Não redesenhe o logo em SVG nem aplique outra cor: é preto com contorno ciano, feito para fundo escuro.
 - O nome é **Leviatã** (com til) em todo texto visível.
 - Ciano da marca = contorno do logo: `cyan-mid` #06D4EC; brilho do olho = `cyan-light` #5CF0FA. Brilho decorativo: `drop-shadow-[0_0_12px_rgba(6,212,236,0.45)]` só no hover do logo/destaques, nunca em texto corrido.
+
+## Ícones (Hugeicons)
+- Biblioteca: **Hugeicons** gratuita (`@hugeicons/core-free-icons` + `@hugeicons/react`), estilo stroke rounded, traço 1.8.
+- Importe sempre de `@/components/icons` (ex.: `import { PlusIcon, XIcon } from "@/components/icons"`), nunca direto do pacote. Lá cada nome usado no painel aponta para um desenho do Hugeicons — para trocar um desenho, mude só o mapeamento.
+- Ícone novo: escolha em https://hugeicons.com/icons (filtro Free), importe em `components/icons.tsx` e exporte com `icon(...)`. Tipo para props/arrays: `AppIcon`.
+- Tamanho pelo Tailwind (`size-4`, `size-5`); cor herda do texto (`currentColor`). Ícone sozinho em botão precisa de `aria-label` no botão.
+- `lucide-react` foi removido; componentes novos do shadcn que vierem com Lucide devem ser ajustados para `@/components/icons`.

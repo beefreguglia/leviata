@@ -3,7 +3,7 @@
 import { useActionState, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import type { ActionResult } from "@/lib/actions";
 

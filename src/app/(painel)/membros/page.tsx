@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRightIcon, PlusIcon, SearchIcon, UsersIcon } from "lucide-react";
+import { ChevronRightIcon, PlusIcon, SearchIcon, UsersIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

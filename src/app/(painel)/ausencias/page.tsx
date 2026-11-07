@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarOffIcon, PlusIcon } from "lucide-react";
+import { CalendarOffIcon, PlusIcon } from "@/components/icons";
 import { subDays } from "date-fns";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

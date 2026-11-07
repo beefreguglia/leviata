@@ -1,4 +1,4 @@
-import { SearchXIcon } from "lucide-react";
+import { SearchXIcon } from "@/components/icons";
 import { StatusScreen } from "@/components/layout/status-screen";
 import { LinkButton } from "@/components/ui/link-button";
 

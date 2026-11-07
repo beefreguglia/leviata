@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2Icon, PlusIcon, RotateCcwIcon, TriangleAlertIcon, XIcon } from "lucide-react";
+import { CheckCircle2Icon, PlusIcon, RotateCcwIcon, TriangleAlertIcon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, NativeSelect } from "@/components/forms/fields";

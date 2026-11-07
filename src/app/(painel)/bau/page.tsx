@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowDownLeftIcon, ArrowUpRightIcon, CheckIcon, PackageIcon, PlusIcon, Undo2Icon, WalletIcon, XIcon } from "lucide-react";
+import { ArrowDownLeftIcon, ArrowUpRightIcon, CheckIcon, PackageIcon, PlusIcon, Undo2Icon, WalletIcon, XIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

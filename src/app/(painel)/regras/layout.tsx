@@ -1,4 +1,4 @@
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { getViewer } from "@/lib/session";
 import { LinkButton } from "@/components/ui/link-button";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, PlusIcon, Trash2Icon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { activeAbsenceWhere } from "@/lib/absences";

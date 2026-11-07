@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ImageIcon, PlusIcon, TargetIcon } from "lucide-react";
+import { ImageIcon, PlusIcon, TargetIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { PageHeader } from "@/components/layout/page-header";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { RotateCcwIcon, TriangleAlertIcon } from "lucide-react";
+import { RotateCcwIcon, TriangleAlertIcon } from "@/components/icons";
 import { StatusScreen } from "@/components/layout/status-screen";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";

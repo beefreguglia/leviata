@@ -1,4 +1,4 @@
-import { CheckIcon, Undo2Icon } from "lucide-react";
+import { CheckIcon, Undo2Icon } from "@/components/icons";
 import { ActionForm, SubmitButton } from "@/components/forms/action-form";
 import { FormDialog } from "@/components/forms/form-dialog";
 import { Field } from "@/components/forms/fields";

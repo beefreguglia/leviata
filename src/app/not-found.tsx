@@ -1,4 +1,4 @@
-import { CompassIcon } from "lucide-react";
+import { CompassIcon } from "@/components/icons";
 import { StatusScreen } from "@/components/layout/status-screen";
 import { LinkButton } from "@/components/ui/link-button";
 

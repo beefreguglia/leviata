@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { ScrollTextIcon } from "lucide-react";
+import { ScrollTextIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { getViewer } from "@/lib/session";
 import { EmptyState } from "@/components/layout/grouped-list";

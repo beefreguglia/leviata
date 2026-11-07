@@ -1,4 +1,4 @@
-import { LockKeyholeIcon } from "lucide-react";
+import { LockKeyholeIcon } from "@/components/icons";
 import { signOut } from "@/auth";
 import { getViewer } from "@/lib/session";
 import { StatusScreen } from "@/components/layout/status-screen";

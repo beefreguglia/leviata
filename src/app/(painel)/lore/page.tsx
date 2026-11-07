@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpenIcon, PinIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { BookOpenIcon, PinIcon, PlusIcon, SearchIcon } from "@/components/icons";
 import type { LoreCategory, Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

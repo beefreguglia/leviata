@@ -1,4 +1,4 @@
-import { HammerIcon, PackageIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { HammerIcon, PackageIcon, PencilIcon, PlusIcon, Trash2Icon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { fmtMinutes } from "@/lib/crafting";

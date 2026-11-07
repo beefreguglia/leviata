@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ArrowUpDownIcon, PencilIcon } from "lucide-react";
+import { ArrowUpDownIcon, PencilIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { ABSENCE_STATUS, ABSENT_BADGE, MEMBER_STATUS, presenceOf } from "@/lib/labels";

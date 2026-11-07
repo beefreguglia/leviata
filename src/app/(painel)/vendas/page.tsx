@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HandCoinsIcon, PlusIcon, UndoIcon } from "lucide-react";
+import { HandCoinsIcon, PlusIcon, UndoIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

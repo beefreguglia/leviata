@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import type { AppIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { BrandMark } from "@/components/layout/logo";
 
@@ -15,7 +15,7 @@ export function StatusScreen({
   fullscreen,
   tone = "primary",
 }: {
-  icon: LucideIcon;
+  icon: AppIcon;
   code?: string;
   title: string;
   description: React.ReactNode;

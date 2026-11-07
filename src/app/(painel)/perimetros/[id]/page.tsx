@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CalendarPlusIcon, PencilIcon } from "lucide-react";
+import { CalendarPlusIcon, PencilIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { fmtAgo } from "@/lib/dates";

@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- prévia de imagens privadas */
 import { useEffect, useRef, useState } from "react";
-import { ImagePlusIcon, Loader2Icon, XIcon } from "lucide-react";
+import { ImagePlusIcon, Loader2Icon, XIcon } from "@/components/icons";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { MAX_IMAGE_BYTES, uploadUrl } from "@/lib/images";

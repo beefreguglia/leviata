@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "@/components/icons";
 import { ABSENCE_STATUS } from "@/lib/labels";
 import { fmtDate } from "@/lib/dates";
 import { StatusBadge } from "@/components/status-badge";

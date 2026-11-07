@@ -1,8 +1,8 @@
 import type { Permission } from "@/lib/permissions";
 import {
   BookOpenIcon, CalendarDaysIcon, TypeIcon, CoinsIcon, ExternalLinkIcon, HomeIcon, IdCardIcon, LayoutListIcon, MegaphoneIcon,
-  ScrollTextIcon, UsersIcon, type LucideIcon,
-} from "lucide-react";
+  ScrollTextIcon, UsersIcon, type AppIcon,
+} from "@/components/icons";
 
 export type NavLink = {
   href: string;
@@ -17,7 +17,7 @@ export type NavLink = {
 /** Item principal do menu (sidebar-08): link direto ou grupo que abre subitens. */
 export type NavSection = {
   label: string;
-  icon: LucideIcon;
+  icon: AppIcon;
   href?: string;
   perm?: Permission;
   items?: NavLink[];
@@ -79,7 +79,7 @@ export const NAV_MAIN: NavSection[] = [
 /** Regras oficiais do servidor Cidade dos Anjos. */
 export const CITY_RULES_URL = "https://regras.cdanjos.com/";
 
-export const NAV_SECONDARY: (NavLink & { icon: LucideIcon })[] = [
+export const NAV_SECONDARY: (NavLink & { icon: AppIcon })[] = [
   { href: "/registro", label: "Meu registro", icon: IdCardIcon },
   { href: "/regras", label: "Regras da Leviatã", icon: ScrollTextIcon },
   { href: CITY_RULES_URL, label: "Regras da cidade", icon: ExternalLinkIcon, external: true },

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CalculatorIcon, ClockIcon, HammerIcon, SproutIcon } from "lucide-react";
+import { CalculatorIcon, ClockIcon, HammerIcon, SproutIcon } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Field, NativeSelect } from "@/components/forms/fields";
 import { CraftCycleError, fmtMinutes, planCraft, type CraftRecipe } from "@/lib/crafting";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
+import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { EVENT_KIND, EVENT_STATUS, ATTENDANCE } from "@/lib/labels";

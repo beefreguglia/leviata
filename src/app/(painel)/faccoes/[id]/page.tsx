@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CrownIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
+import { CrownIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { money } from "@/lib/finance";
 import { requireViewer } from "@/lib/session";

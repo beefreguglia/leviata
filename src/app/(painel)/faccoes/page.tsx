@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusIcon, SwordsIcon } from "lucide-react";
+import { PlusIcon, SwordsIcon } from "@/components/icons";
 import type { FactionRelation } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

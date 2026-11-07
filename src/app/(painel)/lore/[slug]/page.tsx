@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { LORE_CATEGORY } from "@/lib/labels";

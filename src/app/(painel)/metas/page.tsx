@@ -1,4 +1,4 @@
-import { PencilIcon, PlusIcon, TargetIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, PlusIcon, TargetIcon, Trash2Icon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { weeklyGoals } from "@/lib/goals";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClockIcon, PackageIcon, PencilIcon, PlusIcon, Trash2Icon, TruckIcon, UserIcon } from "lucide-react";
+import { CalendarClockIcon, PackageIcon, PencilIcon, PlusIcon, Trash2Icon, TruckIcon, UserIcon } from "@/components/icons";
 import type { OrderStatus, Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

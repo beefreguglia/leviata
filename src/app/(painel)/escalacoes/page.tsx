@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CarIcon, ClipboardListIcon, TriangleAlertIcon } from "lucide-react";
+import { CarIcon, ClipboardListIcon, TriangleAlertIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { EVENT_KIND } from "@/lib/labels";

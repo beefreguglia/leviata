@@ -1,5 +1,5 @@
 import { after } from "next/server";
-import { RadioIcon, RefreshCwIcon, Trash2Icon, TriangleAlertIcon } from "lucide-react";
+import { RadioIcon, RefreshCwIcon, Trash2Icon, TriangleAlertIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { refreshStreamsIfStale } from "@/lib/stream-refresh";

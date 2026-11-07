@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronsUpDownIcon, IdCardIcon, LogOutIcon, UserXIcon } from "lucide-react";
+import { ChevronsUpDownIcon, IdCardIcon, LogOutIcon, UserXIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,

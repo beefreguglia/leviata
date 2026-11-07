@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarIcon, ImageIcon, MegaphoneIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { CalendarIcon, ImageIcon, MegaphoneIcon, PlusIcon, Trash2Icon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { fmtDate } from "@/lib/dates";

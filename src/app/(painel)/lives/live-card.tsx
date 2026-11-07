@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element -- miniaturas externas (Twitch/Kick/YouTube) */
-import { EyeIcon, RadioIcon } from "lucide-react";
+import { EyeIcon, RadioIcon } from "@/components/icons";
 import { StatusBadge } from "@/components/status-badge";
 import { STREAM_PLATFORM } from "@/lib/labels";
 import { STREAM_URL } from "@/lib/streams";

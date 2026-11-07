@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ImageIcon, MapIcon } from "lucide-react";
+import { ImageIcon, MapIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { getMapConfig } from "@/lib/map-config";

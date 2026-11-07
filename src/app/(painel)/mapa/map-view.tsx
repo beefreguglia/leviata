@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Map as LeafletMap, Marker } from "leaflet";
-import { CrosshairIcon, MapPinIcon, PencilIcon, SearchIcon, Trash2Icon, XIcon } from "lucide-react";
+import { CrosshairIcon, MapPinIcon, PencilIcon, SearchIcon, Trash2Icon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";

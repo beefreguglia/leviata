@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FlagIcon, UserIcon } from "lucide-react";
+import { FlagIcon, UserIcon } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, NativeSelect } from "@/components/forms/fields";

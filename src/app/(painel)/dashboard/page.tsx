@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDaysIcon, ChevronRightIcon, ClockIcon, PackageIcon, RadioIcon, TargetIcon, UserXIcon, UsersIcon, WalletIcon } from "lucide-react";
+import { CalendarDaysIcon, ChevronRightIcon, ClockIcon, PackageIcon, RadioIcon, TargetIcon, UserXIcon, UsersIcon, WalletIcon } from "@/components/icons";
 import { allBalances } from "@/lib/vault";
 import { weeklyGoals } from "@/lib/goals";
 import { noticeInclude } from "@/lib/polls";

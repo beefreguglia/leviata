@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ClockIcon, MapPinIcon, PackageIcon, PencilIcon, WrenchIcon } from "lucide-react";
+import { ClockIcon, MapPinIcon, PackageIcon, PencilIcon, WrenchIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { RISK } from "@/lib/labels";

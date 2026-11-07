@@ -1,4 +1,4 @@
-import { PencilIcon, PinIcon, PinOffIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, PinIcon, PinOffIcon, Trash2Icon } from "@/components/icons";
 import { Markdown } from "@/components/markdown";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";

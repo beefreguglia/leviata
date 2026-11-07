@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClockIcon, MapPinIcon, PlusIcon, SproutIcon } from "lucide-react";
+import { ClockIcon, MapPinIcon, PlusIcon, SproutIcon } from "@/components/icons";
 import type { Risk } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";

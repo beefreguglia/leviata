@@ -1,4 +1,4 @@
-import { CheckIcon, VoteIcon } from "lucide-react";
+import { CheckIcon, VoteIcon } from "@/components/icons";
 import { ActionForm } from "@/components/forms/action-form";
 import { cn } from "@/lib/utils";
 import { pct, type NoticeWithPoll } from "@/lib/polls";

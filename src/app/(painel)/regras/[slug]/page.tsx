@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { HistoryIcon, PencilIcon } from "lucide-react";
+import { HistoryIcon, PencilIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { getViewer } from "@/lib/session";
 import { fmtAgo } from "@/lib/dates";

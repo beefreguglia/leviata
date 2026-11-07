@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/layout/grouped-list";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
-import { LayoutListIcon } from "lucide-react";
+import { LayoutListIcon } from "@/components/icons";
 
 export const metadata = { title: "Auditoria" };
 

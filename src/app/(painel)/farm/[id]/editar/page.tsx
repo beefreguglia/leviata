@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Trash2Icon } from "lucide-react";
+import { Trash2Icon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { PageHeader } from "@/components/layout/page-header";
