@@ -39,7 +39,8 @@ test.describe("farm (gerência)", () => {
     await expect(page.getByTestId("farm-card").filter({ hasText: title })).toHaveCount(0);
 
     await page.goto("/fabricacao");
-    await expect(page.getByText(item).locator("..").getByText("Tem guia de farm")).toBeVisible();
+    // só o que está visível (o streaming do Next pode deixar uma cópia escondida por um instante)
+    await expect(page.getByText(item).locator("..").getByText("Tem guia de farm").filter({ visible: true })).toBeVisible();
   });
 });
 

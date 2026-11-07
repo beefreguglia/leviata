@@ -30,6 +30,20 @@ test.describe("mapa (gerência)", () => {
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 
     const d = page.getByRole("dialog");
+    // o diálogo fica POR CIMA do mapa (as camadas do Leaflet não podem cobrir o formulário)
+    await page.waitForTimeout(400);
+    const covered = await d.evaluate((dlg) => {
+      const r = dlg.getBoundingClientRect();
+      const out: string[] = [];
+      for (let fx = 0.05; fx < 1; fx += 0.15)
+        for (let fy = 0.05; fy < 1; fy += 0.15) {
+          const el = document.elementFromPoint(r.x + r.width * fx, r.y + r.height * fy);
+          if (el && !dlg.contains(el)) out.push(String(el.className));
+        }
+      return out;
+    });
+    expect(covered, "algo do mapa está por cima do diálogo").toEqual([]);
+    await d.getByLabel("Nome do lugar").click();
     await d.getByLabel("Nome do lugar").fill(name);
     await d.getByLabel("Categoria").selectOption("DESMANCHE");
     await d.getByLabel("Descrição").fill("Só depois das 22h");
@@ -81,5 +95,26 @@ test.describe("mapa (soldado)", () => {
     await expect(page.getByRole("heading", { name: "Mapa" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Marcar lugar" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /imagem do mapa/ })).toHaveCount(0);
+  });
+});
+
+test.describe("mapa: zoom", () => {
+  test.use(as("soldado"));
+  test("zoom máximo é o tamanho real da imagem", async ({ page }) => {
+    await page.goto("/mapa");
+    const map = page.getByTestId("map");
+    const img = map.locator(".leaflet-image-layer");
+    await expect(img).toBeVisible();
+    const zoomIn = map.locator(".leaflet-control-zoom-in");
+    for (let i = 0; i < 12 && !(await zoomIn.getAttribute("class"))?.includes("leaflet-disabled"); i++) {
+      await zoomIn.click();
+      await page.waitForTimeout(300);
+    }
+    await expect(zoomIn).toHaveClass(/leaflet-disabled/);
+    await page.waitForTimeout(400);
+    // a imagem de teste tem 400×300: no zoom máximo ela fica exatamente nesse tamanho
+    const box = (await img.boundingBox())!;
+    expect(Math.round(box.width)).toBe(400);
+    expect(Math.round(box.height)).toBe(300);
   });
 });

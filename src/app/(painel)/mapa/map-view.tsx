@@ -71,16 +71,26 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
       const L = (await import("leaflet")).default;
       if (disposed || !containerRef.current || mapRef.current) return;
       const bounds = L.latLngBounds([0, 0], [map.height, map.width]);
+      // zoom 0 = 1 pixel da imagem por pixel da tela: é o máximo (não amplia além do tamanho real)
       const m = L.map(containerRef.current, {
         crs: L.CRS.Simple,
-        minZoom: -4,
-        maxZoom: 3,
+        minZoom: -6,
+        maxZoom: 0,
         zoomSnap: 0.25,
-        maxBounds: bounds.pad(0.25),
+        maxBounds: bounds,
+        maxBoundsViscosity: 1,
         attributionControl: false,
       });
       L.imageOverlay(uploadUrl(map.imageId), bounds).addTo(m);
+      // mínimo = a imagem inteira cabendo na área do mapa (recalcula quando a área muda de tamanho)
+      const fitMinZoom = () => {
+        const fit = Math.min(m.getBoundsZoom(bounds), 0);
+        m.setMinZoom(fit);
+        if (m.getZoom() < fit) m.setZoom(fit);
+      };
       m.fitBounds(bounds);
+      fitMinZoom();
+      m.on("resize", fitMinZoom);
       m.on("click", (e) => {
         if (!addingRef.current) return;
         const x = e.latlng.lng;
@@ -259,7 +269,8 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
         )}
       </aside>
 
-      <div className="relative overflow-hidden rounded-card bg-grey-950">
+      {/* isolate: as camadas do Leaflet (z-index até 1000) ficam presas aqui e não passam por cima dos diálogos */}
+      <div className="relative isolate overflow-hidden rounded-card bg-grey-950">
         {adding && (
           <p className="absolute top-4 left-1/2 z-[1000] flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lg">
             <MapPinIcon className="size-4" /> Clique no mapa onde fica o lugar

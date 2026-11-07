@@ -164,6 +164,8 @@
 @layer base {
   body { -webkit-font-smoothing: antialiased; line-height: 1.6; }
   ::selection { background: var(--cyan-low); color: var(--cyan-light); }
+  /* demais rolagens (menu, diálogos, listas): trilho preto e polegar ciano */
+  * { scrollbar-width: thin; scrollbar-color: var(--cyan-dark) var(--grey-950); }
   * {
     @apply border-border outline-ring/50;
   }

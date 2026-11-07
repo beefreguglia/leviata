@@ -32,7 +32,7 @@ test.describe("regras (liderança)", () => {
     await expect(page.getByText("Respeitar a bandeira")).toBeVisible();
 
     await page.getByRole("link", { name: "Histórico" }).click();
-    await expect(page.locator("details")).toHaveCount(2);
+    await expect(page.locator("details").filter({ visible: true })).toHaveCount(2);
     await expect(page.getByText("versão atual")).toBeVisible();
 
     await page.goto(page.url().replace("/historico", "/editar"));

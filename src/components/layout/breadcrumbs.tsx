@@ -48,7 +48,7 @@ export function Breadcrumbs() {
           const last = i === crumbs.length - 1;
           return (
             <Fragment key={i}>
-              {i > 0 && <BreadcrumbSeparator className="hidden md:block" />}
+              {i > 0 && <BreadcrumbSeparator className="hidden text-cyan-mid md:block" />}
               <BreadcrumbItem className={last ? undefined : "hidden md:block"}>
                 {last ? (
                   <BreadcrumbPage>{c.label}</BreadcrumbPage>

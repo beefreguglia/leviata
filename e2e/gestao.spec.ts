@@ -64,14 +64,14 @@ test.describe("baú e metas", () => {
     await page.getByRole("dialog").getByLabel("Quantidade").fill("30");
     await page.getByRole("dialog").getByRole("button", { name: "Entregar" }).click();
     await expectToast(page, "Entrega registrada");
-    await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("30");
+    await expect(page.getByTestId("stock-row").filter({ hasText: item, visible: true })).toContainText("30");
 
     await page.goto("/metas");
     const mine = page.getByTestId("my-goal").filter({ hasText: item });
     await expect(mine).toContainText("30");
     await expect(mine).toContainText("faltam 20");
     await page.goto("/dashboard");
-    await expect(page.getByTestId("dashboard-goals")).toContainText(item);
+    await expect(page.getByTestId("dashboard-goals").filter({ visible: true })).toContainText(item);
   });
 });
 
@@ -117,7 +117,7 @@ test.describe("encomendas", () => {
     await expect(page.getByTestId("order-done").filter({ hasText: customer })).toContainText("Entregue");
 
     await page.goto("/bau");
-    await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("1");
+    await expect(page.getByTestId("stock-row").filter({ hasText: item, visible: true })).toContainText("1");
     await expect(page.getByTestId("vault-move").filter({ hasText: `Pagamento da encomenda de ${customer}` })).toContainText("R$ 6.000");
   });
 });
@@ -229,11 +229,11 @@ test.describe("vendas", () => {
 
     await page.getByRole("navigation", { name: "Filtrar por comprador" }).getByRole("link", { name: "Facções" }).click();
     await expect(page).toHaveURL(/comprador=faccao/);
-    await expect(page.getByTestId("sale-row").filter({ hasText: faction })).toBeVisible();
-    await expect(page.getByTestId("sale-row").filter({ hasText: `João ${s}` })).toHaveCount(0);
+    await expect(page.getByTestId("sale-row").filter({ hasText: faction, visible: true })).toBeVisible();
+    await expect(page.getByTestId("sale-row").filter({ hasText: `João ${s}`, visible: true })).toHaveCount(0);
 
     await page.goto("/bau");
-    await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("5");
+    await expect(page.getByTestId("stock-row").filter({ hasText: item, visible: true })).toContainText("5");
 
     // cancelar a do player devolve 3
     await page.goto("/vendas");
@@ -241,8 +241,8 @@ test.describe("vendas", () => {
     await page.getByRole("dialog").getByLabel("Motivo (opcional)").fill("lançado errado");
     await page.getByRole("dialog").getByRole("button", { name: "Cancelar venda" }).click();
     await expectToast(page, "Venda cancelada e desfeita no baú");
-    await expect(page.getByTestId("sale-row").filter({ hasText: `João ${s}` })).toContainText("Cancelada");
+    await expect(page.getByTestId("sale-row").filter({ hasText: `João ${s}`, visible: true })).toContainText("Cancelada");
     await page.goto("/bau");
-    await expect(page.getByTestId("stock-row").filter({ hasText: item })).toContainText("8");
+    await expect(page.getByTestId("stock-row").filter({ hasText: item, visible: true })).toContainText("8");
   });
 });
