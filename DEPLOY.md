@@ -119,7 +119,8 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 1. Copie o ID do servidor (passo 3.4) e crie os webhooks que quiser (passo 3.5).
 2. Na Vercel, adicione `DISCORD_GUILD_ID` (e os `DISCORD_WEBHOOK_*`) → **Redeploy**.
 3. Em **Hierarquia**, ligue cada patente ao ID do cargo do Discord.
-4. A partir daqui só entra quem está no servidor, e a patente segue o cargo do Discord a cada login (quem não tiver cargo ligado mantém a patente que já tinha no painel).
+4. A partir daqui só entra quem está no servidor, e a patente segue o cargo do Discord a cada login. Quem está no servidor mas não tem cargo ligado entra com ficha **sem patente** (ou mantém a patente que já tinha no painel).
+5. Cada pessoa vê de novo a tela de autorização do Discord no próximo login (o painel passa a pedir permissão para ler os cargos dela no servidor).
 
 ---
 

@@ -113,10 +113,13 @@ export async function discordSignIn(params: {
   const guildMember = await getGuildMember(accessToken, guildId);
   if (!guildMember) return "/login?erro=fora-do-servidor";
 
+  // está no servidor: entra mesmo sem cargo ligado a uma patente (ficha sem patente; a liderança
+  // liga o cargo em Hierarquia ou promove em Membros)
   await syncDiscordUser({
     ...base,
     nick: guildMember.nick,
     roles: guildMember.roles,
+    createWithoutRank: true,
   });
   return true;
 }

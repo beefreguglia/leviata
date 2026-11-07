@@ -43,11 +43,20 @@ describe("login com Discord", () => {
     expect(user.member?.rank?.name).toBe("Gerente");
   });
 
-  it("sem cargo mapeado: entra, mas fica sem ficha de membro", async () => {
-    guildReturns({ roles: ["555"], nick: null });
+  it("no servidor e sem cargo mapeado: entra com ficha SEM patente (apelido do servidor)", async () => {
+    guildReturns({ roles: ["555"], nick: "Zé da Esquina" });
     await expect(discordSignIn({ accessToken: "t", guildId: "g", profile })).resolves.toBe(true);
     const user = await db.user.findUniqueOrThrow({ where: { discordId: "999" }, include: { member: true } });
-    expect(user.member).toBeNull();
+    expect(user.member).toMatchObject({ rpName: "Zé da Esquina", rankId: null });
+  });
+
+  it("ficha sem patente ganha a patente quando o cargo é ligado depois", async () => {
+    guildReturns({ roles: ["111"], nick: null });
+    await discordSignIn({ accessToken: "t", guildId: "g", profile });
+    await linkRole("Soldado", "111");
+    await discordSignIn({ accessToken: "t", guildId: "g", profile });
+    const user = await db.user.findUniqueOrThrow({ where: { discordId: "999" }, include: { member: { include: { rank: true } } } });
+    expect(user.member?.rank?.name).toBe("Soldado");
   });
 
   it("cargo mudou no Discord → patente atualiza e registra promoção", async () => {
@@ -102,11 +111,12 @@ describe("acesso inicial (BOOTSTRAP_ADMIN_DISCORD_IDS)", () => {
     expect(m.rank?.name).toBe("Líder");
   });
 
-  it("não listado e sem cargo → sem ficha (como antes)", async () => {
+  it("não listado e sem cargo → ficha sem patente (não vira líder)", async () => {
     process.env.BOOTSTRAP_ADMIN_DISCORD_IDS = "123";
     guildReturns({ roles: [], nick: null });
     await discordSignIn({ accessToken: "t", guildId: "g", profile });
-    expect(await db.member.count({ where: { user: { discordId: "999" } } })).toBe(0);
+    const m = await db.member.findFirstOrThrow({ where: { user: { discordId: "999" } } });
+    expect(m.rankId).toBeNull();
   });
 
   it("cargo mapeado tem prioridade sobre o bootstrap", async () => {
