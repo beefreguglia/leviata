@@ -3,7 +3,7 @@
 Tempo estimado: **20–30 minutos**. Tudo nos planos grátis.
 
 ```
-Navegador ──► Vercel (site, São Paulo) ──► Supabase (banco + imagens, São Paulo)
+Navegador ──► Vercel (site) ──► Supabase (banco + imagens) — mesma região (vercel.json)
                      │
                      └─► Discord (login + webhooks)
 ```
@@ -33,7 +33,7 @@ git push -u origin main
 ## 2. Supabase — banco e imagens
 
 1. Crie um projeto em <https://supabase.com/dashboard> → **New project**.
-   - **Region:** South America (São Paulo).
+   - **Region:** a mais perto dos jogadores (ex.: São Paulo). Deixe `regions` do `vercel.json` na mesma região do banco (sa-east-1 → `gru1`, us-east-1 → `iad1`).
    - Guarde a **senha do banco**.
 2. **Connect** (botão no topo do projeto) → aba **ORMs/Connection string**:
    - **Transaction pooler** (porta **6543**) → vai ser o `DATABASE_URL`.
