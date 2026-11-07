@@ -69,6 +69,14 @@ model Member {
   attendances   Attendance[]
   lineupSlots   LineupSlot[]
   eventReports  EventReport[] @relation("EventReportAuthor")
+
+  vaultMoves       VaultTransaction[] @relation("VaultMember")
+  vaultCreated     VaultTransaction[] @relation("VaultCreatedBy")
+  vaultConfirmed   VaultTransaction[] @relation("VaultConfirmedBy")
+  ordersAssigned   Order[]            @relation("OrderAssignedTo")
+  ordersCreated    Order[]            @relation("OrderCreatedBy")
+  punishments      Punishment[]       @relation("PunishmentMember")
+  punishmentsGiven Punishment[]       @relation("PunishmentCreatedBy")
 }
 
 /// Patente/cargo da hierarquia. Pode ser ligada a um cargo do Discord.
@@ -84,6 +92,7 @@ model Rank {
   members        Member[]
   promotionsFrom Promotion[] @relation("PromotionFrom")
   promotionsTo   Promotion[] @relation("PromotionTo")
+  farmGoals      FarmGoal[]
 }
 
 /// Histórico de promoções / rebaixamentos.
@@ -255,6 +264,7 @@ model Faction {
 
   events  FactionEvent[]
   mapPins MapPin[]
+  orders  Order[]
 }
 
 enum FactionEventKind {
@@ -293,6 +303,10 @@ model Item {
   producedBy Recipe[]      @relation("RecipeOutput")
   usedIn     RecipeInput[]
   farmGuides FarmGuide[]
+
+  vaultMoves VaultTransaction[]
+  farmGoals  FarmGoal[]
+  orders     Order[]
 }
 
 enum Risk {
@@ -592,4 +606,136 @@ model EventReport {
   event    Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   authorId String?
   author   Member? @relation("EventReportAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+// ============================================================
+// Fase 4 — baú/financeiro, metas de farm, encomendas, punições
+// ============================================================
+
+enum VaultKind {
+  ENTRADA
+  SAIDA
+}
+
+enum VaultAsset {
+  DINHEIRO_SUJO
+  DINHEIRO_LIMPO
+  ITEM
+}
+
+enum VaultStatus {
+  PENDENTE
+  CONFIRMADA
+  ESTORNADA
+}
+
+/// Movimentação do baú. Só CONFIRMADA conta no saldo.
+model VaultTransaction {
+  id          String      @id @default(cuid())
+  kind        VaultKind
+  asset       VaultAsset
+  quantity    Int // unidades do item ou valor em dinheiro
+  reason      String?
+  status      VaultStatus @default(CONFIRMADA)
+  createdAt   DateTime    @default(now())
+  confirmedAt DateTime?
+
+  itemId        String?
+  item          Item?   @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  /// membro responsável (quem entregou / quem retirou)
+  memberId      String?
+  member        Member? @relation("VaultMember", fields: [memberId], references: [id], onDelete: SetNull)
+  createdById   String?
+  createdBy     Member? @relation("VaultCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  confirmedById String?
+  confirmedBy   Member? @relation("VaultConfirmedBy", fields: [confirmedById], references: [id], onDelete: SetNull)
+  orderId       String?
+  order         Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([status, asset, itemId])
+  @@index([memberId, createdAt])
+}
+
+/// Meta semanal de farm (vale para todos os membros ativos, ou só para uma patente).
+model FarmGoal {
+  id        String   @id @default(cuid())
+  quantity  Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  itemId String
+  item   Item    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  rankId String?
+  rank   Rank?   @relation(fields: [rankId], references: [id], onDelete: SetNull)
+
+  @@unique([itemId, rankId])
+}
+
+enum OrderStatus {
+  ABERTA
+  PRODUCAO
+  PRONTA
+  ENTREGUE
+  CANCELADA
+}
+
+/// Encomenda / venda.
+model Order {
+  id          String      @id @default(cuid())
+  customer    String
+  quantity    Int
+  unitPrice   Int         @default(0)
+  status      OrderStatus @default(ABERTA)
+  paid        Boolean     @default(false)
+  dueAt       DateTime?
+  notes       String?
+  deliveredAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  itemId       String
+  item         Item     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  factionId    String?
+  faction      Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  assignedToId String?
+  assignedTo   Member?  @relation("OrderAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdById  String?
+  createdBy    Member?  @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  vaultTransactions VaultTransaction[]
+
+  @@index([status, dueAt])
+}
+
+enum PunishmentKind {
+  ADVERTENCIA
+  MULTA
+  SUSPENSAO
+  REBAIXAMENTO
+  EXPULSAO
+}
+
+enum PunishmentStatus {
+  ATIVA
+  CUMPRIDA
+  REVOGADA
+}
+
+model Punishment {
+  id           String           @id @default(cuid())
+  kind         PunishmentKind
+  reason       String
+  fineAmount   Int?
+  expiresAt    DateTime?
+  status       PunishmentStatus @default(ATIVA)
+  revokeReason String?
+  createdAt    DateTime         @default(now())
+  closedAt     DateTime?
+
+  memberId    String
+  member      Member  @relation("PunishmentMember", fields: [memberId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   Member? @relation("PunishmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([memberId, status])
 }

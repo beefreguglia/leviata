@@ -122,3 +122,38 @@ export const EVENT_RESULT: Record<EventResult, { label: string; className: strin
   PARCIAL: { label: "Parcial", className: "bg-warning-low text-warning" },
   FALHA: { label: "Falhou", className: "bg-danger-low text-danger-light" },
 };
+
+// ---------------- Fase 4 ----------------
+export const VAULT_ASSET = {
+  DINHEIRO_SUJO: { label: "Dinheiro sujo", short: "Sujo" },
+  DINHEIRO_LIMPO: { label: "Dinheiro limpo", short: "Limpo" },
+  ITEM: { label: "Item", short: "Item" },
+} as const;
+
+export const VAULT_STATUS = {
+  PENDENTE: { label: "Pendente", className: "bg-warning-low text-warning" },
+  CONFIRMADA: { label: "Confirmada", className: "bg-success-low text-success" },
+  ESTORNADA: { label: "Estornada", className: "bg-grey-600 text-grey-300" },
+} as const;
+
+export const ORDER_STATUS = {
+  ABERTA: { label: "Aberta", className: "bg-grey-600 text-grey-100" },
+  PRODUCAO: { label: "Em produção", className: "bg-cyan-low text-cyan-light" },
+  PRONTA: { label: "Pronta", className: "bg-warning-low text-warning" },
+  ENTREGUE: { label: "Entregue", className: "bg-success-low text-success" },
+  CANCELADA: { label: "Cancelada", className: "bg-grey-700 text-grey-400" },
+} as const;
+
+export const PUNISHMENT_KIND = {
+  ADVERTENCIA: { label: "Advertência", className: "bg-warning-low text-warning" },
+  MULTA: { label: "Multa", className: "bg-warning-low text-warning" },
+  SUSPENSAO: { label: "Suspensão", className: "bg-danger-low text-danger-light" },
+  REBAIXAMENTO: { label: "Rebaixamento", className: "bg-danger-low text-danger-light" },
+  EXPULSAO: { label: "Expulsão", className: "bg-danger-base text-white" },
+} as const;
+
+export const PUNISHMENT_STATUS = {
+  ATIVA: { label: "Ativa", className: "bg-danger-low text-danger-light" },
+  CUMPRIDA: { label: "Cumprida", className: "bg-success-low text-success" },
+  REVOGADA: { label: "Revogada", className: "bg-grey-600 text-grey-300" },
+} as const;

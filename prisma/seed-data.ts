@@ -8,6 +8,8 @@ export const GERENCIA = [
   "regras.editar",
   "conteudo.editar",
   "operacoes.gerenciar",
+  "financeiro.gerenciar",
+  "punicoes.gerenciar",
   "ausencias.gerenciar",
   "auditoria.ver",
 ];

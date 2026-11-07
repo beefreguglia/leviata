@@ -118,6 +118,50 @@ export async function seedExamples(db: PrismaClient) {
   }
 
   await seedOperations(db, authorId);
+  await seedManagement(db, authorId);
+}
+
+/** Fase 4: baú, metas, encomendas e uma advertência. */
+async function seedManagement(db: PrismaClient, authorId: string | undefined) {
+  if (await db.vaultTransaction.count()) return;
+  const item = (name: string) => db.item.findUnique({ where: { name } });
+  const [metal, polvora, pistola] = await Promise.all([item("Metal"), item("Pólvora"), item("Pistola")]);
+  const member = (rpName: string) => db.member.findFirst({ where: { rpName } });
+  const [nina, rafa, leo] = await Promise.all([member("Nina Torres"), member("Rafa Cardoso"), member("Léo Vieira")]);
+  const ok = { status: "CONFIRMADA" as const, createdById: authorId, confirmedById: authorId, confirmedAt: new Date() };
+
+  await db.vaultTransaction.createMany({
+    data: [
+      { kind: "ENTRADA", asset: "DINHEIRO_SUJO", quantity: 250_000, reason: "Loot da Vangelico", ...ok },
+      { kind: "SAIDA", asset: "DINHEIRO_SUJO", quantity: 40_000, reason: "Compra de armas", ...ok },
+      { kind: "ENTRADA", asset: "DINHEIRO_LIMPO", quantity: 60_000, reason: "Lavagem da semana", ...ok },
+      ...(metal ? [{ kind: "ENTRADA" as const, asset: "ITEM" as const, itemId: metal.id, quantity: 80, memberId: rafa?.id, reason: "Entrega de farm", ...ok }] : []),
+      ...(polvora ? [{ kind: "ENTRADA" as const, asset: "ITEM" as const, itemId: polvora.id, quantity: 300, reason: "Paiol", ...ok }] : []),
+      ...(metal && nina
+        ? [{ kind: "ENTRADA" as const, asset: "ITEM" as const, itemId: metal.id, quantity: 45, memberId: nina.id, createdById: nina.id, reason: "Entrega de farm", status: "PENDENTE" as const }]
+        : []),
+    ],
+  });
+  if (metal) await db.farmGoal.create({ data: { itemId: metal.id, quantity: 100 } });
+
+  const leone = await db.faction.findUnique({ where: { name: "Família Leone" } });
+  const vagos = await db.faction.findUnique({ where: { name: "Vagos" } });
+  if (pistola) {
+    await db.order.create({
+      data: { customer: "Marco Leone", factionId: leone?.id, itemId: pistola.id, quantity: 5, unitPrice: 12_000, status: "PRODUCAO", assignedToId: rafa?.id, dueAt: new Date(Date.now() + 3 * 864e5), createdById: authorId },
+    });
+  }
+  const municao = await item("Munição 9mm");
+  if (municao) {
+    await db.order.create({
+      data: { customer: "Chefe dos Vagos", factionId: vagos?.id, itemId: municao.id, quantity: 200, unitPrice: 150, status: "ABERTA", createdById: authorId },
+    });
+  }
+  if (leo) {
+    await db.punishment.create({
+      data: { memberId: leo.id, kind: "ADVERTENCIA", reason: "Faltou à reunião sem avisar", expiresAt: new Date(Date.now() + 30 * 864e5), createdById: authorId },
+    });
+  }
 }
 
 /** Fase 3: mapa de exemplo, marcadores, perímetro e eventos. */

@@ -29,12 +29,14 @@ test.describe("menu lateral", () => {
     await expect(nav.getByRole("link", { name: "Agenda" })).toBeVisible();
   });
 
-  test("módulos futuros aparecem desabilitados com a fase", async ({ page }) => {
+  test("todos os módulos do plano estão no ar (nenhum 'em breve')", async ({ page }) => {
     await page.goto("/dashboard");
     const nav = sidebar(page);
-    await nav.getByRole("button", { name: "Economia" }).click();
-    await expect(nav.getByRole("link", { name: /Baú/ })).toHaveCount(0);
-    await expect(nav.getByTitle("Chega na Fase 4").first()).toBeVisible();
+    for (const group of ["Operações", "Economia", "Cidade", "Comunicação"]) await nav.getByRole("button", { name: group }).click();
+    await expect(nav.getByTitle(/Chega na Fase/)).toHaveCount(0);
+    for (const label of ["Agenda", "Mapa", "Baú", "Metas de farm", "Encomendas", "Lore", "Facções", "Mural & Flyers", "Ao vivo", "Punições"]) {
+      await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    }
   });
 
   test("navega, marca o item ativo e mostra o breadcrumb", async ({ page }) => {

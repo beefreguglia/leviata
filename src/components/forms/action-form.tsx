@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
@@ -26,22 +26,19 @@ export function ActionForm({
   children: React.ReactNode;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction] = useActionState<State, FormData>(async (_prev, fd) => {
+  // O toast sai assim que a ação termina (não num efeito): se o formulário sumir da tela
+  // depois de salvar (ex.: item que sai de uma lista), a confirmação continua aparecendo.
+  const [, formAction] = useActionState<State, FormData>(async (_prev, fd) => {
     const result = await action(fd);
-    return { ...result, at: Date.now() };
-  }, null);
-
-  useEffect(() => {
-    if (!state) return;
-    if (state.ok) {
-      toast.success(state.message ?? success ?? "Salvo");
+    if (result.ok) {
+      toast.success(result.message ?? success ?? "Salvo");
       if (resetOnSuccess) formRef.current?.reset();
       onSuccess?.();
     } else {
-      toast.error(state.error);
+      toast.error(result.error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+    return { ...result, at: Date.now() };
+  }, null);
 
   return (
     <form ref={formRef} action={formAction} className={className}>

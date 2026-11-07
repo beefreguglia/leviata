@@ -3,6 +3,7 @@ import { ptBR } from "date-fns/locale";
 
 /** Horário de Brasília (sem horário de verão desde 2019). */
 const BRT_OFFSET = "-03:00";
+export const BRT_OFFSET_HOURS = 3;
 
 /** "2026-11-06" → início do dia em Brasília */
 export function startOfDayBRT(dateStr: string) {

@@ -9,6 +9,8 @@ export const PERMISSIONS = {
   "regras.editar": "Editar regras",
   "conteudo.editar": "Editar lore, facções, farm, fabricação, mural e mapa",
   "operacoes.gerenciar": "Agendar ações, montar escalações e perímetros",
+  "financeiro.gerenciar": "Baú, metas de farm e encomendas",
+  "punicoes.gerenciar": "Aplicar e revogar punições",
   "ausencias.gerenciar": "Aprovar/recusar avisos de ausência",
   "auditoria.ver": "Ver log de auditoria",
   admin: "Administrador (tudo)",

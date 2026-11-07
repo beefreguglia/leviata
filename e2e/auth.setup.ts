@@ -17,6 +17,7 @@ setup("aquecer páginas", async ({ browser }) => {
     "/dashboard", "/membros", "/hierarquia", "/ausencias", "/regras/estatuto", "/regras/nova", "/auditoria",
     "/mural", "/lore", "/lore/novo", "/faccoes", "/fabricacao", "/farm", "/farm/novo", "/lives", "/sem-acesso",
     "/mapa", "/perimetros", "/perimetros/novo", "/agenda", "/escalacoes",
+    "/bau", "/metas", "/encomendas", "/punicoes",
   ]) {
     await page.goto(path, { timeout: 120_000 });
   }

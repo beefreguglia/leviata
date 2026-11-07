@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDaysIcon, ChevronRightIcon, ClockIcon, RadioIcon, UserXIcon, UsersIcon } from "lucide-react";
+import { CalendarDaysIcon, ChevronRightIcon, ClockIcon, PackageIcon, RadioIcon, TargetIcon, UserXIcon, UsersIcon, WalletIcon } from "lucide-react";
+import { allBalances } from "@/lib/vault";
+import { weeklyGoals } from "@/lib/goals";
+import { money } from "@/lib/finance";
 import { after } from "next/server";
 import { refreshStreamsIfStale } from "@/lib/stream-refresh";
 import { ATTENDANCE, STREAM_PLATFORM } from "@/lib/labels";
@@ -62,7 +65,8 @@ export default async function DashboardPage() {
   const now = new Date();
   const canManage = viewer.can("ausencias.gerenciar");
   after(() => refreshStreamsIfStale().catch((err) => console.error("Falha ao atualizar lives:", err)));
-  const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents] = await Promise.all([
+  const canFinance = viewer.can("financeiro.gerenciar");
+  const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents, balances, myGoals, pendingDeliveries] = await Promise.all([
     db.member.count({ where: { status: "ATIVO" } }),
     db.absence.findMany({ where: activeAbsenceWhere(now), include: { member: true }, orderBy: { endsAt: "asc" } }),
     canManage ? db.absence.count({ where: { status: "PENDENTE", endsAt: { gte: now } } }) : Promise.resolve(0),
@@ -85,7 +89,11 @@ export default async function DashboardPage() {
       orderBy: { startsAt: "asc" },
       take: 4,
     }),
+    canFinance ? allBalances() : Promise.resolve(null),
+    viewer.member ? weeklyGoals(now, viewer.member.id) : Promise.resolve(null),
+    canFinance ? db.vaultTransaction.count({ where: { status: "PENDENTE" } }) : Promise.resolve(0),
   ]);
+  const myRow = myGoals?.rows[0];
 
   const firstName = (viewer.member?.rpName ?? viewer.user.username).split(" ")[0];
 
@@ -112,7 +120,61 @@ export default async function DashboardPage() {
             <Stat label="Aguardando aprovação" value={pendingCount} icon={ClockIcon} href="/ausencias" tone="warning" />
           </StaggerItem>
         )}
+        {canFinance && (
+          <StaggerItem>
+            <Stat label="Entregas para conferir" value={pendingDeliveries} icon={PackageIcon} href="/bau" tone="warning" />
+          </StaggerItem>
+        )}
       </Stagger>
+
+      {(balances || myRow?.hasGoals) && (
+        <FadeIn delay={0.03} className="mt-10 grid gap-4 lg:grid-cols-2">
+          {balances && (
+            <Link href="/bau" className="flex flex-col gap-3 rounded-card bg-card p-6 transition-colors hover:bg-grey-700" data-testid="dashboard-vault">
+              <span className="flex items-center gap-2 text-sm font-bold text-grey-200">
+                <WalletIcon className="size-4 text-primary" /> Baú
+              </span>
+              <span className="grid grid-cols-2 gap-4">
+                <span>
+                  <span className="block text-2xl font-bold tabular-nums text-grey-100">{money(balances.dirty)}</span>
+                  <span className="text-sm text-muted-foreground">sujo</span>
+                </span>
+                <span>
+                  <span className="block text-2xl font-bold tabular-nums text-grey-100">{money(balances.clean)}</span>
+                  <span className="text-sm text-muted-foreground">limpo</span>
+                </span>
+              </span>
+            </Link>
+          )}
+          {myRow?.hasGoals && (
+            <Link href="/metas" className="flex flex-col gap-3 rounded-card bg-card p-6 transition-colors hover:bg-grey-700" data-testid="dashboard-goals">
+              <span className="flex items-center justify-between text-sm font-bold text-grey-200">
+                <span className="flex items-center gap-2">
+                  <TargetIcon className="size-4 text-primary" /> Minhas metas da semana
+                </span>
+                {myRow.complete && <span className="text-success">✓ batidas</span>}
+              </span>
+              {myRow.cells.map((c) => {
+                if (!c.applicable) return null;
+                const item = myGoals!.items.find((i) => i.id === c.itemId)!;
+                return (
+                  <span key={c.itemId} className="flex flex-col gap-1.5">
+                    <span className="flex justify-between text-sm text-grey-200">
+                      {item.name}
+                      <span className="tabular-nums">
+                        {c.done} / {c.target} {item.unit}
+                      </span>
+                    </span>
+                    <span className="block h-2 overflow-hidden rounded-full bg-grey-700">
+                      <span className={`block h-full rounded-full ${c.complete ? "bg-success" : "bg-primary"}`} style={{ width: `${c.pct}%` }} />
+                    </span>
+                  </span>
+                );
+              })}
+            </Link>
+          )}
+        </FadeIn>
+      )}
 
       {pinnedNotices.length > 0 && (
         <FadeIn delay={0.05} className="mt-10 flex flex-col gap-3">

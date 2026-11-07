@@ -7,7 +7,7 @@ Painel interno da Leviata (GTA RP · Cidade dos Anjos).
 | 1 · Base | Login Discord, membros, hierarquia, regras, ausências, auditoria | ✅ |
 | 2 · Conteúdo | Lore, facções, farm, fabricação (calculadoras), mural & flyers, lives, upload de imagens | ✅ |
 | 3 · Operações | Mapa com marcadores, perímetros, agenda (presença + relatório), escalações | ✅ |
-| 4 · Gestão | Baú/financeiro, metas de farm, encomendas, punições | — |
+| 4 · Gestão | Baú (sujo/limpo/itens, entregas conferidas), metas semanais de farm, encomendas, punições | ✅ |
 | 5 · Deploy | Vercel + Supabase | — |
 
 **Stack:** Next.js 16 · TypeScript · Tailwind v4 · shadcn/ui (Base UI, sidebar-08) · design system Andromeda (ciano) · motion · Prisma 7 + PostgreSQL · Auth.js (Discord)
@@ -89,7 +89,7 @@ Como funciona: no login o painel confere se a pessoa está no servidor e pega os
 
 ## Permissões
 
-Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel.ver`, `membros.gerenciar`, `hierarquia.gerenciar`, `regras.editar`, `conteudo.editar` (lore, facções, farm, fabricação, mural, mapa), `operacoes.gerenciar` (agenda, escalações, perímetros), `ausencias.gerenciar`, `auditoria.ver` e `admin` (tudo). Patente sem `painel.ver` (ex.: Recruta) só vê as regras marcadas como "visível para recrutas".
+Cada patente tem uma lista de permissões (editável em **Hierarquia**): `painel.ver`, `membros.gerenciar`, `hierarquia.gerenciar`, `regras.editar`, `conteudo.editar` (lore, facções, farm, fabricação, mural, mapa), `operacoes.gerenciar` (agenda, escalações, perímetros), `financeiro.gerenciar` (baú, metas, encomendas), `punicoes.gerenciar`, `ausencias.gerenciar`, `auditoria.ver` e `admin` (tudo). Patente sem `painel.ver` (ex.: Recruta) só vê as regras marcadas como "visível para recrutas".
 
 ## Personalizar
 

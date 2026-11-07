@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { RankBadge, StatusBadge } from "@/components/status-badge";
 import { FadeIn } from "@/components/motion";
 import { MemberFields } from "../member-fields";
+import { PunishmentRows } from "../../punicoes/punishment-list";
 import { changeRank, updateMember } from "../actions";
 
 export default async function MemberPage({ params }: PageProps<"/membros/[id]">) {
@@ -30,7 +31,13 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
   });
   if (!member) notFound();
 
-  const ranks = await db.rank.findMany({ orderBy: { order: "asc" } });
+  const canSeePunishments = viewer.can("punicoes.gerenciar") || viewer.member?.id === member.id;
+  const [ranks, punishments] = await Promise.all([
+    db.rank.findMany({ orderBy: { order: "asc" } }),
+    canSeePunishments
+      ? db.punishment.findMany({ where: { memberId: member.id }, include: { member: true, createdBy: true }, orderBy: { createdAt: "desc" }, take: 20 })
+      : Promise.resolve([]),
+  ]);
   const canManage = viewer.can("membros.gerenciar");
   const now = new Date();
   const absentNow = member.absences.some(
@@ -132,6 +139,16 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
             ))
           )}
         </GroupedList>
+
+        {canSeePunishments && (
+          <GroupedList header="Punições">
+            {punishments.length === 0 ? (
+              <GroupedRow label="Nenhuma punição" />
+            ) : (
+              <PunishmentRows rows={punishments} canManage={viewer.can("punicoes.gerenciar")} showMember={false} />
+            )}
+          </GroupedList>
+        )}
 
         <GroupedList header="Ausências recentes">
           {member.absences.length === 0 ? (

@@ -30,7 +30,7 @@ export const NAV_MAIN: NavSection[] = [
       { href: "/membros", label: "Membros", perm: "painel.ver" },
       { href: "/hierarquia", label: "Hierarquia", perm: "painel.ver" },
       { href: "/ausencias", label: "Ausências", perm: "painel.ver" },
-      { href: "/punicoes", label: "Punições", perm: "painel.ver", soon: "Fase 4" },
+      { href: "/punicoes", label: "Punições", perm: "painel.ver" },
     ],
   },
   {
@@ -49,8 +49,9 @@ export const NAV_MAIN: NavSection[] = [
     items: [
       { href: "/farm", label: "Farm", perm: "painel.ver" },
       { href: "/fabricacao", label: "Fabricação", perm: "painel.ver" },
-      { href: "/bau", label: "Baú", perm: "painel.ver", soon: "Fase 4" },
-      { href: "/encomendas", label: "Encomendas", perm: "painel.ver", soon: "Fase 4" },
+      { href: "/bau", label: "Baú", perm: "painel.ver" },
+      { href: "/metas", label: "Metas de farm", perm: "painel.ver" },
+      { href: "/encomendas", label: "Encomendas", perm: "painel.ver" },
     ],
   },
   {
