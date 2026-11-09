@@ -8,7 +8,7 @@ export default function Loading() {
         <Skeleton className="h-4 w-40 rounded" />
         <Skeleton className="h-10 w-72 rounded-md" />
       </div>
-      <StatsSkeleton />
+      <StatsSkeleton icon={false} />
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
         <BlockSkeleton className="h-64" />
         <BlockSkeleton className="h-64" />

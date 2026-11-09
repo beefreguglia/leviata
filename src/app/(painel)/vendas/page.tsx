@@ -15,6 +15,9 @@ import { Field } from "@/components/forms/fields";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChartCard } from "@/components/charts/chart-card";
+import { BarTrendChart, RankedBars } from "@/components/charts/charts";
+import { salesHistory } from "@/lib/economy-stats";
 import { SaleFields } from "./sale-fields";
 import { cancelSale, createSale } from "./actions";
 
@@ -26,6 +29,11 @@ const FILTERS = [
   { key: "player", label: "Players" },
 ] as const;
 
+const SALES_SERIES = [
+  { key: "faccao", label: "Facções", color: "var(--chart-1)" },
+  { key: "player", label: "Players", color: "var(--chart-2)" },
+];
+
 export default async function VendasPage({ searchParams }: PageProps<"/vendas">) {
   const viewer = await requireViewer("economia.ver");
   const canManage = viewer.can("financeiro.gerenciar");
@@ -34,13 +42,14 @@ export default async function VendasPage({ searchParams }: PageProps<"/vendas">)
   const where: Prisma.SaleWhereInput = filter === "faccao" ? { buyerKind: "FACCAO" } : filter === "player" ? { buyerKind: "PLAYER" } : {};
   const week = weekRangeBRT();
 
-  const [sales, weekSales, items, factions, members, balances] = await Promise.all([
+  const [sales, weekSales, items, factions, members, balances, history] = await Promise.all([
     db.sale.findMany({ where, include: { item: true, seller: true, faction: true }, orderBy: { createdAt: "desc" }, take: 100 }),
     db.sale.findMany({ where: { cancelledAt: null, createdAt: { gte: week.from, lt: week.to } }, select: { quantity: true, unitPrice: true, payment: true, buyerKind: true } }),
     canManage ? db.item.findMany({ select: { id: true, name: true, unit: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
     canManage ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
     canManage ? db.member.findMany({ where: { status: "ATIVO" }, select: { id: true, rpName: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
     canManage ? allBalances() : Promise.resolve(null),
+    salesHistory(),
   ]);
 
   const sum = (rows: typeof weekSales) => rows.reduce((n, s) => n + s.quantity * s.unitPrice, 0);
@@ -90,6 +99,30 @@ export default async function VendasPage({ searchParams }: PageProps<"/vendas">)
           </div>
         ))}
       </section>
+
+      <div className="mb-10 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+        <ChartCard
+          testId="chart-vendas-semanas"
+          title="Faturamento por semana"
+          description="Vendas para facções e players, somando sujo e limpo."
+          series={SALES_SERIES}
+          empty={history.byWeek.length === 0}
+          emptyText="O gráfico aparece com as primeiras vendas."
+          table={{ columns: ["Semana", "Facções", "Players"], rows: history.byWeek.map((w) => [w.label, money(w.faccao), money(w.player)]) }}
+        >
+          <BarTrendChart data={history.byWeek} xKey="label" series={SALES_SERIES} stacked />
+        </ChartCard>
+        <ChartCard
+          testId="chart-vendas-itens"
+          title="Itens que mais faturaram"
+          description="Últimas 8 semanas."
+          empty={history.items.length === 0}
+          emptyText="O gráfico aparece com as primeiras vendas."
+          table={{ columns: ["Item", "Faturamento"], rows: history.items.map((i) => [i.name, money(i.value)]) }}
+        >
+          <RankedBars data={history.items} label="Faturamento" />
+        </ChartCard>
+      </div>
 
       <nav aria-label="Filtrar por comprador" className="mb-4 flex gap-2">
         {FILTERS.map((f) => (

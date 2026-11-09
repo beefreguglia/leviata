@@ -14,6 +14,10 @@ import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FadeIn } from "@/components/motion";
+import { ChartCard } from "@/components/charts/chart-card";
+import { BarTrendChart, RankedBars } from "@/components/charts/charts";
+import { memberGoalPct } from "@/lib/economy-charts";
+import { goalHistory } from "@/lib/economy-stats";
 import { createGoal, deleteGoal, updateGoalQuantity } from "./actions";
 
 export const metadata = { title: "Metas de farm" };
@@ -29,11 +33,13 @@ function Bar({ pct, complete }: { pct: number; complete: boolean }) {
 export default async function MetasPage() {
   const viewer = await requireViewer("economia.ver");
   const canManage = viewer.can("financeiro.gerenciar");
-  const [{ from, to, goals, items, rows }, allItems, ranks] = await Promise.all([
+  const [{ from, to, goals, items, rows }, allItems, ranks, completion] = await Promise.all([
     weeklyGoals(),
     canManage ? db.item.findMany({ orderBy: { name: "asc" } }) : Promise.resolve([]),
     canManage ? db.rank.findMany({ orderBy: { order: "asc" } }) : Promise.resolve([]),
+    goalHistory(),
   ]);
+  const memberPct = memberGoalPct(rows);
   const me = rows.find((r) => r.member.id === viewer.member?.id);
   const lastDay = new Date(to.getTime() - 1);
   // dispensados (ausência de 7+ dias na semana) não entram na conta
@@ -116,6 +122,28 @@ export default async function MetasPage() {
               </GroupedList>
             </FadeIn>
           )}
+
+          <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+            <ChartCard
+              testId="chart-metas-membros"
+              title="Progresso por membro nesta semana"
+              description="Média das metas de cada um. A linha marca 100%."
+              empty={memberPct.length === 0}
+              emptyText="Ninguém tem meta nesta semana."
+              table={{ columns: ["Membro", "Progresso"], rows: memberPct.map((m) => [m.name, `${m.pct}%`]) }}
+            >
+              <RankedBars data={memberPct.map((m) => ({ name: m.name, value: m.pct }))} label="Progresso" format="percent" target={100} />
+            </ChartCard>
+            <ChartCard
+              testId="chart-metas-semanas"
+              title="Quem bateu a meta por semana"
+              description="Calculado com as metas atuais."
+              empty={completion.length === 0}
+              table={{ columns: ["Semana", "Bateram", "Membros"], rows: completion.map((w) => [w.label, `${w.pct}%`, `${w.complete} de ${w.total}`]) }}
+            >
+              <BarTrendChart data={completion} xKey="label" series={[{ key: "pct", label: "Bateram a meta", color: "var(--chart-1)" }]} format="percent" />
+            </ChartCard>
+          </div>
 
           {canManage && (
             <GroupedList header="Metas ativas">

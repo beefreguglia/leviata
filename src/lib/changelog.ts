@@ -15,6 +15,25 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-09-graficos-economia",
+    date: "2026-11-09",
+    title: "Gráficos na economia",
+    items: [
+      "**Metas:** veja o progresso de cada membro na semana e quantos bateram a meta nas últimas semanas",
+      "**Vendas:** faturamento por semana, para facções e players, e os itens que mais renderam",
+      "**Baú:** a gerência acompanha o saldo sujo e limpo dos últimos 30 dias",
+    ],
+  },
+  {
+    id: "2026-11-09-inicio-vidro",
+    date: "2026-11-09",
+    title: "Início de cara nova",
+    items: [
+      "Os cards do Início agora têm **visual de vidro** com brilho ciano",
+      "Os números ficaram em destaque, com um ícone pequeno ao lado de cada nome",
+    ],
+  },
+  {
     id: "2026-11-07-economia-metas",
     date: "2026-11-07",
     title: "Economia aberta para todos e metas mais justas",

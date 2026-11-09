@@ -16,6 +16,8 @@ import { getViewer } from "@/lib/session";
 import { activeAbsenceWhere } from "@/lib/absences";
 import { fmtAgo, fmtDate, fmtTime, fmtWeekday } from "@/lib/dates";
 import { GroupedList } from "@/components/layout/grouped-list";
+import { Sparkline } from "@/components/charts/sparkline";
+import { vaultHistory } from "@/lib/economy-stats";
 import { FadeIn, Stagger, StaggerItem } from "@/components/motion";
 
 export const metadata = { title: "Início" };
@@ -41,18 +43,11 @@ function Stat({
   tone?: "primary" | "warning";
 }) {
   return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-5 rounded-card bg-card p-6 transition-colors hover:bg-grey-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-    >
-      <span
-        className={`flex size-10 items-center justify-center rounded-md ${tone === "warning" ? "bg-warning-low text-warning" : "bg-cyan-low text-cyan-light"}`}
-      >
-        <Icon className="size-5" />
-      </span>
-      <span>
-        <span className="block type-stat text-grey-100">{value}</span>
-        <span className="text-sm text-muted-foreground">{label}</span>
+    <Link href={href} className="glass-card glass-card-interactive flex flex-col gap-2 rounded-card p-6">
+      <span className="block type-stat text-grey-100">{value}</span>
+      <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <Icon className={`size-4 shrink-0 ${tone === "warning" ? "text-warning" : "text-cyan-light"}`} />
+        {label}
       </span>
     </Link>
   );
@@ -68,7 +63,7 @@ export default async function DashboardPage() {
   const canManage = viewer.can("ausencias.gerenciar");
   after(() => refreshStreamsIfStale().catch((err) => console.error("Falha ao atualizar lives:", err)));
   const canFinance = viewer.can("financeiro.gerenciar");
-  const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents, balances, myGoals, pendingDeliveries] = await Promise.all([
+  const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents, balances, myGoals, pendingDeliveries, balanceHistory] = await Promise.all([
     db.member.count({ where: { status: "ATIVO" } }),
     canManage
       ? db.absence.findMany({ where: activeAbsenceWhere(now), include: { member: true }, orderBy: { endsAt: "asc" } })
@@ -96,13 +91,16 @@ export default async function DashboardPage() {
     canFinance ? allBalances() : Promise.resolve(null),
     viewer.member ? weeklyGoals(now, viewer.member.id) : Promise.resolve(null),
     canFinance ? db.vaultTransaction.count({ where: { status: "PENDENTE" } }) : Promise.resolve(0),
+    canFinance ? vaultHistory(now) : Promise.resolve([]),
   ]);
   const myRow = myGoals?.rows[0];
 
   const firstName = (viewer.member?.rpName ?? viewer.user.username).split(" ")[0];
 
   return (
-    <>
+    <div className="relative isolate">
+      {/* o que o vidro dos cards desfoca; vai até a borda do padding do layout */}
+      <div aria-hidden="true" className="glass-glow pointer-events-none absolute -inset-x-4 -inset-y-6 -z-10 md:-inset-x-8 md:-inset-y-8" />
       {!registered && (
         <FadeIn className="mb-6">
           <Link
@@ -152,7 +150,7 @@ export default async function DashboardPage() {
       {(balances || myRow?.hasGoals) && (
         <FadeIn delay={0.03} className="mt-10 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           {balances && (
-            <Link href="/bau" className="flex flex-col gap-3 rounded-card bg-card p-6 transition-colors hover:bg-grey-700" data-testid="dashboard-vault">
+            <Link href="/bau" className="glass-card glass-card-interactive flex flex-col gap-3 rounded-card p-6" data-testid="dashboard-vault">
               <span className="flex items-center gap-2 text-sm font-bold text-grey-200">
                 <WalletIcon className="size-4 text-primary" /> Baú
               </span>
@@ -160,16 +158,18 @@ export default async function DashboardPage() {
                 <span>
                   <span className="block type-stat text-grey-100">{money(balances.dirty)}</span>
                   <span className="text-sm text-muted-foreground">sujo</span>
+                  <Sparkline values={balanceHistory.map((p) => p.dirty)} color="var(--chart-1)" className="mt-2 block h-8 w-full" />
                 </span>
                 <span>
                   <span className="block type-stat text-grey-100">{money(balances.clean)}</span>
                   <span className="text-sm text-muted-foreground">limpo</span>
+                  <Sparkline values={balanceHistory.map((p) => p.clean)} color="var(--chart-2)" className="mt-2 block h-8 w-full" />
                 </span>
               </span>
             </Link>
           )}
           {myRow?.hasGoals && (
-            <Link href="/metas" className="flex flex-col gap-3 rounded-card bg-card p-6 transition-colors hover:bg-grey-700" data-testid="dashboard-goals">
+            <Link href="/metas" className="glass-card glass-card-interactive flex flex-col gap-3 rounded-card p-6" data-testid="dashboard-goals">
               <span className="flex items-center justify-between text-sm font-bold text-grey-200">
                 <span className="flex items-center gap-2">
                   <TargetIcon className="size-4 text-primary" /> Minhas metas da semana
@@ -206,7 +206,7 @@ export default async function DashboardPage() {
           </div>
           <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
             {pinnedNotices.map((n) => (
-              <NoticeCard key={n.id} notice={n} compact />
+              <NoticeCard key={n.id} notice={n} compact glass />
             ))}
           </div>
         </FadeIn>
@@ -214,14 +214,14 @@ export default async function DashboardPage() {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2 [&>*]:min-w-0">
         <FadeIn delay={0.1}>
-          <GroupedList header="Próximas ações e corridas">
+          <GroupedList glass header="Próximas ações e corridas">
             {nextEvents.length === 0 ? (
-              <Link href="/agenda" className="flex items-center gap-3 px-5 py-5 text-base text-muted-foreground hover:bg-grey-700">
+              <Link href="/agenda" className="flex items-center gap-3 px-5 py-5 text-base text-muted-foreground hover:bg-white/5">
                 <CalendarDaysIcon className="size-5" /> Nada agendado ainda
               </Link>
             ) : (
               nextEvents.map((e) => (
-                <Link key={e.id} href={`/agenda/${e.id}`} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-grey-700" data-testid="dashboard-event">
+                <Link key={e.id} href={`/agenda/${e.id}`} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-white/5" data-testid="dashboard-event">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate text-base text-grey-100">{e.title}</span>
                     <span className="text-sm text-muted-foreground first-letter:uppercase">
@@ -240,7 +240,7 @@ export default async function DashboardPage() {
 
 {canManage && (
         <FadeIn delay={0.15}>
-          <GroupedList header="Fora agora">
+          <GroupedList glass header="Fora agora">
             {absentNow.length === 0 ? (
               <p className="px-5 py-4 text-base text-muted-foreground">Todo mundo na ativa.</p>
             ) : (
@@ -248,7 +248,7 @@ export default async function DashboardPage() {
                 <Link
                   key={a.id}
                   href={`/membros/${a.member.id}`}
-                  className="flex min-h-12 items-center justify-between gap-3 px-5 py-4 text-base hover:bg-grey-700"
+                  className="flex min-h-12 items-center justify-between gap-3 px-5 py-4 text-base hover:bg-white/5"
                 >
                   <span className="truncate">{a.member.rpName}</span>
                   <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
@@ -262,9 +262,9 @@ export default async function DashboardPage() {
         )}
 
         <FadeIn delay={0.18}>
-          <GroupedList header={`Ao vivo agora · ${liveNow.length}`}>
+          <GroupedList glass header={`Ao vivo agora · ${liveNow.length}`}>
             {liveNow.length === 0 ? (
-              <Link href="/lives" className="flex items-center gap-3 px-5 py-5 text-base text-muted-foreground hover:bg-grey-700">
+              <Link href="/lives" className="flex items-center gap-3 px-5 py-5 text-base text-muted-foreground hover:bg-white/5">
                 <RadioIcon className="size-5" /> Ninguém em live agora
               </Link>
             ) : (
@@ -274,7 +274,7 @@ export default async function DashboardPage() {
                   href={STREAM_URL[c.platform](c.handle)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex min-h-12 items-center justify-between gap-3 px-5 py-4 text-base hover:bg-grey-700"
+                  className="flex min-h-12 items-center justify-between gap-3 px-5 py-4 text-base hover:bg-white/5"
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="size-2 shrink-0 animate-pulse rounded-full bg-danger-light" />
@@ -293,7 +293,7 @@ export default async function DashboardPage() {
 
         {recent.length > 0 && (
           <FadeIn delay={0.2} className="lg:col-span-2">
-            <GroupedList header="Atividade recente">
+            <GroupedList glass header="Atividade recente">
               {recent.map((log) => (
                 <div key={log.id} className="flex items-center justify-between gap-3 px-5 py-4">
                   <p className="min-w-0 truncate text-base">
@@ -310,6 +310,6 @@ export default async function DashboardPage() {
           </FadeIn>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -57,12 +57,12 @@ export function CardGridSkeleton({ cards = 6, image = true }: { cards?: number; 
   );
 }
 
-export function StatsSkeleton({ count = 4 }: { count?: number }) {
+export function StatsSkeleton({ count = 4, icon = true }: { count?: number; icon?: boolean }) {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className="flex flex-col gap-3 rounded-card bg-card p-5">
-          <Skeleton className="size-9 rounded-md" />
+          {icon && <Skeleton className="size-9 rounded-md" />}
           <Skeleton className="h-8 w-16 rounded" />
           <Skeleton className="h-4 w-24 rounded" />
         </div>

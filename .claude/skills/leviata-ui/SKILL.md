@@ -32,10 +32,15 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 - Nunca Bebas abaixo de 24px nem em parágrafo/botão/campo. A maiúscula vem da classe, não do texto digitado.
 - Pricedown (fonte do GTA) é proprietária: não usar.
 
+## Gráficos
+- Use `ChartCard` (`components/charts/chart-card.tsx`: título, legenda, tabela "Ver dados" e estado vazio) com `LineTrendChart`, `BarTrendChart` ou `RankedBars` (`components/charts/charts.tsx`). Tendência decorativa em card: `Sparkline`.
+- Cores só por `var(--chart-1)` e `var(--chart-2)`, fixas por série. Um eixo só. Cálculo novo vai em `lib/economy-charts.ts` (puro) e sem zeros inventados antes do primeiro dado.
+
 ## Espaçamento e raios
 - Escala de 4px (Andromeda space = Tailwind). Valores usuais: 2 (8) · 3 (12) · 4 (16) · 5 (20) · 6 (24) · 8 (32) · 10 (40).
 - Página: `px-4 py-6 md:px-8 md:py-8`; cabeçalho da página `mb-10`; entre seções `gap-10`; cards em grid `gap-4`.
 - Card: `rounded-card` (20px) `bg-card`, padding `p-5`/`p-6`. Linhas de lista: `min-h-14 px-5 py-4`.
+- Vidro (`glass-card`, e `glass-card-interactive` se for clicável): só no Início. Exige `.glass-glow` atrás, senão vira um card preto. `GroupedList` e `NoticeCard` aceitam a prop `glass`; linhas sobre o vidro usam `hover:bg-white/5`.
 - Raios (um pouco mais arredondados que o Andromeda, a pedido da fac): `rounded-md` = 12px (botões, inputs, menus), `rounded-card` = 20px (cards, blocos e modais), `rounded-full` (badges, avatares). Ajuste em `--radius` / `--radius-card`.
 
 ## Componentes

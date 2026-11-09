@@ -18,6 +18,9 @@ import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Stagger, StaggerItem } from "@/components/motion";
+import { ChartCard } from "@/components/charts/chart-card";
+import { LineTrendChart } from "@/components/charts/charts";
+import { vaultHistory } from "@/lib/economy-stats";
 import { MoveFields } from "./move-fields";
 import { cancelMyDelivery, confirmMove, deliverFarm, registerMove, reverseMove } from "./actions";
 
@@ -25,6 +28,11 @@ export const metadata = { title: "Baú" };
 
 const include = { item: true, member: true, createdBy: true } satisfies Prisma.VaultTransactionInclude;
 type MoveRow = Prisma.VaultTransactionGetPayload<{ include: typeof include }>;
+
+const BALANCE_SERIES = [
+  { key: "dirty", label: "Sujo", color: "var(--chart-1)" },
+  { key: "clean", label: "Limpo", color: "var(--chart-2)" },
+];
 
 function MoveLine({ m, actions }: { m: MoveRow; actions?: React.ReactNode }) {
   const isIn = m.kind === "ENTRADA";
@@ -55,12 +63,13 @@ export default async function BauPage() {
   const canManage = viewer.can("financeiro.gerenciar");
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
 
-  const [balances, pending, history, mine, members] = await Promise.all([
+  const [balances, pending, history, mine, members, balanceHistory] = await Promise.all([
     canManage ? allBalances() : Promise.resolve(null),
     canManage ? db.vaultTransaction.findMany({ where: { status: "PENDENTE" }, include, orderBy: { createdAt: "asc" } }) : Promise.resolve([]),
     canManage ? db.vaultTransaction.findMany({ where: { status: { not: "PENDENTE" } }, include, orderBy: { createdAt: "desc" }, take: 40 }) : Promise.resolve([]),
     viewer.member ? db.vaultTransaction.findMany({ where: { memberId: viewer.member.id }, include, orderBy: { createdAt: "desc" }, take: 15 }) : Promise.resolve([]),
     canManage ? db.member.findMany({ where: { status: { not: "EXPULSO" } }, select: { id: true, rpName: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
+    canManage ? vaultHistory() : Promise.resolve(null),
   ]);
   const stock = balances ? items.map((i) => ({ ...i, qty: balances.items.get(i.id) ?? 0 })).filter((i) => i.qty !== 0) : [];
 
@@ -141,6 +150,18 @@ export default async function BauPage() {
               </StaggerItem>
             ))}
           </Stagger>
+        )}
+
+        {balanceHistory && (
+          <ChartCard
+            testId="chart-bau-saldo"
+            title="Saldo nos últimos 30 dias"
+            series={BALANCE_SERIES}
+            empty={balanceHistory.length === 0}
+            table={{ columns: ["Dia", "Sujo", "Limpo"], rows: balanceHistory.map((p) => [p.label, money(p.dirty), money(p.clean)]) }}
+          >
+            <LineTrendChart data={balanceHistory} xKey="label" series={BALANCE_SERIES} />
+          </ChartCard>
         )}
 
         {canManage && pending.length > 0 && (

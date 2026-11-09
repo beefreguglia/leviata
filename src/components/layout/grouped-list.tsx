@@ -8,12 +8,15 @@ export function GroupedList({
   header,
   footer,
   action,
+  glass,
   className,
   children,
 }: {
   header?: React.ReactNode;
   footer?: React.ReactNode;
   action?: React.ReactNode;
+  /** visual de vidro (globals.css): precisa de .glass-glow atrás */
+  glass?: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -25,7 +28,7 @@ export function GroupedList({
           {action}
         </div>
       )}
-      <div className="overflow-hidden rounded-card bg-card [&>*+*]:border-t [&>*+*]:border-grey-700">{children}</div>
+      <div className={cn("overflow-hidden rounded-card [&>*+*]:border-t", glass ? "glass-card [&>*+*]:border-white/10" : "bg-card [&>*+*]:border-grey-700")}>{children}</div>
       {footer && <p className="text-sm text-muted-foreground">{footer}</p>}
     </section>
   );

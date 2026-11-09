@@ -73,6 +73,35 @@ test.describe("baú e metas", () => {
     await page.goto("/dashboard");
     await expect(page.getByTestId("dashboard-goals").filter({ visible: true })).toContainText(item);
   });
+
+  test("gráficos: saldo no baú, progresso nas metas e tabela em \"Ver dados\"", async ({ page }) => {
+    await page.goto("/bau");
+    await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
+    const d = page.getByRole("dialog");
+    await d.getByLabel("Movimento").selectOption("ENTRADA");
+    await d.getByLabel("O quê").selectOption("DINHEIRO_SUJO");
+    await d.getByLabel("Valor (R$)").fill("12345");
+    await d.getByLabel("Motivo").fill(`Gráfico ${uid()}`);
+    await d.getByRole("button", { name: "Registrar" }).click();
+    await expectToast(page, "Entrada registrada");
+
+    const saldo = page.getByTestId("chart-bau-saldo").filter({ visible: true });
+    await expect(saldo.locator("svg.recharts-surface").first()).toBeVisible();
+    await saldo.getByText("Ver dados").click();
+    await expect(saldo.getByRole("table")).toBeVisible();
+    await expect(saldo.getByRole("columnheader", { name: "Sujo" })).toBeVisible();
+
+    const item = `Ferro ${uid()}`;
+    await newItem(page, item);
+    await page.goto("/metas");
+    await page.getByRole("button", { name: "Nova meta" }).click();
+    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: item });
+    await page.getByRole("dialog").getByLabel("Quantidade por semana").fill("50");
+    await page.getByRole("dialog").getByRole("button", { name: "Criar meta" }).click();
+    await expectToast(page, "Meta criada");
+    await expect(page.getByTestId("chart-metas-membros").filter({ visible: true })).toBeVisible();
+    await expect(page.getByTestId("chart-metas-semanas").filter({ visible: true })).toBeVisible();
+  });
 });
 
 test.describe("encomendas", () => {
@@ -226,6 +255,11 @@ test.describe("vendas", () => {
     await v.getByLabel("Pagamento entrou como").selectOption("DINHEIRO_LIMPO");
     await v.getByRole("button", { name: "Registrar venda" }).click();
     await expectToast(page, "Venda registrada: R$ 3.000 no baú");
+
+    const itens = page.getByTestId("chart-vendas-itens").filter({ visible: true });
+    await itens.getByText("Ver dados").click();
+    await expect(itens.getByRole("table")).toContainText(item);
+    await expect(page.getByTestId("chart-vendas-semanas").filter({ visible: true }).locator("svg.recharts-surface").first()).toBeVisible();
 
     await page.getByRole("navigation", { name: "Filtrar por comprador" }).getByRole("link", { name: "Facções" }).click();
     await expect(page).toHaveURL(/comprador=faccao/);

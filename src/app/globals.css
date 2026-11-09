@@ -144,8 +144,9 @@
   --border: var(--grey-600); /* shape-tertiary */
   --input: var(--grey-900);
   --ring: var(--cyan-mid);
-  --chart-1: var(--cyan-mid);
-  --chart-2: #6a80ff;
+  /* séries de gráfico: validadas para daltonismo sobre card e vidro (o cyan-mid é claro demais) */
+  --chart-1: var(--cyan-dark);
+  --chart-2: #8b7cf6;
   --chart-3: var(--warning-light);
   --chart-4: var(--danger-light);
   --chart-5: var(--success-light);
@@ -208,6 +209,44 @@
 @utility type-stat {
   font-family: var(--font-display); font-weight: 400; font-size: 2.5rem; line-height: 1;
   letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+}
+/* Vidro do Início: precisa de .glass-glow (ou outra cor) atrás para o desfoque aparecer */
+@utility glass-card {
+  background-color: color-mix(in srgb, var(--grey-950) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cyan-mid) 20%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 12px 32px -20px rgb(0 0 0 / 0.7);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: var(--grey-950);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--grey-950);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@utility glass-card-interactive {
+  transition: border-color 200ms, box-shadow 200ms;
+  &:hover {
+    border-color: color-mix(in srgb, var(--cyan-mid) 70%, transparent);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 28px -8px color-mix(in srgb, var(--cyan-mid) 55%, transparent);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+@utility glass-glow {
+  background-image:
+    radial-gradient(420px 300px at 14% 16%, color-mix(in srgb, var(--cyan-mid) 26%, transparent), transparent 72%),
+    radial-gradient(520px 360px at 88% 34%, color-mix(in srgb, var(--cyan-dark) 24%, transparent), transparent 72%),
+    radial-gradient(480px 340px at 28% 82%, color-mix(in srgb, var(--cyan-mid) 16%, transparent), transparent 72%);
+  /* apaga as beiradas: o brilho não pode terminar num corte reto */
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, transparent, black 10%, black 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, transparent, black 10%, black 88%, transparent);
+  mask-composite: intersect;
 }
 @utility type-accent { font-family: var(--font-accent); font-weight: 400; line-height: 1.2; letter-spacing: 0.01em; }
 @utility type-code { font-family: var(--font-mono); font-size: 0.875em; }
