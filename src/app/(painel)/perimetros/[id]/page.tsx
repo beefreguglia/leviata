@@ -48,7 +48,7 @@ export default async function PerimeterPage({ params }: PageProps<"/perimetros/[
           <UploadImage id={p.imageId} alt={`Vista de cima: ${p.name}`} className="w-full" />
         </a>
       ) : (
-        <p className="rounded-card bg-card px-5 py-5 text-base text-muted-foreground">Sem imagem.</p>
+        <p className="rounded-card glass-card px-5 py-5 text-base text-muted-foreground">Sem imagem.</p>
       )}
     </FadeIn>
   );

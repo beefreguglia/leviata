@@ -87,7 +87,7 @@ export default async function AgendaPage({ searchParams }: PageProps<"/agenda">)
               </LinkButton>
             </div>
           </div>
-          <div className="overflow-hidden rounded-card bg-card" role="grid" aria-label="Calendário">
+          <div className="overflow-hidden rounded-card glass-card" role="grid" aria-label="Calendário">
             <div className="grid grid-cols-7 border-b border-grey-700" role="row">
               {WEEKDAYS.map((d) => (
                 <div key={d} role="columnheader" className="px-2 py-3 text-center text-xs font-bold text-muted-foreground">
@@ -153,7 +153,7 @@ export default async function AgendaPage({ searchParams }: PageProps<"/agenda">)
               {upcoming.map((e) => {
                 const mine = e.attendances[0];
                 return (
-                  <Link key={e.id} href={`/agenda/${e.id}`} data-testid="upcoming-event" className="flex flex-col gap-1.5 px-5 py-4 hover:bg-grey-700">
+                  <Link key={e.id} href={`/agenda/${e.id}`} data-testid="upcoming-event" className="flex flex-col gap-1.5 px-5 py-4 hover:bg-white/5">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs text-muted-foreground first-letter:uppercase">
                         {toDateInputBRT(e.startsAt) === toDateInputBRT(now) ? "Hoje" : fmtWeekday(e.startsAt)} · {fmtTime(e.startsAt)}

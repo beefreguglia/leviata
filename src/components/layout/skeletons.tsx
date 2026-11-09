@@ -26,7 +26,7 @@ export function HeaderSkeleton({ action = true }: { action?: boolean }) {
 
 export function ListSkeleton({ rows = 6, avatar = true, className }: { rows?: number; avatar?: boolean; className?: string }) {
   return (
-    <div className={cn("overflow-hidden rounded-card bg-card", className)}>
+    <div className={cn("overflow-hidden rounded-card glass-card", className)}>
       {Array.from({ length: rows }, (_, i) => (
         <div key={i} className="flex min-h-14 items-center gap-4 border-b border-grey-700 px-5 py-3 last:border-0">
           {avatar && <Skeleton className="size-10 shrink-0 rounded-full" />}
@@ -45,7 +45,7 @@ export function CardGridSkeleton({ cards = 6, image = true }: { cards?: number; 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: cards }, (_, i) => (
-        <div key={i} className="overflow-hidden rounded-card bg-card">
+        <div key={i} className="overflow-hidden rounded-card glass-card">
           {image && <Skeleton className="aspect-[4/3] w-full rounded-none" />}
           <div className="flex flex-col gap-3 p-5">
             <Skeleton className="h-5 w-2/3 rounded" />
@@ -61,7 +61,7 @@ export function StatsSkeleton({ count = 4, icon = true }: { count?: number; icon
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-card bg-card p-5">
+        <div key={i} className="flex flex-col gap-3 rounded-card glass-card p-5">
           {icon && <Skeleton className="size-9 rounded-md" />}
           <Skeleton className="h-8 w-16 rounded" />
           <Skeleton className="h-4 w-24 rounded" />
@@ -72,5 +72,5 @@ export function StatsSkeleton({ count = 4, icon = true }: { count?: number; icon
 }
 
 export function BlockSkeleton({ className }: { className?: string }) {
-  return <Skeleton className={cn("rounded-card bg-card", className)} />;
+  return <div className={cn("glass-card animate-pulse rounded-card", className)} />;
 }

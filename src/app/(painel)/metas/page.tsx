@@ -188,7 +188,7 @@ export default async function MetasPage() {
             <h2 className="type-h2 text-grey-300">
               Fac · {doneCount} de {withGoals} bateram tudo
             </h2>
-            <div className="overflow-x-auto rounded-card bg-card">
+            <div className="overflow-x-auto rounded-card glass-card">
               <table className="w-full min-w-[560px] text-left" data-testid="goals-table">
                 <thead>
                   <tr className="border-b border-grey-700 text-xs text-muted-foreground">

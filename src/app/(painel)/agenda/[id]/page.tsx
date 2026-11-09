@@ -175,7 +175,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
           {(["VOU", "TALVEZ", "NAO_VOU"] as const).map((st) => {
             const list = byStatus(st);
             return (
-              <div key={st} className="flex flex-col gap-2 rounded-card bg-card p-4" data-testid={`attendance-${st}`}>
+              <div key={st} className="flex flex-col gap-2 rounded-card glass-card p-4" data-testid={`attendance-${st}`}>
                 <span className="flex items-center justify-between text-sm font-bold text-grey-200">
                   {ATTENDANCE[st].label} <span className="tabular-nums text-muted-foreground">{list.length}</span>
                 </span>
@@ -225,7 +225,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
           )}
         </div>
         {canManage && open ? (
-          <div className="rounded-card bg-card p-5">
+          <div className="rounded-card glass-card p-5">
             <LineupEditor
               version={ev.slots.map((s) => s.id).join()}
               action={saveLineup.bind(null, ev.id)}
@@ -240,7 +240,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
             />
           </div>
         ) : ev.slots.length === 0 ? (
-          <p className="rounded-card bg-card px-5 py-5 text-base text-muted-foreground">Escalação ainda não montada.</p>
+          <p className="rounded-card glass-card px-5 py-5 text-base text-muted-foreground">Escalação ainda não montada.</p>
         ) : (
           <GroupedList>
             {ev.slots.map((s) => (
@@ -317,7 +317,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
             </Field>
           </FormDialog>
         ) : (
-          !ev.report && <p className="rounded-card bg-card px-5 py-5 text-base text-muted-foreground">{started ? "Sem relatório." : "O relatório é feito depois que o evento começar."}</p>
+          !ev.report && <p className="rounded-card glass-card px-5 py-5 text-base text-muted-foreground">{started ? "Sem relatório." : "O relatório é feito depois que o evento começar."}</p>
         )}
       </section>
     </div>

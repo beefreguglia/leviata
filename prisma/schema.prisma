@@ -68,6 +68,7 @@ model Member {
   flyers        Flyer[]         @relation("FlyerAuthor")
   streams       StreamChannel[]
 
+  dossiers      Dossier[]     @relation("DossierAuthor")
   mapPins       MapPin[]      @relation("MapPinAuthor")
   perimeters    Perimeter[]   @relation("PerimeterAuthor")
   eventsCreated Event[]       @relation("EventCreatedBy")
@@ -269,10 +270,11 @@ model Faction {
   logoId String?
   logo   Upload? @relation(fields: [logoId], references: [id], onDelete: SetNull)
 
-  events  FactionEvent[]
-  mapPins MapPin[]
-  orders  Order[]
-  sales   Sale[]
+  events   FactionEvent[]
+  mapPins  MapPin[]
+  orders   Order[]
+  sales    Sale[]
+  dossiers Dossier[]
 }
 
 enum FactionEventKind {
@@ -808,6 +810,8 @@ model Sector {
   order         Int      @default(0)
   /// cargo do Discord que coloca a pessoa neste setor
   discordRoleId String?  @unique
+  /// permissões que o setor soma às da patente (ver src/lib/permissions.ts)
+  permissions   String[] @default([])
   createdAt     DateTime @default(now())
 
   members     Member[]
@@ -826,4 +830,68 @@ model Management {
   sectorId String?
   sector   Sector?  @relation(fields: [sectorId], references: [id], onDelete: SetNull)
   members  Member[] @relation("MemberManagements")
+}
+
+// ============================================================
+// Dossiê: pessoas da cidade (acesso restrito à investigação)
+// ============================================================
+
+enum DossierStatus {
+  LIVRE
+  PRESO
+  FORAGIDO
+  MORTO
+  DESCONHECIDO
+}
+
+/// Ficha de uma pessoa da cidade.
+model Dossier {
+  id        String        @id @default(cuid())
+  name      String
+  nickname  String?
+  phone     String?
+  passport  String?
+  status    DossierStatus @default(DESCONHECIDO)
+  threat    Risk          @default(BAIXO)
+  notes     String? // markdown
+  imageIds  String[] // ids de Upload (prints)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  factionId String?
+  faction   Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+  authorId  String?
+  author    Member?  @relation("DossierAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  vehicles  DossierVehicle[]
+  linksFrom DossierLink[]    @relation("DossierLinkFrom")
+  linksTo   DossierLink[]    @relation("DossierLinkTo")
+
+  @@index([name])
+}
+
+model DossierVehicle {
+  id    String  @id @default(cuid())
+  plate String
+  model String?
+  color String?
+
+  dossierId String
+  dossier   Dossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  @@index([plate])
+}
+
+/// Vínculo entre duas fichas (ex.: "irmão de", "trabalha para").
+model DossierLink {
+  id          String   @id @default(cuid())
+  description String
+  createdAt   DateTime @default(now())
+
+  fromId String
+  from   Dossier @relation("DossierLinkFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId   String
+  to     Dossier @relation("DossierLinkTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
 }

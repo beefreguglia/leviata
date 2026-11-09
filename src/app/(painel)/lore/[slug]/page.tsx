@@ -45,7 +45,7 @@ export default async function LoreArticlePage({ params }: PageProps<"/lore/[slug
           </LinkButton>
         )}
       </div>
-      <article className="rounded-card bg-card px-6 py-8 sm:px-10">
+      <article className="rounded-card glass-card px-6 py-8 sm:px-10">
         <Markdown>{article.content}</Markdown>
       </article>
       {article.tags.length > 0 && (

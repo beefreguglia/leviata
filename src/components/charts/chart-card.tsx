@@ -22,7 +22,7 @@ export function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex min-w-0 flex-col gap-4 rounded-card bg-card p-5 md:p-6" data-testid={testId}>
+    <section className="flex min-w-0 flex-col gap-4 rounded-card glass-card p-5 md:p-6" data-testid={testId}>
       <header className="flex flex-col gap-1">
         <h2 className="text-base font-bold text-grey-100">{title}</h2>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}

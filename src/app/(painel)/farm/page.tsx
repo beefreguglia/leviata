@@ -75,7 +75,7 @@ export default async function FarmPage({ searchParams }: PageProps<"/farm">) {
             const perHour = yieldPerHour(g.amountPerRun, g.minutesPerRun);
             return (
               <StaggerItem key={g.id}>
-                <Link href={`/farm/${g.id}`} data-testid="farm-card" className="group flex h-full flex-col overflow-hidden rounded-card bg-card transition-colors hover:bg-grey-700">
+                <Link href={`/farm/${g.id}`} data-testid="farm-card" className="group flex h-full flex-col overflow-hidden rounded-card glass-card glass-card-interactive">
                   {g.imageIds[0] ? (
                     <UploadImage id={g.imageIds[0]} alt="" className="aspect-video w-full" />
                   ) : (

@@ -94,7 +94,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
         }
       />
 
-      <nav className="mb-8 flex gap-1 rounded-md bg-card p-1 sm:w-fit" aria-label="Seções do mural">
+      <nav className="mb-8 flex gap-1 rounded-md glass-card p-1 sm:w-fit" aria-label="Seções do mural">
         {TABS.map((t) => (
           <Link
             key={t.key}
@@ -140,7 +140,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
         <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {flyers.map((f) => (
             <StaggerItem key={f.id}>
-              <article data-testid="flyer" className="group flex h-full flex-col overflow-hidden rounded-card bg-card">
+              <article data-testid="flyer" className="group flex h-full flex-col overflow-hidden rounded-card glass-card">
                 <a href={uploadUrl(f.imageId)} target="_blank" rel="noreferrer" className="block overflow-hidden bg-input" aria-label={`Abrir flyer ${f.title}`}>
                   <UploadImage id={f.imageId} alt={f.title} className="aspect-[4/5] w-full transition-transform duration-300 group-hover:scale-[1.02]" />
                 </a>

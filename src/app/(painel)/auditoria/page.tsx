@@ -33,7 +33,7 @@ export default async function AuditoriaPage({ searchParams }: PageProps<"/audito
       {logs.length === 0 ? (
         <EmptyState icon={LayoutListIcon} title="Nada registrado ainda" />
       ) : (
-        <div className="overflow-hidden rounded-card bg-card [&>*+*]:border-t [&>*+*]:border-border">
+        <div className="overflow-hidden rounded-card glass-card [&>*+*]:border-t [&>*+*]:border-white/10">
           {logs.map((log) => (
             <div key={log.id} className="flex flex-col gap-0.5 px-5 py-4 sm:flex-row sm:items-center sm:gap-4">
               <span className="w-36 shrink-0 text-sm text-muted-foreground tabular-nums">{fmtDateTime(log.createdAt)}</span>

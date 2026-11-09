@@ -33,6 +33,7 @@ export const NAV_MAIN: NavSection[] = [
       { href: "/hierarquia", label: "Hierarquia", perm: "painel.ver" },
       { href: "/ausencias", label: "Ausências", perm: "painel.ver" },
       { href: "/punicoes", label: "Punições", perm: "painel.ver" },
+      { href: "/radar", label: "Radar de inatividade", perm: "radar.ver" },
     ],
   },
   {
@@ -63,6 +64,7 @@ export const NAV_MAIN: NavSection[] = [
     items: [
       { href: "/lore", label: "Lore", perm: "painel.ver" },
       { href: "/faccoes", label: "Facções", perm: "painel.ver" },
+      { href: "/dossie", label: "Dossiê", perm: "dossie.gerenciar" },
     ],
   },
   {

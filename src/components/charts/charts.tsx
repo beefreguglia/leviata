@@ -45,7 +45,7 @@ export function LineTrendChart({ data, xKey, series, format = "money", height = 
           <YAxis {...axisProps} width={84} tickFormatter={(v: number) => formatTick(v, format)} />
           <Tooltip cursor={{ stroke: "var(--grey-500)" }} content={(p) => <ChartTooltip {...(p as object)} format={format} />} />
           {series.map((s) => (
-            <Line key={s.key} dataKey={s.key} name={s.label} stroke={s.color} strokeWidth={2} dot={false} activeDot={{ r: 4, stroke: "var(--card)", strokeWidth: 2 }} isAnimationActive={false} />
+            <Line key={s.key} dataKey={s.key} name={s.label} stroke={s.color} strokeWidth={2} dot={false} activeDot={{ r: 4, stroke: "var(--card-glass)", strokeWidth: 2 }} isAnimationActive={false} />
           ))}
         </LineChart>
       </ResponsiveContainer>
@@ -83,7 +83,7 @@ export function BarTrendChart({
               name={s.label}
               fill={s.color}
               stackId={stacked ? "total" : undefined}
-              stroke="var(--card)"
+              stroke="var(--card-glass)"
               strokeWidth={2}
               radius={!stacked || i === series.length - 1 ? [4, 4, 0, 0] : undefined}
               maxBarSize={36}

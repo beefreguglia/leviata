@@ -98,9 +98,7 @@ export default async function DashboardPage() {
   const firstName = (viewer.member?.rpName ?? viewer.user.username).split(" ")[0];
 
   return (
-    <div className="relative isolate">
-      {/* o que o vidro dos cards desfoca; vai até a borda do padding do layout */}
-      <div aria-hidden="true" className="glass-glow pointer-events-none absolute -inset-x-4 -inset-y-6 -z-10 md:-inset-x-8 md:-inset-y-8" />
+    <>
       {!registered && (
         <FadeIn className="mb-6">
           <Link
@@ -206,7 +204,7 @@ export default async function DashboardPage() {
           </div>
           <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
             {pinnedNotices.map((n) => (
-              <NoticeCard key={n.id} notice={n} compact glass />
+              <NoticeCard key={n.id} notice={n} compact />
             ))}
           </div>
         </FadeIn>
@@ -214,7 +212,7 @@ export default async function DashboardPage() {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2 [&>*]:min-w-0">
         <FadeIn delay={0.1}>
-          <GroupedList glass header="Próximas ações e corridas">
+          <GroupedList header="Próximas ações e corridas">
             {nextEvents.length === 0 ? (
               <Link href="/agenda" className="flex items-center gap-3 px-5 py-5 text-base text-muted-foreground hover:bg-white/5">
                 <CalendarDaysIcon className="size-5" /> Nada agendado ainda
@@ -240,7 +238,7 @@ export default async function DashboardPage() {
 
 {canManage && (
         <FadeIn delay={0.15}>
-          <GroupedList glass header="Fora agora">
+          <GroupedList header="Fora agora">
             {absentNow.length === 0 ? (
               <p className="px-5 py-4 text-base text-muted-foreground">Todo mundo na ativa.</p>
             ) : (
@@ -262,7 +260,7 @@ export default async function DashboardPage() {
         )}
 
         <FadeIn delay={0.18}>
-          <GroupedList glass header={`Ao vivo agora · ${liveNow.length}`}>
+          <GroupedList header={`Ao vivo agora · ${liveNow.length}`}>
             {liveNow.length === 0 ? (
               <Link href="/lives" className="flex items-center gap-3 px-5 py-5 text-base text-muted-foreground hover:bg-white/5">
                 <RadioIcon className="size-5" /> Ninguém em live agora
@@ -293,7 +291,7 @@ export default async function DashboardPage() {
 
         {recent.length > 0 && (
           <FadeIn delay={0.2} className="lg:col-span-2">
-            <GroupedList glass header="Atividade recente">
+            <GroupedList header="Atividade recente">
               {recent.map((log) => (
                 <div key={log.id} className="flex items-center justify-between gap-3 px-5 py-4">
                   <p className="min-w-0 truncate text-base">
@@ -310,6 +308,6 @@ export default async function DashboardPage() {
           </FadeIn>
         )}
       </div>
-    </div>
+    </>
   );
 }

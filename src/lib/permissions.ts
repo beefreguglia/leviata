@@ -14,6 +14,8 @@ export const PERMISSIONS = {
   "punicoes.gerenciar": "Aplicar e revogar punições",
   "ausencias.gerenciar": "Aprovar/recusar avisos de ausência",
   "auditoria.ver": "Ver log de auditoria",
+  "radar.ver": "Ver o radar de inatividade",
+  "dossie.gerenciar": "Ver e editar o dossiê de pessoas da cidade",
   admin: "Administrador (tudo)",
 } as const;
 

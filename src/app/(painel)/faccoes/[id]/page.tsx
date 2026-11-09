@@ -140,7 +140,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
             )}
           </div>
           {faction.events.length === 0 ? (
-            <p className="rounded-card bg-card px-5 py-5 text-base text-muted-foreground">Nada registrado ainda.</p>
+            <p className="rounded-card glass-card px-5 py-5 text-base text-muted-foreground">Nada registrado ainda.</p>
           ) : (
             <ol className="flex flex-col gap-0 border-l-2 border-grey-700 pl-6" data-testid="faction-timeline">
               {faction.events.map((e) => (

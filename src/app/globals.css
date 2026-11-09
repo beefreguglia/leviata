@@ -52,6 +52,7 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --color-chart-5: var(--chart-5);
+  --color-card-glass: var(--card-glass);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
@@ -126,7 +127,8 @@
   /* tokens semânticos (shadcn) → Andromeda */
   --background: var(--grey-900); /* color-background */
   --foreground: var(--grey-100); /* text-title */
-  --card: var(--grey-800); /* shape-primary */
+  --card: var(--grey-800); /* shape-primary: modais */
+  --card-glass: color-mix(in srgb, var(--grey-950) 45%, var(--grey-900)); /* cards das páginas */
   --card-foreground: var(--grey-100);
   --popover: var(--grey-700); /* dropdowns/menus */
   --popover-foreground: var(--grey-100);
@@ -210,21 +212,11 @@
   font-family: var(--font-display); font-weight: 400; font-size: 2.5rem; line-height: 1;
   letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
 }
-/* Vidro do Início: precisa de .glass-glow (ou outra cor) atrás para o desfoque aparecer */
+/* Card padrão do painel: escuro, com borda ciano fina e reflexo no topo */
 @utility glass-card {
-  background-color: color-mix(in srgb, var(--grey-950) 45%, transparent);
+  background-color: var(--card-glass);
   border: 1px solid color-mix(in srgb, var(--cyan-mid) 20%, transparent);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 12px 32px -20px rgb(0 0 0 / 0.7);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    background-color: var(--grey-950);
-  }
-  @media (prefers-reduced-transparency: reduce) {
-    background-color: var(--grey-950);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
 }
 @utility glass-card-interactive {
   transition: border-color 200ms, box-shadow 200ms;
@@ -236,17 +228,6 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
-}
-@utility glass-glow {
-  background-image:
-    radial-gradient(420px 300px at 14% 16%, color-mix(in srgb, var(--cyan-mid) 26%, transparent), transparent 72%),
-    radial-gradient(520px 360px at 88% 34%, color-mix(in srgb, var(--cyan-dark) 24%, transparent), transparent 72%),
-    radial-gradient(480px 340px at 28% 82%, color-mix(in srgb, var(--cyan-mid) 16%, transparent), transparent 72%);
-  /* apaga as beiradas: o brilho não pode terminar num corte reto */
-  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, transparent, black 10%, black 88%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, transparent, black 10%, black 88%, transparent);
-  mask-composite: intersect;
 }
 @utility type-accent { font-family: var(--font-accent); font-weight: 400; line-height: 1.2; letter-spacing: 0.01em; }
 @utility type-code { font-family: var(--font-mono); font-size: 0.875em; }

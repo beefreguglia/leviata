@@ -105,7 +105,7 @@ export default async function HierarquiaPage() {
                   </div>
                 )}
               </div>
-              <div className="rounded-card bg-card p-5">
+              <div className="rounded-card glass-card p-5">
                 {rank.members.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Ninguém nesta patente.</p>
                 ) : (
@@ -173,13 +173,13 @@ export default async function HierarquiaPage() {
           )}
         </div>
         {sectors.length === 0 ? (
-          <p className="rounded-card bg-card px-5 py-4 text-base text-muted-foreground">Nenhum setor cadastrado.</p>
+          <p className="rounded-card glass-card px-5 py-4 text-base text-muted-foreground">Nenhum setor cadastrado.</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
             {sectors.map((sector) => {
               const managers = sector.managements.flatMap((g) => g.members.map((m) => ({ g: g.name, m })));
               return (
-                <article key={sector.id} className="flex flex-col gap-3 rounded-card bg-card p-5" data-testid="sector-card">
+                <article key={sector.id} className="flex flex-col gap-3 rounded-card glass-card p-5" data-testid="sector-card">
                   <header className="flex items-start justify-between gap-2">
                     <div className="flex min-w-0 flex-col gap-1">
                       <h3 className="flex items-center gap-2 type-h3 text-grey-100">
@@ -275,9 +275,9 @@ export default async function HierarquiaPage() {
           )}
         </div>
         {managements.length === 0 ? (
-          <p className="rounded-card bg-card px-5 py-4 text-base text-muted-foreground">Nenhuma gerência cadastrada.</p>
+          <p className="rounded-card glass-card px-5 py-4 text-base text-muted-foreground">Nenhuma gerência cadastrada.</p>
         ) : (
-          <div className="overflow-hidden rounded-card bg-card [&>*+*]:border-t [&>*+*]:border-grey-700">
+          <div className="overflow-hidden rounded-card glass-card [&>*+*]:border-t [&>*+*]:border-white/10">
             {managements.map((g) => (
               <div key={g.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-start sm:justify-between" data-testid="management-row">
                 <div className="flex min-w-0 flex-col gap-1">

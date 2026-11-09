@@ -1,22 +1,19 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Bloco de lista (card Andromeda: shape-primary, raio 10px, separadores grey-700).
+ * Bloco de lista (card padrão do painel, ver glass-card em globals.css).
  * Cabeçalho de seção acima e nota de rodapé abaixo.
  */
 export function GroupedList({
   header,
   footer,
   action,
-  glass,
   className,
   children,
 }: {
   header?: React.ReactNode;
   footer?: React.ReactNode;
   action?: React.ReactNode;
-  /** visual de vidro (globals.css): precisa de .glass-glow atrás */
-  glass?: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -28,7 +25,7 @@ export function GroupedList({
           {action}
         </div>
       )}
-      <div className={cn("overflow-hidden rounded-card [&>*+*]:border-t", glass ? "glass-card [&>*+*]:border-white/10" : "bg-card [&>*+*]:border-grey-700")}>{children}</div>
+      <div className="glass-card overflow-hidden rounded-card [&>*+*]:border-t [&>*+*]:border-white/10">{children}</div>
       {footer && <p className="text-sm text-muted-foreground">{footer}</p>}
     </section>
   );

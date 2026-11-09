@@ -174,7 +174,7 @@ function LoreCard({
       href={`/lore/${article.slug}`}
       data-testid="lore-card"
       className={cn(
-        "group flex overflow-hidden rounded-card bg-card transition-colors hover:bg-grey-700",
+        "group flex overflow-hidden rounded-card glass-card glass-card-interactive",
         large ? "flex-col" : "flex-col sm:flex-row",
       )}
     >

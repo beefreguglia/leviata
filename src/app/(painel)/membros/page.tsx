@@ -118,20 +118,20 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
       ) : (
         <div className="flex flex-col gap-3">
         <PresenceLegend />
-        <Stagger className="overflow-hidden rounded-card bg-card">
+        <Stagger className="overflow-hidden rounded-card glass-card">
           {members.map((m, i) => {
             const presence = presenceOf(m.status, m.absences.length > 0);
             return (
               <StaggerItem key={m.id} className={i > 0 ? "border-t border-border" : undefined}>
                 <Link
                   href={`/membros/${m.id}`}
-                  className="group flex min-h-14 items-center gap-4 px-5 py-4 transition-colors hover:bg-grey-700 focus-visible:bg-grey-700 focus-visible:outline-none"
+                  className="group flex min-h-14 items-center gap-4 px-5 py-4 transition-colors hover:bg-white/5 focus-visible:bg-grey-700 focus-visible:outline-none"
                 >
                   <PresenceAvatar
                     name={m.rpName}
                     src={m.user?.avatarUrl}
                     presence={presence}
-                    ringClassName="ring-card group-hover:ring-grey-700 group-focus-visible:ring-grey-700"
+                    ringClassName="ring-card-glass"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-base font-medium">{m.rpName}</p>

@@ -83,7 +83,7 @@ export function QuickCalculator({ presets = [] }: { presets?: RecipePreset[] }) 
   const itemLabel = item.trim() || "itens";
 
   return (
-    <div className="flex flex-col gap-6 rounded-card bg-card p-6" data-testid="quick-calc">
+    <div className="flex flex-col gap-6 rounded-card glass-card p-6" data-testid="quick-calc">
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-3 flex items-center gap-2 text-base font-bold text-grey-100">
           <Step n={1} /> Qual vai ser a fabricação?

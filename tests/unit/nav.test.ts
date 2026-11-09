@@ -14,7 +14,7 @@ describe("menu lateral (sidebar-08)", () => {
 
   it("todos os módulos do plano estão no menu", () => {
     const expected = ["/dashboard", "/membros", "/hierarquia", "/regras", "/ausencias", "/auditoria", "/punicoes", "/lore",
-      "/faccoes", "/mapa", "/perimetros", "/agenda", "/escalacoes", "/farm", "/fabricacao", "/bau", "/encomendas", "/mural", "/lives"];
+      "/faccoes", "/mapa", "/perimetros", "/agenda", "/escalacoes", "/farm", "/fabricacao", "/bau", "/encomendas", "/mural", "/lives", "/radar", "/dossie"];
     for (const href of expected) expect(ALL_NAV_LINKS.map((i) => i.href)).toContain(href);
   });
 

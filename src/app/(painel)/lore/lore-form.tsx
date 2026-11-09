@@ -46,7 +46,7 @@ export function LoreForm({
         <Input id="tags" name="tags" defaultValue={article?.tags.join(", ")} />
       </Field>
       <MarkdownEditor name="content" defaultValue={article?.content} placeholder="## O que aconteceu" />
-      <label className="flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-card bg-card px-5 text-base">
+      <label className="flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-card glass-card px-5 text-base">
         Destacar no topo da lore
         <input type="checkbox" name="isPinned" defaultChecked={article?.isPinned} className="size-5 accent-[var(--primary)]" />
       </label>

@@ -139,7 +139,7 @@ export default async function AusenciasPage() {
                 <Link
                   key={m.id}
                   href={`/membros/${m.id}`}
-                  className="flex min-h-12 items-center justify-between px-5 py-4 text-base hover:bg-grey-700"
+                  className="flex min-h-12 items-center justify-between px-5 py-4 text-base hover:bg-white/5"
                 >
                   {m.rpName}
                   <span className="text-sm text-muted-foreground">

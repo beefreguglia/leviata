@@ -124,7 +124,7 @@ export default async function FabricacaoPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
               {recipes.map((r) => (
-                <article key={r.id} data-testid="recipe" className="flex flex-col gap-4 rounded-card bg-card p-5">
+                <article key={r.id} data-testid="recipe" className="flex flex-col gap-4 rounded-card glass-card p-5">
                   <header className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="text-lg font-bold text-grey-100">

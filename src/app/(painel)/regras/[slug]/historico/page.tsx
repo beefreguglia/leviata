@@ -21,7 +21,7 @@ export default async function HistoricoRegraPage({ params }: PageProps<"/regras/
       <p className="mb-10 text-base text-muted-foreground">{page.title}</p>
       <div className="flex flex-col gap-4">
         {page.versions.map((v, i) => (
-          <details key={v.id} className="group rounded-card bg-card" open={i === 0}>
+          <details key={v.id} className="group rounded-card glass-card" open={i === 0}>
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 text-base">
               <span>
                 {fmtDateTime(v.createdAt)}

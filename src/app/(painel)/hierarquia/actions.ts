@@ -104,7 +104,7 @@ export async function updateSector(id: string, fd: FormData) {
     const data = parseSectorForm(fd);
     await assertRoleFree("sector", data.discordRoleId, id);
     const sector = await db.sector.update({ where: { id }, data });
-    await audit({ userId: viewer.user.id, action: "sector.update", entity: "Sector", entityId: id, summary: `Editou o setor ${sector.name}` });
+    await audit({ userId: viewer.user.id, action: "sector.update", entity: "Sector", entityId: id, summary: `Editou o setor ${sector.name}`, data: { permissions: data.permissions } });
     revalidate();
     return "Setor atualizado";
   });

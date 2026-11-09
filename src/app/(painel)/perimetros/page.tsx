@@ -36,7 +36,7 @@ export default async function PerimetrosPage() {
               <Link
                 href={`/perimetros/${p.id}`}
                 data-testid="perimeter-card"
-                className="flex h-full flex-col overflow-hidden rounded-card bg-card transition-colors hover:bg-grey-700"
+                className="flex h-full flex-col overflow-hidden rounded-card glass-card glass-card-interactive"
               >
                 {p.imageId ? (
                   <UploadImage id={p.imageId} alt="" className="aspect-[4/3] w-full" />

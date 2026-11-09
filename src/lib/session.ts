@@ -20,13 +20,13 @@ export const getViewer = cache(async () => {
   const member = user.member;
   const blocked = !member || member.status === "EXPULSO";
   // desenvolvedor: tudo liberado, mas a ficha continua mostrando a patente cadastrada
-  // permissões = patente + todas as gerências da pessoa
+  // permissões = patente + setor + todas as gerências da pessoa
   const permissions: string[] =
     member && isDeveloper(user.discordId)
       ? ["admin"]
       : blocked
         ? []
-        : [...new Set([...(member.rank?.permissions ?? []), ...member.managements.flatMap((g) => g.permissions)])];
+        : [...new Set([...(member.rank?.permissions ?? []), ...(member.sector?.permissions ?? []), ...member.managements.flatMap((g) => g.permissions)])];
 
   return {
     user,

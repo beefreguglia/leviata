@@ -15,6 +15,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-09-radar",
+    date: "2026-11-09",
+    title: "Radar de inatividade e cards novos",
+    items: [
+      "A gerência agora vê quem está há **7 dias ou mais** sem entregar farm nem responder presença",
+      "Quem avisou ausência e quem acabou de entrar não aparecem no radar",
+      "Todas as telas ganharam o **novo visual de cards**",
+    ],
+  },
+  {
     id: "2026-11-09-graficos-economia",
     date: "2026-11-09",
     title: "Gráficos na economia",

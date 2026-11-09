@@ -138,7 +138,7 @@ export default async function BauPage() {
               { label: "Dinheiro limpo", value: balances.clean, tone: "bg-success-low text-success" },
             ].map((b) => (
               <StaggerItem key={b.label}>
-                <div className="flex flex-col gap-4 rounded-card bg-card p-6" data-testid={`balance-${b.label}`}>
+                <div className="flex flex-col gap-4 rounded-card glass-card p-6" data-testid={`balance-${b.label}`}>
                   <span className={cn("flex size-10 items-center justify-center rounded-md", b.tone)}>
                     <WalletIcon className="size-5" />
                   </span>

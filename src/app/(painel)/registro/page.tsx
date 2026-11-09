@@ -31,7 +31,7 @@ export default async function RegistroPage() {
             : "Seus dados na cidade."
         }
       />
-      <ActionForm action={saveMyRegistration} className="flex flex-col gap-4 rounded-card bg-card p-6">
+      <ActionForm action={saveMyRegistration} className="flex flex-col gap-4 rounded-card glass-card p-6">
         <Field label="Nome" htmlFor="rpName">
           <Input id="rpName" name="rpName" required defaultValue={member.rpName} placeholder="Seu nome na cidade" autoComplete="off" />
         </Field>

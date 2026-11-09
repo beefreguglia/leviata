@@ -13,7 +13,7 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 |---|---|---|
 | rocketseat-light / mid / dark / low | `cyan-light` #5cf0fa · `cyan-mid` = `primary` #06d4ec · `cyan-dark` #0aa5b9 · `cyan-low` #06303a | hover · ação principal/foco/ativo · pressionado · fundo tingido |
 | color-background (grey-900) | `bg-background` #121214 | fundo do conteúdo |
-| shape-primary (grey-800) | `bg-card` #202024 | cards, listas, modais |
+| shape-primary (grey-800) | `bg-card` #202024 | modais |
 | shape-secondary (grey-700) | `bg-secondary`/`bg-muted`/`bg-grey-700` #29292E | botão secundário, chips, hover de linha |
 | shape-tertiary (grey-600) | `border-border`/`bg-accent` #323238 | bordas, hover em chips |
 | grey-950 | `bg-sidebar` #09090A | menu lateral |
@@ -39,8 +39,8 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 ## Espaçamento e raios
 - Escala de 4px (Andromeda space = Tailwind). Valores usuais: 2 (8) · 3 (12) · 4 (16) · 5 (20) · 6 (24) · 8 (32) · 10 (40).
 - Página: `px-4 py-6 md:px-8 md:py-8`; cabeçalho da página `mb-10`; entre seções `gap-10`; cards em grid `gap-4`.
-- Card: `rounded-card` (20px) `bg-card`, padding `p-5`/`p-6`. Linhas de lista: `min-h-14 px-5 py-4`.
-- Vidro (`glass-card`, e `glass-card-interactive` se for clicável): só no Início. Exige `.glass-glow` atrás, senão vira um card preto. `GroupedList` e `NoticeCard` aceitam a prop `glass`; linhas sobre o vidro usam `hover:bg-white/5`.
+- Card: `rounded-card` (20px) `glass-card`, padding `p-5`/`p-6`. Linhas de lista: `min-h-14 px-5 py-4`.
+- Todo card de página usa `glass-card` (e `glass-card-interactive` se for clicável). Linhas dentro dele: `hover:bg-white/5` e separadores `border-white/10`. Modais continuam em `bg-card`. Fundo da página é sempre `bg-background`, sem brilho.
 - Raios (um pouco mais arredondados que o Andromeda, a pedido da fac): `rounded-md` = 12px (botões, inputs, menus), `rounded-card` = 20px (cards, blocos e modais), `rounded-full` (badges, avatares). Ajuste em `--radius` / `--radius-card`.
 
 ## Componentes

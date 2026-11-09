@@ -27,6 +27,7 @@ export function SectorFields({ sector }: { sector?: Sector }) {
       <Field label="ID do cargo no Discord" htmlFor="s-role" hint={ROLE_HINT}>
         <Input id="s-role" name="discordRoleId" inputMode="numeric" defaultValue={sector?.discordRoleId ?? ""} placeholder="Ex.: 1234567890123456789" />
       </Field>
+      <PermissionChecklist selected={sector?.permissions} legend="Permissões que este setor soma à patente" />
     </div>
   );
 }

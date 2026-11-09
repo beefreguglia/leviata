@@ -28,14 +28,14 @@ export function CraftCalculator({ items, recipes }: { items: ItemLite[]; recipes
 
   if (!craftable.length) {
     return (
-      <p className="rounded-card bg-card px-5 py-5 text-base text-muted-foreground">
+      <p className="rounded-card glass-card px-5 py-5 text-base text-muted-foreground">
         Cadastre uma receita para usar a calculadora.
       </p>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5 rounded-card bg-card p-6" data-testid="calculator">
+    <div className="flex flex-col gap-5 rounded-card glass-card p-6" data-testid="calculator">
       <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
         <Field label="Quero fabricar" htmlFor="calc-item">
           <NativeSelect id="calc-item" value={target} onChange={(e) => setTarget(e.target.value)}>

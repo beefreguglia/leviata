@@ -93,7 +93,7 @@ export default async function VendasPage({ searchParams }: PageProps<"/vendas">)
           { label: "Sujo na semana", value: money(weekDirty) },
           { label: "Limpo na semana", value: money(weekClean) },
         ].map((s) => (
-          <div key={s.label} className="flex flex-col gap-1 rounded-card bg-card p-5">
+          <div key={s.label} className="flex flex-col gap-1 rounded-card glass-card p-5">
             <span className="type-stat text-grey-100">{s.value}</span>
             <span className="text-sm text-muted-foreground">{s.label}</span>
           </div>

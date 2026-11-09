@@ -6,7 +6,7 @@ const PAGES = [
   "/dashboard", "/membros", "/hierarquia", "/ausencias", "/punicoes",
   "/agenda", "/escalacoes", "/perimetros", "/mapa",
   "/farm", "/fabricacao", "/bau", "/metas", "/encomendas",
-  "/lore", "/faccoes", "/mural", "/mural?aba=flyers", "/lives",
+  "/lore", "/faccoes", "/dossie", "/radar", "/mural", "/mural?aba=flyers", "/lives",
   "/regras/estatuto", "/regras/conduta", "/registro", "/auditoria",
   "/lore/novo", "/perimetros/novo", "/farm/novo", "/regras/nova",
 ];

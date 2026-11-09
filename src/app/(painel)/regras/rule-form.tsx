@@ -24,7 +24,7 @@ export function RuleForm({
           <Input id="order" name="order" type="number" defaultValue={page?.order ?? 0} />
         </Field>
       </div>
-      <label className="flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-card bg-card px-5 py-4 text-base">
+      <label className="flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-card glass-card px-5 py-4 text-base">
         <span>
           Visível para recrutas
           <span className="block text-sm text-muted-foreground">Quem ainda não tem acesso ao painel também vê esta página.</span>

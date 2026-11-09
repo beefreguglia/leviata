@@ -17,20 +17,17 @@ export function NoticeCard({
   notice,
   canEdit,
   compact,
-  glass,
 }: {
   notice: NoticeWithPoll;
   canEdit?: boolean;
   compact?: boolean;
-  /** visual de vidro (globals.css): precisa de .glass-glow atrás */
-  glass?: boolean;
 }) {
   const p = NOTICE_PRIORITY[notice.priority];
   const expired = notice.expiresAt && notice.expiresAt < new Date();
   return (
     <article
       data-testid="notice"
-      className={cn("relative flex flex-col gap-3 overflow-hidden rounded-card p-6 pl-7", glass ? "glass-card" : "bg-card", expired && "opacity-60")}
+      className={cn("relative flex flex-col gap-3 overflow-hidden rounded-card glass-card p-6 pl-7", expired && "opacity-60")}
     >
       <span className={cn("absolute inset-y-0 left-0 w-1", p.bar)} aria-hidden="true" />
       <header className="flex flex-wrap items-start justify-between gap-3">

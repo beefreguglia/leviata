@@ -58,7 +58,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           <p className="mt-2 type-label text-grey-300">Cidade dos Anjos · Painel interno</p>
         </div>
 
-        <FadeIn className="rounded-card bg-card p-6">
+        <FadeIn className="rounded-card glass-card p-6">
           {errMsg && (
             <p className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {errMsg}

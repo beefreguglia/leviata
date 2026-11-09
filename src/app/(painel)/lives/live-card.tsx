@@ -13,7 +13,7 @@ export function LiveCard({ channel }: { channel: StreamChannel & { member: Membe
       target="_blank"
       rel="noreferrer"
       data-testid="live-card"
-      className="group flex flex-col overflow-hidden rounded-card bg-card transition-colors hover:bg-grey-700"
+      className="group flex flex-col overflow-hidden rounded-card glass-card glass-card-interactive"
     >
       <div className="relative aspect-video bg-input">
         {channel.thumbnailUrl ? (

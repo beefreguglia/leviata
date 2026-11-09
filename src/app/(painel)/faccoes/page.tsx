@@ -69,7 +69,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
               href={active ? "/faccoes" : `/faccoes?relacao=${r}`}
               aria-current={active ? "true" : undefined}
               className={cn(
-                "flex flex-col gap-2 rounded-card bg-card p-4 ring-2 transition-colors hover:bg-grey-700",
+                "flex flex-col gap-2 rounded-card glass-card glass-card-interactive p-4 ring-2",
                 active ? "ring-primary" : "ring-transparent",
               )}
             >
@@ -95,7 +95,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
               <Link
                 href={`/faccoes/${f.id}`}
                 data-testid="faction-card"
-                className={cn("flex h-full items-start gap-4 rounded-card bg-card p-5 transition-colors hover:bg-grey-700", !f.isActive && "opacity-60")}
+                className={cn("flex h-full items-start gap-4 rounded-card glass-card glass-card-interactive p-5", !f.isActive && "opacity-60")}
               >
                 <FactionAvatar name={f.name} tag={f.tag} color={f.color} logoId={f.logoId} />
                 <div className="flex min-w-0 flex-1 flex-col gap-1.5">

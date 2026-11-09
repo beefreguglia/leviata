@@ -45,7 +45,7 @@ export default async function RegraPage({ params }: PageProps<"/regras/[slug]">)
           </div>
         )}
       </div>
-      <article className="rounded-card bg-card px-6 py-8 sm:px-10">
+      <article className="rounded-card glass-card px-6 py-8 sm:px-10">
         <Markdown>{page.content}</Markdown>
       </article>
     </FadeIn>

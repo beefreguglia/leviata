@@ -55,7 +55,7 @@ export default async function EncomendasPage() {
       materials = [];
     }
     return (
-      <article className="flex flex-col gap-3 rounded-card bg-card p-5" data-testid="order-card">
+      <article className="flex flex-col gap-3 rounded-card glass-card p-5" data-testid="order-card">
         <header className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="truncate text-base font-bold text-grey-100">{o.customer}</h3>

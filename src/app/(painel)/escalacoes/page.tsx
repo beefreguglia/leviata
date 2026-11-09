@@ -37,7 +37,7 @@ export default async function EscalacoesPage() {
             <p className="px-5 py-4 text-base text-muted-foreground">Você não está escalado em nada por enquanto.</p>
           ) : (
             mine.map(({ e, s }) => (
-              <Link key={s.id} href={`/agenda/${e.id}`} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-grey-700" data-testid="my-lineup">
+              <Link key={s.id} href={`/agenda/${e.id}`} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-white/5" data-testid="my-lineup">
                 <span className="flex flex-col">
                   <span className="text-base font-medium text-grey-100">{e.title}</span>
                   <span className="text-sm text-muted-foreground first-letter:uppercase">
@@ -60,7 +60,7 @@ export default async function EscalacoesPage() {
         {canManage && withoutLineup.length > 0 && (
           <GroupedList header="Sem escalação ainda" footer="Ações agendadas que ainda não têm ninguém escalado.">
             {withoutLineup.map((e) => (
-              <Link key={e.id} href={`/agenda/${e.id}`} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-grey-700">
+              <Link key={e.id} href={`/agenda/${e.id}`} className="flex min-h-14 items-center justify-between gap-3 px-5 py-3 hover:bg-white/5">
                 <span className="flex items-center gap-2 text-base text-grey-100">
                   <TriangleAlertIcon className="size-4 text-warning" /> {e.title}
                 </span>
@@ -80,7 +80,7 @@ export default async function EscalacoesPage() {
               const filled = e.slots.filter((s) => s.member).length;
               return (
                 <StaggerItem key={e.id}>
-                  <article className="flex h-full flex-col gap-4 rounded-card bg-card p-5" data-testid="lineup-card">
+                  <article className="flex h-full flex-col gap-4 rounded-card glass-card p-5" data-testid="lineup-card">
                     <header className="flex items-start justify-between gap-3">
                       <div>
                         <Link href={`/agenda/${e.id}`} className="text-lg font-bold text-grey-100 hover:underline">

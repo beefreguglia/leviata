@@ -1,6 +1,6 @@
 import type {
   AttendanceStatus, EventKind, EventResult, EventStatus, MapPinCategory,
-  AbsenceStatus, FactionEventKind, FactionRelation, LoreCategory, MemberStatus, NoticePriority, Risk, StreamPlatform,
+  AbsenceStatus, DossierStatus, FactionEventKind, FactionRelation, LoreCategory, MemberStatus, NoticePriority, Risk, StreamPlatform,
 } from "@/generated/prisma/client";
 
 export const MEMBER_STATUS: Record<MemberStatus, { label: string; className: string }> = {
@@ -67,6 +67,14 @@ export const RISK: Record<Risk, { label: string; className: string }> = {
   BAIXO: { label: "Risco baixo", className: "bg-success-low text-success" },
   MEDIO: { label: "Risco médio", className: "bg-warning-low text-warning" },
   ALTO: { label: "Risco alto", className: "bg-danger-low text-danger-light" },
+};
+
+export const DOSSIER_STATUS: Record<DossierStatus, { label: string; className: string }> = {
+  LIVRE: { label: "Livre", className: "bg-grey-600 text-grey-100" },
+  PRESO: { label: "Preso", className: "bg-warning-low text-warning" },
+  FORAGIDO: { label: "Foragido", className: "bg-danger-low text-danger-light" },
+  MORTO: { label: "Morto", className: "bg-grey-700 text-grey-300" },
+  DESCONHECIDO: { label: "Desconhecido", className: "bg-grey-700 text-grey-300" },
 };
 
 export const NOTICE_PRIORITY: Record<NoticePriority, { label: string; className: string; bar: string }> = {

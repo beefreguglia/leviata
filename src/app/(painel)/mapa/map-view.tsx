@@ -167,7 +167,7 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
     <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
       <aside className="flex min-h-0 flex-col gap-3 lg:h-[calc(100svh-15rem)]">
         {selected ? (
-          <section className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto rounded-card bg-card p-5" data-testid="pin-panel">
+          <section className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto rounded-card glass-card p-5" data-testid="pin-panel">
             <div className="flex items-start justify-between gap-2">
               <div className="flex flex-col gap-1.5">
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-grey-200">
@@ -250,11 +250,11 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
                   </button>
                 ))}
             </div>
-            <ul className="min-h-0 flex-1 overflow-y-auto rounded-card bg-card [&>*+*]:border-t [&>*+*]:border-grey-700" aria-label="Lugares no mapa">
+            <ul className="min-h-0 flex-1 overflow-y-auto rounded-card glass-card [&>*+*]:border-t [&>*+*]:border-white/10" aria-label="Lugares no mapa">
               {visible.length === 0 && <li className="px-5 py-4 text-sm text-muted-foreground">Nenhum lugar {pins.length ? "com esse filtro" : "marcado ainda"}.</li>}
               {visible.map((p) => (
                 <li key={p.id}>
-                  <button type="button" onClick={() => setSelectedId(p.id)} className="flex min-h-12 w-full items-center gap-3 px-5 py-3 text-left hover:bg-grey-700">
+                  <button type="button" onClick={() => setSelectedId(p.id)} className="flex min-h-12 w-full items-center gap-3 px-5 py-3 text-left hover:bg-white/5">
                     <span className="size-2.5 shrink-0 rounded-full" style={{ background: PIN_CATEGORY[p.category].color }} />
                     <span className="min-w-0 flex-1 truncate text-base text-grey-100">{p.title}</span>
                     <span className="text-xs text-muted-foreground">{PIN_CATEGORY[p.category].label}</span>

@@ -14,7 +14,7 @@ export function PresenceAvatar({
   src,
   presence,
   size = "md",
-  ringClassName = "ring-card",
+  ringClassName = "ring-card-glass",
 }: {
   name: string;
   src?: string | null;
