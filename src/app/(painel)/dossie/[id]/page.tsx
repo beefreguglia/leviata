@@ -125,7 +125,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
             }
           >
             <Field label="Placa" htmlFor="v-plate">
-              <Input id="v-plate" name="plate" required className="uppercase" />
+              <Input id="v-plate" name="plate" required autoComplete="off" spellCheck={false} className="uppercase" />
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Modelo" htmlFor="v-model">

@@ -13,8 +13,8 @@ export function PageHeader({
   return (
     <FadeIn className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex flex-col gap-2">
-        <h1 className="type-h1 text-grey-100">{title}</h1>
-        {description && <p className="text-base text-muted-foreground">{description}</p>}
+        <h1 className="type-h1 text-balance text-grey-100">{title}</h1>
+        {description && <p className="text-base text-pretty text-muted-foreground">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
     </FadeIn>

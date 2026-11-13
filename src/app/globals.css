@@ -166,6 +166,7 @@
 
 @layer base {
   body { -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  a, button, [role="button"], label, summary, input, select, textarea { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   ::selection { background: var(--cyan-low); color: var(--cyan-light); }
   /* demais rolagens (menu, diálogos, listas): trilho preto e polegar ciano */
   * { scrollbar-width: thin; scrollbar-color: var(--cyan-dark) var(--grey-950); }

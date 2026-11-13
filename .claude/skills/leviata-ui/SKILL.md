@@ -56,11 +56,37 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 
 ## Movimento (`motion/react`)
 - Presets de `src/components/motion.tsx` (`FadeIn`, `Stagger`/`StaggerItem`, `spring`). Animar só opacity/transform, curto (≤300ms). `reducedMotion="user"` já está no layout.
+- Nunca `transition-all`: liste as propriedades (`transition-[color,background-color,border-color,box-shadow,opacity,transform]` ou `transition-colors`).
+- Micro-interações discretas: card clicável sobe no máximo 2px ou acende a borda (`glass-card-interactive`), imagem dá zoom de 1.02 dentro da moldura, botão muda no hover e no clique. Nada de inclinar card, carrossel ou aba que troca sozinha.
 
 ## Acessibilidade e mobile
 - Alvos de toque ≥ 40px (44px quando possível no mobile). Funciona em 375px, sem rolagem horizontal.
-- Contraste AA; foco visível; `aria-label` em botões só com ícone; textos em português.
+- Contraste AA; foco visível (`focus-visible:`, nunca `outline-none` sem substituto); `aria-label` em botões só com ícone; ícone decorativo com `aria-hidden`; textos em português.
+- O layout do painel já tem o link "Pular para o conteúdo" (`#conteudo`): não remova; um `h1` por página (o `PageHeader`).
 - Estados vazios com ícone + frase + ação.
+- Texto que vem do usuário (nomes, títulos, descrições) aguenta curto, médio e muito longo: `truncate`/`line-clamp-*`/`break-words`, e `min-w-0` no filho de flex.
+
+## Formulários e buscas (Web Interface Guidelines)
+- Todo campo tem `<label>` (via `Field`) ou `aria-label`, inclusive buscas com ícone dentro.
+- Busca de página: `<form role="search">`, ícone `SearchIcon` dentro do campo (`pl-12`), `bg-card` (na página o `bg-input` some no fundo) e botão de texto ("Buscar"/"Filtrar").
+- Placeholder mostra exemplo e termina com `…` quando é convite a digitar ("Buscar na lore…"); "Ex.: …" para exemplos.
+- Dados do RP (nome na cidade, ID/passaporte, telefone do jogo, placa): `autoComplete="off"` e `spellCheck={false}`, senão o navegador preenche com os dados reais da pessoa. Números: `inputMode="numeric"`.
+- Botão de enviar fica habilitado até a ação começar; durante a ação, spinner (`SubmitButton` já faz). Textos de carregamento terminam com `…` ("Enviando…").
+- Erro diz o que fazer, não só o que deu errado ("Informe o ID do comprador ou deixe em branco").
+- Ação destrutiva: confirmação (`ConfirmButton`) ou desfazer; nunca imediata.
+
+## Texto e números
+- Reticências `…`, aspas curvas “ ”. Títulos com `text-balance`, parágrafos curtos com `text-pretty` (o `PageHeader` e o `GroupedList` já aplicam).
+- Valores em colunas ou comparados: `tabular-nums`. Datas por `lib/dates.ts` e dinheiro por `money()` de `lib/finance.ts` (ambos com locale pt-BR), nunca formato montado à mão.
+- Voz ativa e direta, botões específicos ("Registrar venda", não "Continuar"). Sem enfeite: a frase diz o que a tela faz.
+
+## Estado na URL
+- Filtros, abas, busca e paginação ficam na query string (`?q=`, `?status=`), para o link poder ser compartilhado no Discord e o voltar do navegador funcionar. `useState` só para estado passageiro de formulário.
+- Navegação é sempre `<Link>`/`LinkButton` (abre em nova aba com Ctrl+clique), nunca `onClick` com `router.push`.
+
+## Referências de design
+- Para padrões de painel de produto (densidade, tabelas, paleta de comandos, atalhos), consulte o skill `awesome-design-md` (Linear, Raycast, Vercel, Supabase, Sentry). Use só ritmo e padrões: cores, fontes e logo continuam os da Leviatã.
+- Revisão de conformidade: skill `web-design-guidelines`. Ver a tela de verdade (desktop 1440 e celular 390): `playwright-cli` com o login de dev.
 
 ## Checklist
 - [ ] Item no `nav.ts` (e breadcrumb correto)
@@ -68,7 +94,10 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 - [ ] Só tokens; ciano apenas em ação/ativo/foco
 - [ ] Inputs 48px, botões bold, raios 12px/20px
 - [ ] Vazio / carregando / erro tratados
-- [ ] 375px ok; testes e2e do módulo atualizados
+- [ ] Campos com label, buscas com `aria-label`, dados do RP com `autoComplete="off"`
+- [ ] Filtros e abas na URL; navegação com `<Link>`
+- [ ] Sem `transition-all`; foco visível por teclado
+- [ ] 375px ok (conferido em print); testes e2e do módulo atualizados
 
 ## Identidade visual (marca)
 - Fontes da marca em `brand/` (PNG transparentes): `leviata-logo.png` (dragão + "LEVIATÃ") e `lvt.png` (monograma). Depois de trocar, rode `npm run brand` — gera `public/brand/*.webp`, `src/app/{icon.png,favicon.ico,apple-icon.png,opengraph-image.png}` e os ícones do app instalado.

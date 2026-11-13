@@ -17,7 +17,7 @@ export function MemberFields({ member, ranks, canEditContact = true }: { member?
         <Input id="rpName" name="rpName" required defaultValue={member?.rpName} placeholder="Ex.: Dante Moretti" />
       </Field>
       <Field label="Passaporte / ID" htmlFor="passport" hint={passportLocked ? "Só o dev do painel altera." : undefined}>
-        <Input id="passport" name="passport" defaultValue={member?.passport ?? ""} inputMode="numeric" readOnly={passportLocked} aria-readonly={passportLocked} className={passportLocked ? "opacity-60" : undefined} />
+        <Input id="passport" name="passport" autoComplete="off" defaultValue={member?.passport ?? ""} inputMode="numeric" readOnly={passportLocked} aria-readonly={passportLocked} className={passportLocked ? "opacity-60" : undefined} />
       </Field>
       <Field label="Telefone no jogo" htmlFor="phone" hint={phoneLocked ? "Só o dev do painel altera." : undefined}>
         <PhoneInput id="phone" name="phone" defaultValue={member?.phone} readOnly={phoneLocked} aria-readonly={phoneLocked} className={phoneLocked ? "opacity-60" : undefined} />

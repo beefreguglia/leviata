@@ -80,7 +80,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
       <form className="mb-6 flex flex-col gap-3 sm:flex-row" role="search">
         <div className="relative flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-          <Input name="q" defaultValue={q} placeholder="Buscar por nome, passaporte ou Discord" className="bg-card pl-12" />
+          <Input name="q" defaultValue={q} aria-label="Buscar membros" placeholder="Buscar por nome, passaporte ou Discord…" autoComplete="off" spellCheck={false} className="bg-card pl-12" />
         </div>
         <div className="grid grid-cols-2 gap-3 sm:flex">
           <NativeSelect name="status" defaultValue={status} className="bg-card sm:w-44" aria-label="Filtrar por status">

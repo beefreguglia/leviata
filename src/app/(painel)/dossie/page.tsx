@@ -51,9 +51,20 @@ export default async function DossiePage({ searchParams }: PageProps<"/dossie">)
       />
 
       <form role="search" className="mb-6 flex gap-2">
-        <Input name="q" defaultValue={q} aria-label="Buscar no dossiê" placeholder="Buscar por nome, apelido, ID, telefone ou placa" />
-        <Button type="submit" variant="secondary" size="lg" aria-label="Buscar">
-          <SearchIcon />
+        <div className="relative flex-1">
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
+          <Input
+            name="q"
+            defaultValue={q}
+            aria-label="Buscar no dossiê"
+            placeholder="Buscar por nome, apelido, ID, telefone ou placa…"
+            autoComplete="off"
+            spellCheck={false}
+            className="bg-card pl-12"
+          />
+        </div>
+        <Button type="submit" variant="secondary" size="lg">
+          Buscar
         </Button>
       </form>
 

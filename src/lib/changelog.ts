@@ -15,6 +15,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-13-ajustes-uso",
+    date: "2026-11-13",
+    title: "Painel mais fácil de usar",
+    items: [
+      "A **busca do Dossiê** ficou mais visível e ganhou o botão **Buscar**",
+      "O navegador não sugere mais seus dados pessoais nos campos de nome, ID, passaporte e placa",
+      "Toques no celular respondem mais rápido",
+      "Quem usa teclado pode apertar **Tab** para pular o menu e ir direto ao conteúdo",
+    ],
+  },
+  {
     id: "2026-11-09-radar",
     date: "2026-11-09",
     title: "Radar de inatividade e cards novos",

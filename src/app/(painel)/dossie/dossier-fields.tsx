@@ -12,16 +12,16 @@ export function DossierFields({ dossier, factions }: { dossier?: Dossier; factio
     <div className="flex flex-col gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Nome" htmlFor="d-name">
-          <Input id="d-name" name="name" required defaultValue={dossier?.name} placeholder="Nome na cidade" />
+          <Input id="d-name" name="name" required defaultValue={dossier?.name} autoComplete="off" spellCheck={false} placeholder="Nome na cidade" />
         </Field>
         <Field label="Apelido" htmlFor="d-nickname">
-          <Input id="d-nickname" name="nickname" defaultValue={dossier?.nickname ?? ""} />
+          <Input id="d-nickname" name="nickname" autoComplete="off" spellCheck={false} defaultValue={dossier?.nickname ?? ""} />
         </Field>
         <Field label="Telefone" htmlFor="d-phone">
           <PhoneInput id="d-phone" name="phone" defaultValue={dossier?.phone} />
         </Field>
         <Field label="ID" htmlFor="d-passport">
-          <Input id="d-passport" name="passport" inputMode="numeric" defaultValue={dossier?.passport ?? ""} />
+          <Input id="d-passport" name="passport" inputMode="numeric" autoComplete="off" defaultValue={dossier?.passport ?? ""} />
         </Field>
         <Field label="Situação" htmlFor="d-status">
           <NativeSelect id="d-status" name="status" defaultValue={dossier?.status ?? "DESCONHECIDO"}>

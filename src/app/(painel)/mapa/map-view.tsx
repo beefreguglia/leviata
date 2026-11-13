@@ -229,7 +229,7 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
           <>
             <div className="relative">
               <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar lugar" className="bg-card pl-12" aria-label="Buscar lugar" />
+              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar lugar…" autoComplete="off" spellCheck={false} className="bg-card pl-12" aria-label="Buscar lugar" />
             </div>
             <div className="flex flex-wrap gap-1.5" aria-label="Categorias">
               {(Object.keys(PIN_CATEGORY) as MapPinCategory[])

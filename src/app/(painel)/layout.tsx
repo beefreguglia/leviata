@@ -33,6 +33,13 @@ export default async function PainelLayout({ children }: LayoutProps<"/">) {
   return (
     // altura travada na tela: o header fica fixo e só o conteúdo do card rola
     <SidebarProvider defaultOpen={sidebarState !== "false"} className="h-svh overflow-hidden">
+      {/* teclado: primeiro Tab da página pula o menu direto para o conteúdo */}
+      <a
+        href="#conteudo"
+        className="sr-only z-50 rounded-md bg-primary font-bold text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:px-4 focus:py-2"
+      >
+        Pular para o conteúdo
+      </a>
       <AppSidebar user={user} permissions={viewer.permissions} signOutAction={signOutAction} />
       {/* com o menu aberto, o card do conteúdo ganha a borda ciano da marca */}
       <SidebarInset className="min-h-0 overflow-hidden border border-transparent transition-[border-color,box-shadow] duration-300 md:peer-data-[state=expanded]:border-cyan-mid/50 md:peer-data-[state=expanded]:shadow-[0_0_28px_-10px_rgba(6,212,236,0.45)]">

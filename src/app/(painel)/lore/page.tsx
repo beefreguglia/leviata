@@ -81,7 +81,7 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
       <form className="mb-4 flex flex-col gap-3 sm:flex-row" role="search">
         <div className="relative flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-          <Input name="q" defaultValue={q} placeholder="Buscar na lore" className="bg-card pl-12" />
+          <Input name="q" defaultValue={q} aria-label="Buscar na lore" placeholder="Buscar na lore…" autoComplete="off" spellCheck={false} className="bg-card pl-12" />
         </div>
         <div className="flex gap-3">
           <NativeSelect name="categoria" defaultValue={cat ?? ""} className="bg-card sm:w-44" aria-label="Categoria">
