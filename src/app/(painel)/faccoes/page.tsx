@@ -41,7 +41,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
         title="Facções"
         description="Quem é quem na cidade e como estamos com cada um."
         actions={
-          viewer.can("conteudo.editar") && (
+          viewer.can("faccoes.editar") && (
             <FormDialog
               title="Nova facção"
               size="lg"

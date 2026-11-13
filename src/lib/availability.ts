@@ -14,7 +14,7 @@ export async function unavailableMembers(at: Date) {
     db.punishment.findMany({ where: { kind: "SUSPENSAO", ...activePunishmentWhere(at) }, select: { memberId: true } }),
   ]);
   const map = new Map<string, string>();
-  for (const m of notActive) map.set(m.id, m.status === "AFASTADO" ? "afastado" : m.status === "EXPULSO" ? "expulso" : "inativo");
+  for (const m of notActive) map.set(m.id, m.status === "AFASTADO" ? "afastado" : m.status === "EXPULSO" ? "expulso" : m.status === "SAIU" ? "saiu" : "inativo");
   for (const a of absent) map.set(a.memberId, "ausente");
   for (const p of suspended) map.set(p.memberId, "suspenso");
   return map;

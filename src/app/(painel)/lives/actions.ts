@@ -48,7 +48,7 @@ export async function removeStreamChannel(id: string) {
   return runAction(async () => {
     const viewer = await assertPermission("painel.ver");
     const channel = await db.streamChannel.findUniqueOrThrow({ where: { id }, include: { member: true } });
-    if (channel.memberId !== viewer.member?.id && !viewer.can("conteudo.editar")) throw new Error("Sem permissão");
+    if (channel.memberId !== viewer.member?.id && !viewer.can("lives.gerenciar")) throw new Error("Sem permissão");
     await db.streamChannel.delete({ where: { id } });
     await audit({
       userId: viewer.user.id,
@@ -64,7 +64,7 @@ export async function removeStreamChannel(id: string) {
 
 export async function refreshStreamsNow() {
   return runAction(async () => {
-    await assertPermission("conteudo.editar");
+    await assertPermission("lives.gerenciar");
     const s = await refreshStreams();
     revalidate();
     return `Verificados ${s.checked} canais · ${s.live} ao vivo${s.errors ? ` · ${s.errors} com erro` : ""}`;

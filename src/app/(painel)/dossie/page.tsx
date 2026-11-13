@@ -16,7 +16,7 @@ import { createDossier } from "./actions";
 export const metadata = { title: "Dossiê" };
 
 export default async function DossiePage({ searchParams }: PageProps<"/dossie">) {
-  await requireViewer("dossie.gerenciar");
+  const viewer = await requireViewer("dossie.ver");
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
   const contains = { contains: q, mode: "insensitive" as const };
@@ -34,6 +34,7 @@ export default async function DossiePage({ searchParams }: PageProps<"/dossie">)
         title="Dossiê"
         description="Pessoas da cidade, placas e vínculos. Acesso restrito à investigação."
         actions={
+          viewer.can("dossie.editar") && (
           <FormDialog
             title="Nova ficha"
             size="lg"
@@ -47,6 +48,7 @@ export default async function DossiePage({ searchParams }: PageProps<"/dossie">)
           >
             <DossierFields factions={factions} />
           </FormDialog>
+          )
         }
       />
 

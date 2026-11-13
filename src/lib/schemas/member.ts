@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { startOfDayBRT } from "@/lib/dates";
+import { EDITABLE_STATUSES } from "@/lib/members";
 
 const optional = z
   .string()
@@ -12,7 +13,7 @@ export const memberSchema = z.object({
   rpName: z.string().trim().min(2, "Nome RP muito curto"),
   passport: optional,
   phone: optional,
-  status: z.enum(["ATIVO", "INATIVO", "AFASTADO", "EXPULSO"]).default("ATIVO"),
+  status: z.enum(EDITABLE_STATUSES).default("ATIVO"),
   joinedAt: optional,
   birthday: optional,
   notes: optional,
@@ -49,4 +50,14 @@ export const registrationSchema = z.object({
 export function parseRegistrationForm(fd: FormData) {
   const get = (k: string) => (typeof fd.get(k) === "string" ? String(fd.get(k)) : "");
   return registrationSchema.parse({ rpName: get("rpName"), phone: get("phone"), passport: get("passport") });
+}
+
+/** Desligar membro: saiu por conta própria ou expulsão. */
+export const dismissSchema = z.object({
+  kind: z.enum(["SAIU", "EXPULSO"], { message: "Escolha o motivo do desligamento" }),
+  reason: z.string().trim().min(3, "Explique o motivo").max(500),
+});
+
+export function parseDismissForm(fd: FormData) {
+  return dismissSchema.parse({ kind: fd.get("kind"), reason: fd.get("reason") ?? "" });
 }

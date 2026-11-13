@@ -14,7 +14,7 @@ export const metadata = { title: "Escalações" };
 
 export default async function EscalacoesPage() {
   const viewer = await requireViewer();
-  const canManage = viewer.can("operacoes.gerenciar");
+  const canManage = viewer.can("escalacoes.gerenciar");
   const now = new Date();
   const since = new Date(now.getTime() - 3 * 3600_000);
 

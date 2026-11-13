@@ -28,7 +28,7 @@ function revalidate(id?: string) {
 
 export async function createFaction(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("faccoes.editar");
     const data = await parse(fd);
     await ensureNameFree(data.name);
     const faction = await db.faction.create({ data });
@@ -40,7 +40,7 @@ export async function createFaction(fd: FormData) {
 
 export async function updateFaction(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("faccoes.editar");
     const data = await parse(fd);
     await ensureNameFree(data.name, id);
     const before = await db.faction.findUniqueOrThrow({ where: { id } });
@@ -73,7 +73,7 @@ export async function updateFaction(id: string, fd: FormData) {
 
 export async function deleteFaction(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("faccoes.editar");
     const faction = await db.faction.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "faction.delete", entity: "Faction", entityId: id, summary: `Apagou a facção ${faction.name}` });
     revalidate();
@@ -84,7 +84,7 @@ export async function deleteFaction(id: string) {
 
 export async function addFactionEvent(factionId: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("faccoes.editar");
     const data = parseFactionEventForm(fd);
     const event = await db.factionEvent.create({
       data: { ...data, happenedAt: data.happenedAt ?? new Date(), factionId, authorId: viewer.member?.id },
@@ -98,7 +98,7 @@ export async function addFactionEvent(factionId: string, fd: FormData) {
 
 export async function deleteFactionEvent(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("faccoes.editar");
     const event = await db.factionEvent.delete({ where: { id }, include: { faction: true } });
     await audit({ userId: viewer.user.id, action: "faction.event.delete", entity: "Faction", entityId: event.factionId, summary: `Removeu do histórico de ${event.faction.name}: ${event.title}` });
     revalidate(event.factionId);

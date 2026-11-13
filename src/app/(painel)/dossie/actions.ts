@@ -9,7 +9,7 @@ import { runAction } from "@/lib/actions";
 import { parseDossierForm, parseDossierLinkForm, parseVehicleForm } from "@/lib/schemas/dossier";
 import { existingUploadIds } from "@/lib/uploads";
 
-const PERM = "dossie.gerenciar";
+const PERM = "dossie.editar";
 
 async function parse(fd: FormData) {
   const data = parseDossierForm(fd);

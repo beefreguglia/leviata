@@ -20,7 +20,8 @@ import { DossierFields } from "../dossier-fields";
 import { addDossierLink, addVehicle, deleteDossier, removeDossierLink, removeVehicle, updateDossier } from "../actions";
 
 export default async function DossierPage({ params }: PageProps<"/dossie/[id]">) {
-  await requireViewer("dossie.gerenciar");
+  const viewer = await requireViewer("dossie.ver");
+  const canEdit = viewer.can("dossie.editar");
   const { id } = await params;
   const dossier = await db.dossier.findUnique({
     where: { id },
@@ -56,6 +57,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
             {dossier.author && ` · criada por ${dossier.author.rpName}`}
           </p>
         </div>
+        {canEdit && (
         <div className="flex gap-2">
           <FormDialog
             title={`Editar ${dossier.name}`}
@@ -82,6 +84,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
             }
           />
         </div>
+        )}
       </header>
 
       <GroupedList header="Dados">
@@ -114,6 +117,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
       <GroupedList
         header="Veículos"
         action={
+          canEdit && (
           <FormDialog
             title="Adicionar veículo"
             action={addVehicle.bind(null, id)}
@@ -136,6 +140,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
               </Field>
             </div>
           </FormDialog>
+          )
         }
       >
         {dossier.vehicles.length === 0 ? (
@@ -147,6 +152,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
                 <strong className="type-code">{v.plate}</strong>
                 {(v.model || v.color) && <span className="text-sm text-muted-foreground"> · {[v.model, v.color].filter(Boolean).join(", ")}</span>}
               </span>
+              {canEdit && (
               <ConfirmButton
                 title={`Remover a placa ${v.plate}?`}
                 confirmLabel="Remover"
@@ -158,6 +164,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
                   </Button>
                 }
               />
+              )}
             </div>
           ))
         )}
@@ -166,7 +173,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
       <GroupedList
         header="Vínculos"
         action={
-          candidates.length > 0 && (
+          canEdit && candidates.length > 0 && (
             <FormDialog
               title="Adicionar vínculo"
               action={addDossierLink.bind(null, id)}
@@ -205,6 +212,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
                 </Link>
                 <span className="text-sm text-muted-foreground"> · {l.description}</span>
               </span>
+              {canEdit && (
               <ConfirmButton
                 title={`Remover o vínculo com ${l.other.name}?`}
                 confirmLabel="Remover"
@@ -216,6 +224,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
                   </Button>
                 }
               />
+              )}
             </div>
           ))
         )}

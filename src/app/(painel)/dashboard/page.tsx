@@ -62,7 +62,7 @@ export default async function DashboardPage() {
   const now = new Date();
   const canManage = viewer.can("ausencias.gerenciar");
   after(() => refreshStreamsIfStale().catch((err) => console.error("Falha ao atualizar lives:", err)));
-  const canFinance = viewer.can("financeiro.gerenciar");
+  const canFinance = viewer.can("bau.gerenciar");
   const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents, balances, myGoals, pendingDeliveries, balanceHistory] = await Promise.all([
     db.member.count({ where: { status: "ATIVO" } }),
     canManage

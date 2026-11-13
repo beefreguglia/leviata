@@ -32,7 +32,7 @@ function Bar({ pct, complete }: { pct: number; complete: boolean }) {
 
 export default async function MetasPage() {
   const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("financeiro.gerenciar");
+  const canManage = viewer.can("metas.gerenciar");
   const [{ from, to, goals, items, rows }, allItems, ranks, completion] = await Promise.all([
     weeklyGoals(),
     canManage ? db.item.findMany({ orderBy: { name: "asc" } }) : Promise.resolve([]),

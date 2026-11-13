@@ -29,7 +29,7 @@ const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { PRODUCAO: "Começar p
 
 export default async function EncomendasPage() {
   const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("financeiro.gerenciar");
+  const canManage = viewer.can("encomendas.gerenciar");
   const now = new Date();
 
   const [active, done, items, factions, members, recipes, balances] = await Promise.all([

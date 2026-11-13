@@ -4,6 +4,7 @@ import {
   BanIcon, CalendarIcon, CarIcon, CheckIcon, ClipboardListIcon, FileTextIcon, MapPinIcon, PencilIcon, RotateCcwIcon,
   SendIcon, TargetIcon, Trash2Icon,
 } from "@/components/icons";
+import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { unavailableMembers } from "@/lib/availability";
@@ -37,7 +38,8 @@ export async function generateMetadata({ params }: PageProps<"/agenda/[id]">) {
 
 export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
   const viewer = await requireViewer();
-  const canManage = viewer.can("operacoes.gerenciar");
+  const canManage = viewer.can("agenda.gerenciar");
+  const canLineup = viewer.can("escalacoes.gerenciar");
   const { id } = await params;
   const ev = await db.event.findUnique({
     where: { id },
@@ -58,10 +60,10 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
   const mySlots = ev.slots.filter((s) => s.memberId && s.memberId === viewer.member?.id);
   const byStatus = (st: "VOU" | "TALVEZ" | "NAO_VOU") => ev.attendances.filter((a) => a.status === st);
 
-  const [perimeters, members, unavailable] = canManage
+  const [perimeters, members, unavailable] = canManage || canLineup
     ? await Promise.all([
         db.perimeter.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-        db.member.findMany({ where: { status: { not: "EXPULSO" } }, include: { rank: true }, orderBy: { rpName: "asc" } }),
+        db.member.findMany({ where: inFactionWhere, include: { rank: true }, orderBy: { rpName: "asc" } }),
         unavailableMembers(ev.startsAt),
       ])
     : [[], [], new Map<string, string>()];
@@ -212,7 +214,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
           <h2 className="type-h2 text-grey-300">
             Escalação {ev.lineupPublishedAt && <span className="font-normal text-muted-foreground">· publicada {fmtAgo(ev.lineupPublishedAt)}</span>}
           </h2>
-          {canManage && open && (
+          {canLineup && open && (
             <div className="flex flex-wrap gap-2">
               {ev.slots.length > 0 && (
                 <ActionForm action={async () => { "use server"; return publishLineup(ev.id); }}>
@@ -224,7 +226,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
             </div>
           )}
         </div>
-        {canManage && open ? (
+        {canLineup && open ? (
           <div className="rounded-card glass-card p-5">
             <LineupEditor
               version={ev.slots.map((s) => s.id).join()}

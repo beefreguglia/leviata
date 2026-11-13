@@ -28,20 +28,24 @@ enum MemberStatus {
   INATIVO
   AFASTADO
   EXPULSO
+  SAIU // pediu para sair (desligado sem punição)
 }
 
 /// Ficha do membro dentro da fac (personagem no RP).
 model Member {
-  id        String       @id @default(cuid())
-  rpName    String
-  passport  String?      @unique // ID / passaporte no jogo
-  phone     String?
-  status    MemberStatus @default(ATIVO)
-  joinedAt  DateTime     @default(now())
-  notes     String?
-  birthday  DateTime?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id         String       @id @default(cuid())
+  rpName     String
+  passport   String?      @unique // ID / passaporte no jogo
+  phone      String?
+  status     MemberStatus @default(ATIVO)
+  joinedAt   DateTime     @default(now())
+  notes      String?
+  birthday   DateTime?
+  /// desligamento (saiu ou expulso): quando e por quê; volta a null se for readmitido
+  leftAt     DateTime?
+  leftReason String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   userId String? @unique
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)

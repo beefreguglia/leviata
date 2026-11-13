@@ -32,7 +32,7 @@ async function parse(fd: FormData) {
 export async function createEvent(fd: FormData) {
   let id = "";
   const result = await runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("agenda.gerenciar");
     const { notifyDiscord, ...data } = await parse(fd);
     const ev = await db.event.create({ data: { ...data, createdById: viewer.member?.id } });
     id = ev.id;
@@ -57,7 +57,7 @@ export async function createEvent(fd: FormData) {
 
 export async function updateEvent(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("agenda.gerenciar");
     const { notifyDiscord: _n, ...data } = await parse(fd);
     void _n;
     const ev = await db.event.update({ where: { id }, data });
@@ -69,7 +69,7 @@ export async function updateEvent(id: string, fd: FormData) {
 
 export async function setEventStatus(id: string, status: "AGENDADO" | "CONCLUIDO" | "CANCELADO") {
   return runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("agenda.gerenciar");
     const ev = await db.event.update({ where: { id }, data: { status } });
     await audit({ userId: viewer.user.id, action: "event.status", entity: "Event", entityId: id, summary: `Marcou "${ev.title}" como ${status.toLowerCase()}` });
     if (status === "CANCELADO") {
@@ -82,7 +82,7 @@ export async function setEventStatus(id: string, status: "AGENDADO" | "CONCLUIDO
 
 export async function deleteEvent(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("agenda.gerenciar");
     const ev = await db.event.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "event.delete", entity: "Event", entityId: id, summary: `Apagou "${ev.title}" da agenda` });
     revalidate();
@@ -110,7 +110,7 @@ export async function setAttendance(eventId: string, status: "VOU" | "TALVEZ" | 
 
 export async function saveLineup(eventId: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("escalacoes.gerenciar");
     const ev = await db.event.findUniqueOrThrow({ where: { id: eventId } });
     const slots = parseLineupForm(fd);
     const memberIds = [...new Set(slots.map((s) => s.memberId).filter((m): m is string => Boolean(m)))];
@@ -146,7 +146,7 @@ export async function saveLineup(eventId: string, fd: FormData) {
 
 export async function publishLineup(eventId: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("escalacoes.gerenciar");
     const ev = await db.event.findUniqueOrThrow({
       where: { id: eventId },
       include: { slots: { include: { member: true }, orderBy: { order: "asc" } } },
@@ -169,7 +169,7 @@ export async function publishLineup(eventId: string) {
 
 export async function saveReport(eventId: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("agenda.gerenciar");
     const data = parseReportForm(fd);
     const ev = await db.event.findUniqueOrThrow({ where: { id: eventId } });
     if (ev.startsAt > new Date()) throw new Error("O relatório só pode ser feito depois que o evento começar");

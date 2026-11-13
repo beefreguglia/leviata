@@ -11,7 +11,7 @@ import { deleteLore, updateLore } from "../../actions";
 export const metadata = { title: "Editar lore" };
 
 export default async function EditarLorePage({ params }: PageProps<"/lore/[slug]/editar">) {
-  await requireViewer("conteudo.editar");
+  await requireViewer("lore.editar");
   const { slug } = await params;
   const article = await db.loreArticle.findUnique({ where: { slug } });
   if (!article) notFound();

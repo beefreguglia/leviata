@@ -39,7 +39,7 @@ export default async function LoreArticlePage({ params }: PageProps<"/lore/[slug
             Por {article.author?.rpName ?? "Leviatã"} · atualizado {fmtAgo(article.updatedAt)}
           </p>
         </div>
-        {viewer.can("conteudo.editar") && (
+        {viewer.can("lore.editar") && (
           <LinkButton href={`/lore/${article.slug}/editar`} variant="secondary">
             <PencilIcon /> Editar
           </LinkButton>

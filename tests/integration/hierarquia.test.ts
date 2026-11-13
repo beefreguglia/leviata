@@ -7,7 +7,7 @@ const rankForm = (o: Partial<Record<string, string | string[]>> = {}) =>
   form({ name: "Conselheiro", order: "6", color: "#00d9ff", discordRoleId: "", ...o } as Record<string, string | string[]>);
 
 describe("hierarquia", () => {
-  it("só quem tem hierarquia.gerenciar cria patente", async () => {
+  it("só quem tem hierarquia.patentes cria patente", async () => {
     await actAs("dev-gerente");
     expect(await createRank(rankForm())).toEqual({ ok: false, error: "Sem permissão para esta ação" });
   });

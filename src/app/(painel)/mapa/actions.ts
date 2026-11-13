@@ -16,7 +16,7 @@ function revalidate() {
 
 export async function saveMapConfig(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mapa.editar");
     const data = mapConfigSchema.parse({ imageId: fd.get("imageId"), width: fd.get("width"), height: fd.get("height") });
     const [imageId] = await existingUploadIds([data.imageId]);
     if (!imageId) throw new Error("Envie a imagem do mapa");
@@ -40,7 +40,7 @@ async function parse(fd: FormData) {
 
 export async function createPin(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mapa.editar");
     const pin = await db.mapPin.create({ data: { ...(await parse(fd)), authorId: viewer.member?.id } });
     await audit({ userId: viewer.user.id, action: "pin.create", entity: "MapPin", entityId: pin.id, summary: `Marcou "${pin.title}" no mapa` });
     revalidate();
@@ -50,7 +50,7 @@ export async function createPin(fd: FormData) {
 
 export async function updatePin(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mapa.editar");
     const pin = await db.mapPin.update({ where: { id }, data: await parse(fd) });
     await audit({ userId: viewer.user.id, action: "pin.update", entity: "MapPin", entityId: id, summary: `Editou "${pin.title}" no mapa` });
     revalidate();
@@ -60,7 +60,7 @@ export async function updatePin(id: string, fd: FormData) {
 
 export async function deletePin(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mapa.editar");
     const pin = await db.mapPin.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "pin.delete", entity: "MapPin", entityId: id, summary: `Removeu "${pin.title}" do mapa` });
     revalidate();

@@ -22,12 +22,12 @@ describe("setores e gerências: permissões", () => {
   it("permissões = patente + gerências", async () => {
     const nina = await memberByName("Nina Torres");
     await actAs("dev-soldado");
-    expect((await getViewer())?.can("financeiro.gerenciar")).toBe(false);
+    expect((await getViewer())?.can("bau.gerenciar")).toBe(false);
     await db.member.update({ where: { id: nina.id }, data: { managements: { connect: { id: (await management("G-Comércio")).id } } } });
     const v = await getViewer();
-    expect(v?.can("financeiro.gerenciar")).toBe(true);
+    expect(v?.can("bau.gerenciar")).toBe(true);
     expect(v?.can("economia.ver")).toBe(true);
-    expect(v?.can("punicoes.gerenciar")).toBe(false);
+    expect(v?.can("punicoes.aplicar")).toBe(false);
   });
 });
 
@@ -87,8 +87,8 @@ describe("setores e gerências: ações", () => {
 
   it("gerência nova com permissões", async () => {
     await actAs("dev-lider");
-    expect(await createManagement(form({ name: "G-Logística", permissions: ["painel.ver", "operacoes.gerenciar", "inventada"] }))).toEqual({ ok: true, message: "Gerência G-Logística criada" });
-    expect((await management("G-Logística")).permissions).toEqual(["painel.ver", "operacoes.gerenciar"]);
+    expect(await createManagement(form({ name: "G-Logística", permissions: ["painel.ver", "agenda.gerenciar", "inventada"] }))).toEqual({ ok: true, message: "Gerência G-Logística criada" });
+    expect((await management("G-Logística")).permissions).toEqual(["painel.ver", "agenda.gerenciar"]);
   });
 
   it("quem gerencia membros muda o setor; gerências só com hierarquia", async () => {
@@ -145,7 +145,7 @@ describe("estrutura oficial: Recruta, Membro e Veterano veem a economia sem edit
     expect((await registerMove(form({ kind: "ENTRADA", asset: "DINHEIRO_SUJO", quantity: "100", reason: "x" }))).ok).toBe(false);
     expect((await createFarmGuide(form({ title: "Guia", location: "Lugar", howTo: "x", risk: "BAIXO" })).catch(() => ({ ok: true }))).ok).toBe(false);
     const v = await getViewer();
-    expect(v?.can("financeiro.gerenciar")).toBe(false);
-    expect(v?.can("conteudo.editar")).toBe(false);
+    expect(v?.can("bau.gerenciar")).toBe(false);
+    expect(v?.can("lore.editar")).toBe(false);
   });
 });

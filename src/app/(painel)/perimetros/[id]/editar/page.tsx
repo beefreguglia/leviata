@@ -11,7 +11,7 @@ import { deletePerimeter, updatePerimeter } from "../../actions";
 export const metadata = { title: "Editar perímetro" };
 
 export default async function EditarPerimetroPage({ params }: PageProps<"/perimetros/[id]/editar">) {
-  await requireViewer("operacoes.gerenciar");
+  await requireViewer("perimetros.gerenciar");
   const { id } = await params;
   const perimeter = await db.perimeter.findUnique({ where: { id } });
   if (!perimeter) notFound();

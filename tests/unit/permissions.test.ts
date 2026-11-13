@@ -28,7 +28,7 @@ describe("hasPermission", () => {
 describe("economia e desenvolvedor", () => {
   it("gerenciar o financeiro implica ver a economia", async () => {
     const { hasPermission } = await import("@/lib/permissions");
-    expect(hasPermission(["financeiro.gerenciar"], "economia.ver")).toBe(true);
+    expect(hasPermission(["bau.gerenciar"], "economia.ver")).toBe(true);
     expect(hasPermission(["painel.ver"], "economia.ver")).toBe(false);
   });
   it("isDeveloper lê a lista de IDs", async () => {
@@ -37,5 +37,28 @@ describe("economia e desenvolvedor", () => {
     expect(isDeveloper("4", "1,2")).toBe(false);
     expect(isDeveloper("1", undefined)).toBe(false);
     expect(isDeveloper(null, "1")).toBe(false);
+  });
+});
+
+describe("permissões granulares", () => {
+  it("chaves antigas viram as novas (rede de segurança)", async () => {
+    const { expandPermissions, hasPermission } = await import("@/lib/permissions");
+    expect(expandPermissions(["painel.ver", "punicoes.gerenciar", "painel.ver"])).toEqual(["painel.ver", "punicoes.aplicar", "punicoes.revogar"]);
+    expect(hasPermission(["conteudo.editar"], "mapa.editar")).toBe(true);
+    expect(hasPermission(["financeiro.gerenciar"], "economia.ver")).toBe(true);
+    expect(hasPermission(["conteudo.editar"], "regras.editar")).toBe(false);
+  });
+  it("cada permissão libera só a sua área", async () => {
+    const { hasPermission } = await import("@/lib/permissions");
+    expect(hasPermission(["lore.editar"], "mural.editar")).toBe(false);
+    expect(hasPermission(["dossie.editar"], "dossie.ver")).toBe(true);
+    expect(hasPermission(["dossie.ver"], "dossie.editar")).toBe(false);
+    expect(hasPermission(["punicoes.aplicar"], "punicoes.revogar")).toBe(false);
+  });
+  it("todas as chaves estão em algum grupo, sem repetir", async () => {
+    const { PERMISSION_GROUPS, ALL_PERMISSIONS } = await import("@/lib/permissions");
+    const keys = PERMISSION_GROUPS.flatMap((g) => Object.keys(g.items));
+    expect(new Set(keys).size).toBe(keys.length);
+    expect(keys.length).toBe(ALL_PERMISSIONS.length);
   });
 });

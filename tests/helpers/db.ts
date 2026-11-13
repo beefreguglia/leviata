@@ -34,8 +34,8 @@ export async function setRankPerms(name: string, permissions: string[]) {
 
 /** Gerência "completa" (configuração customizada) — usada nos testes das regras de cada ação. */
 export const GERENCIA_COMPLETA = [
-  "painel.ver", "economia.ver", "membros.gerenciar", "regras.editar", "conteudo.editar", "operacoes.gerenciar",
-  "financeiro.gerenciar", "punicoes.gerenciar", "ausencias.gerenciar", "auditoria.ver",
+  "painel.ver", "economia.ver", "membros.cadastrar", "membros.editar", "membros.patente", "membros.setor", "membros.desligar", "regras.editar", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar",
+  "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar", "punicoes.aplicar", "punicoes.revogar", "ausencias.gerenciar", "auditoria.ver",
 ];
 
 export const rankId = async (name: string) => (await db.rank.findUniqueOrThrow({ where: { name } })).id;

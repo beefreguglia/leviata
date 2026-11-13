@@ -14,7 +14,7 @@ function revalidate() {
 
 export async function createRank(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.patentes");
     const data = parse(fd);
     const taken = await db.rank.findUnique({ where: { order: data.order } });
     if (taken) {
@@ -31,7 +31,7 @@ export async function createRank(fd: FormData) {
 
 export async function updateRank(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.patentes");
     const data = parse(fd);
     const current = await db.rank.findUniqueOrThrow({ where: { id } });
 
@@ -67,7 +67,7 @@ export async function updateRank(id: string, fd: FormData) {
 
 export async function deleteRank(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.patentes");
     const rank = await db.rank.findUniqueOrThrow({ where: { id }, include: { _count: { select: { members: true } } } });
     if (rank._count.members > 0) throw new Error(`Mova os ${rank._count.members} membros desta patente antes de apagar`);
     await db.rank.delete({ where: { id } });
@@ -88,7 +88,7 @@ async function assertRoleFree(kind: "sector" | "management", roleId: string | nu
 
 export async function createSector(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.setores");
     const data = parseSectorForm(fd);
     await assertRoleFree("sector", data.discordRoleId);
     const sector = await db.sector.create({ data });
@@ -100,7 +100,7 @@ export async function createSector(fd: FormData) {
 
 export async function updateSector(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.setores");
     const data = parseSectorForm(fd);
     await assertRoleFree("sector", data.discordRoleId, id);
     const sector = await db.sector.update({ where: { id }, data });
@@ -112,7 +112,7 @@ export async function updateSector(id: string, fd: FormData) {
 
 export async function deleteSector(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.setores");
     const sector = await db.sector.findUniqueOrThrow({ where: { id }, include: { _count: { select: { members: true } } } });
     if (sector._count.members > 0) throw new Error(`Tire os ${sector._count.members} membros deste setor antes de apagar`);
     await db.sector.delete({ where: { id } });
@@ -126,7 +126,7 @@ export async function deleteSector(id: string) {
 
 export async function createManagement(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.gerencias");
     const data = parseManagementForm(fd);
     await assertRoleFree("management", data.discordRoleId);
     const g = await db.management.create({ data });
@@ -138,7 +138,7 @@ export async function createManagement(fd: FormData) {
 
 export async function updateManagement(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.gerencias");
     const data = parseManagementForm(fd);
     await assertRoleFree("management", data.discordRoleId, id);
     const g = await db.management.update({ where: { id }, data });
@@ -157,7 +157,7 @@ export async function updateManagement(id: string, fd: FormData) {
 
 export async function deleteManagement(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("hierarquia.gerenciar");
+    const viewer = await assertPermission("hierarquia.gerencias");
     const g = await db.management.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "management.delete", entity: "Management", entityId: id, summary: `Apagou a gerência ${g.name}` });
     revalidate();

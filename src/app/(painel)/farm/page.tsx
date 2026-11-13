@@ -37,7 +37,7 @@ export default async function FarmPage({ searchParams }: PageProps<"/farm">) {
         title="Farm"
         description="Onde e como farmar cada coisa — e quanto rende."
         actions={
-          viewer.can("conteudo.editar") && (
+          viewer.can("farm.editar") && (
             <LinkButton href="/farm/novo">
               <PlusIcon /> Novo guia
             </LinkButton>

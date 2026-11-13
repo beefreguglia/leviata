@@ -15,7 +15,7 @@ function revalidate() {
 
 export async function createGoal(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("metas.gerenciar");
     const data = parseGoalForm(fd);
     const item = await db.item.findUnique({ where: { id: data.itemId } });
     if (!item) throw new Error("Item inválido");
@@ -38,7 +38,7 @@ export async function createGoal(fd: FormData) {
 
 export async function updateGoalQuantity(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("metas.gerenciar");
     const quantity = z.coerce.number().int().min(1, "Meta deve ser maior que zero").parse(fd.get("quantity"));
     const goal = await db.farmGoal.update({ where: { id }, data: { quantity }, include: { item: true } });
     await audit({ userId: viewer.user.id, action: "goal.update", entity: "FarmGoal", entityId: id, summary: `Meta de ${goal.item.name} agora é ${quantity}` });
@@ -49,7 +49,7 @@ export async function updateGoalQuantity(id: string, fd: FormData) {
 
 export async function deleteGoal(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("metas.gerenciar");
     const goal = await db.farmGoal.delete({ where: { id }, include: { item: true } });
     await audit({ userId: viewer.user.id, action: "goal.delete", entity: "FarmGoal", entityId: id, summary: `Removeu a meta de ${goal.item.name}` });
     revalidate();

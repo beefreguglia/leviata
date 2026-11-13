@@ -24,7 +24,7 @@ function revalidate() {
 export async function createPerimeter(fd: FormData) {
   let id = "";
   const result = await runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("perimetros.gerenciar");
     const data = await parse(fd);
     const p = await db.perimeter.create({ data: { ...data, authorId: viewer.member?.id } });
     id = p.id;
@@ -37,7 +37,7 @@ export async function createPerimeter(fd: FormData) {
 
 export async function updatePerimeter(id: string, fd: FormData) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("perimetros.gerenciar");
     const data = await parse(fd);
     const p = await db.perimeter.update({ where: { id }, data });
     await audit({ userId: viewer.user.id, action: "perimeter.update", entity: "Perimeter", entityId: id, summary: `Editou o perímetro "${p.name}"` });
@@ -49,7 +49,7 @@ export async function updatePerimeter(id: string, fd: FormData) {
 
 export async function deletePerimeter(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("operacoes.gerenciar");
+    const viewer = await assertPermission("perimetros.gerenciar");
     const p = await db.perimeter.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "perimeter.delete", entity: "Perimeter", entityId: id, summary: `Apagou o perímetro "${p.name}"`, data: { imageId: p.imageId } });
     revalidate();

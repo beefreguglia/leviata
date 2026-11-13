@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowDownLeftIcon, ArrowUpRightIcon, CheckIcon, PackageIcon, PlusIcon, Undo2Icon, WalletIcon, XIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
+import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { allBalances } from "@/lib/vault";
@@ -60,7 +61,7 @@ function MoveLine({ m, actions }: { m: MoveRow; actions?: React.ReactNode }) {
 
 export default async function BauPage() {
   const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("financeiro.gerenciar");
+  const canManage = viewer.can("bau.gerenciar");
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
 
   const [balances, pending, history, mine, members, balanceHistory] = await Promise.all([
@@ -68,7 +69,7 @@ export default async function BauPage() {
     canManage ? db.vaultTransaction.findMany({ where: { status: "PENDENTE" }, include, orderBy: { createdAt: "asc" } }) : Promise.resolve([]),
     canManage ? db.vaultTransaction.findMany({ where: { status: { not: "PENDENTE" } }, include, orderBy: { createdAt: "desc" }, take: 40 }) : Promise.resolve([]),
     viewer.member ? db.vaultTransaction.findMany({ where: { memberId: viewer.member.id }, include, orderBy: { createdAt: "desc" }, take: 15 }) : Promise.resolve([]),
-    canManage ? db.member.findMany({ where: { status: { not: "EXPULSO" } }, select: { id: true, rpName: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
+    canManage ? db.member.findMany({ where: inFactionWhere, select: { id: true, rpName: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
     canManage ? vaultHistory() : Promise.resolve(null),
   ]);
   const stock = balances ? items.map((i) => ({ ...i, qty: balances.items.get(i.id) ?? 0 })).filter((i) => i.qty !== 0) : [];

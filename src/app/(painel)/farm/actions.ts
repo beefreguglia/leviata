@@ -23,7 +23,7 @@ function revalidate() {
 export async function createFarmGuide(fd: FormData) {
   let id = "";
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("farm.editar");
     const guide = await db.farmGuide.create({ data: { ...(await parse(fd)), authorId: viewer.member?.id } });
     id = guide.id;
     await audit({ userId: viewer.user.id, action: "farm.create", entity: "FarmGuide", entityId: guide.id, summary: `Escreveu o guia de farm "${guide.title}"` });
@@ -35,7 +35,7 @@ export async function createFarmGuide(fd: FormData) {
 
 export async function updateFarmGuide(id: string, fd: FormData) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("farm.editar");
     const guide = await db.farmGuide.update({ where: { id }, data: await parse(fd) });
     await audit({ userId: viewer.user.id, action: "farm.update", entity: "FarmGuide", entityId: id, summary: `Editou o guia de farm "${guide.title}"` });
     revalidate();
@@ -46,7 +46,7 @@ export async function updateFarmGuide(id: string, fd: FormData) {
 
 export async function deleteFarmGuide(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("farm.editar");
     const guide = await db.farmGuide.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "farm.delete", entity: "FarmGuide", entityId: id, summary: `Apagou o guia de farm "${guide.title}"`, data: { howTo: guide.howTo } });
     revalidate();

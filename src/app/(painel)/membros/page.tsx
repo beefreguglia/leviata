@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRightIcon, PlusIcon, SearchIcon, UsersIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
+import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { activeAbsenceWhere } from "@/lib/absences";
@@ -35,7 +36,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
       { user: { username: { contains: q, mode: "insensitive" } } },
     ];
   }
-  if (status === "ATUAIS") where.status = { not: "EXPULSO" };
+  if (status === "ATUAIS") Object.assign(where, inFactionWhere);
   else if (status in MEMBER_STATUS) where.status = status as keyof typeof MEMBER_STATUS;
   if (setor === "nenhum") where.sectorId = null;
   else if (setor) where.sectorId = setor;
@@ -47,11 +48,11 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
       orderBy: [{ rank: { order: "asc" } }, { rpName: "asc" }],
     }),
     db.rank.findMany({ orderBy: { order: "asc" } }),
-    db.member.count({ where: { status: { not: "EXPULSO" } } }),
+    db.member.count({ where: inFactionWhere }),
     db.sector.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] }),
   ]);
 
-  const canManage = viewer.can("membros.gerenciar");
+  const canManage = viewer.can("membros.cadastrar");
 
   return (
     <>

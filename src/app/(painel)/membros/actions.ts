@@ -7,6 +7,8 @@ import { audit } from "@/lib/audit";
 import { formToObject, runAction } from "@/lib/actions";
 import { memberInputToData as toData, memberSchema } from "@/lib/schemas/member";
 import { assertCanChangeContact } from "@/lib/contact-lock";
+import { isGone } from "@/lib/members";
+import { parseDismissForm } from "@/lib/schemas/member";
 
 async function ensurePassportFree(passport: string | null | undefined, exceptId?: string) {
   if (!passport) return;
@@ -16,7 +18,7 @@ async function ensurePassportFree(passport: string | null | undefined, exceptId?
 
 export async function createMember(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.gerenciar");
+    const viewer = await assertPermission("membros.cadastrar");
     const input = memberSchema.parse(formToObject(fd));
     const rankId = (fd.get("rankId") as string) || null;
     await ensurePassportFree(input.passport);
@@ -41,13 +43,15 @@ export async function createMember(fd: FormData) {
 
 export async function updateMember(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.gerenciar");
+    const viewer = await assertPermission("membros.editar");
     const input = memberSchema.parse(formToObject(fd));
     await ensurePassportFree(input.passport, id);
 
     const before = await db.member.findUniqueOrThrow({ where: { id } });
     assertCanChangeContact(viewer.isDev, before, input);
-    const member = await db.member.update({ where: { id }, data: toData(input) });
+    // quem foi desligado só volta pelo botão Readmitir
+    const data = isGone(before.status) ? { ...toData(input), status: before.status } : toData(input);
+    const member = await db.member.update({ where: { id }, data });
     await audit({
       userId: viewer.user.id,
       action: "member.update",
@@ -64,7 +68,7 @@ export async function updateMember(id: string, fd: FormData) {
 
 export async function changeRank(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.gerenciar");
+    const viewer = await assertPermission("membros.patente");
     const toRankId = (fd.get("rankId") as string) || null;
     const reason = String(fd.get("reason") ?? "").trim() || null;
 
@@ -99,12 +103,12 @@ export async function changeRank(id: string, fd: FormData) {
 }
 
 /**
- * Setor (membros.gerenciar) e gerências (hierarquia.gerenciar, pois dão permissões).
+ * Setor (membros.setor) e gerências (hierarquia.gerencias, pois dão permissões).
  * Com o servidor do Discord conectado, o que estiver ligado a um cargo volta a seguir o Discord no próximo login.
  */
 export async function setMemberSector(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.gerenciar");
+    const viewer = await assertPermission("membros.setor");
     const sectorId = (fd.get("sectorId") as string) || null;
     if (sectorId && !(await db.sector.findUnique({ where: { id: sectorId } }))) throw new Error("Setor inválido");
     const wantsManagements = fd.get("managementsField") === "1";
@@ -114,7 +118,7 @@ export async function setMemberSector(id: string, fd: FormData) {
     const changedManagements =
       wantsManagements &&
       (managementIds.length !== before.managements.length || managementIds.some((m) => !before.managements.some((g) => g.id === m)));
-    if (changedManagements && !viewer.can("hierarquia.gerenciar")) throw new Error("Só quem gerencia a hierarquia muda gerências");
+    if (changedManagements && !viewer.can("hierarquia.gerencias")) throw new Error("Só quem gerencia a hierarquia muda gerências");
     if (managementIds.length) {
       const found = await db.management.count({ where: { id: { in: managementIds } } });
       if (found !== managementIds.length) throw new Error("Gerência inválida");
@@ -139,5 +143,64 @@ export async function setMemberSector(id: string, fd: FormData) {
     revalidatePath(`/membros/${id}`);
     revalidatePath("/hierarquia");
     return "Setor e gerências atualizados";
+  });
+}
+
+/**
+ * Desliga o membro: saiu por conta própria ou expulsão. Os dois tiram o acesso ao painel.
+ * Expulsão também entra como punição (aparece em Punições e na ficha).
+ */
+export async function dismissMember(id: string, fd: FormData) {
+  return runAction(async () => {
+    const viewer = await assertPermission("membros.desligar");
+    const { kind, reason } = parseDismissForm(fd);
+    const target = await db.member.findUniqueOrThrow({ where: { id }, include: { rank: true } });
+
+    if (target.id === viewer.member?.id) throw new Error("Você não pode desligar a si mesmo");
+    if (isGone(target.status)) throw new Error(`${target.rpName} já está fora da fac`);
+    const myOrder = viewer.member?.rank?.order ?? Infinity;
+    const theirOrder = target.rank?.order ?? Infinity;
+    if (!viewer.can("admin") && theirOrder <= myOrder) throw new Error("Você só pode desligar membros de patente abaixo da sua");
+
+    const now = new Date();
+    await db.$transaction([
+      db.member.update({ where: { id }, data: { status: kind, leftAt: now, leftReason: reason } }),
+      ...(kind === "EXPULSO"
+        ? [db.punishment.create({ data: { memberId: id, kind: "EXPULSAO", reason, status: "ATIVA", createdById: viewer.member?.id } })]
+        : []),
+    ]);
+    await audit({
+      userId: viewer.user.id,
+      action: "member.dismiss",
+      entity: "Member",
+      entityId: id,
+      summary: `${target.rpName} ${kind === "EXPULSO" ? "foi expulso" : "saiu da fac"} — ${reason}`,
+    });
+    revalidatePath("/membros", "layout");
+    revalidatePath("/hierarquia");
+    revalidatePath("/punicoes");
+    return kind === "EXPULSO" ? `${target.rpName} foi expulso` : `${target.rpName} foi desligado`;
+  });
+}
+
+/** Traz de volta quem saiu ou foi expulso (anula a expulsão ativa, se houver). */
+export async function readmitMember(id: string) {
+  return runAction(async () => {
+    const viewer = await assertPermission("membros.desligar");
+    const target = await db.member.findUniqueOrThrow({ where: { id } });
+    if (!isGone(target.status)) throw new Error(`${target.rpName} já está na fac`);
+
+    await db.$transaction([
+      db.member.update({ where: { id }, data: { status: "ATIVO", leftAt: null, leftReason: null } }),
+      db.punishment.updateMany({
+        where: { memberId: id, kind: "EXPULSAO", status: "ATIVA" },
+        data: { status: "REVOGADA", revokeReason: "Readmitido na fac", closedAt: new Date() },
+      }),
+    ]);
+    await audit({ userId: viewer.user.id, action: "member.readmit", entity: "Member", entityId: id, summary: `Readmitiu ${target.rpName}` });
+    revalidatePath("/membros", "layout");
+    revalidatePath("/hierarquia");
+    revalidatePath("/punicoes");
+    return `${target.rpName} voltou para a fac`;
   });
 }

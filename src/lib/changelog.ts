@@ -15,6 +15,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-13-desligar-permissoes",
+    date: "2026-11-13",
+    title: "Desligar membros e permissões uma por uma",
+    items: [
+      "Na ficha do membro, a gerência agora tem o botão **Desligar**: escolha se a pessoa **quis sair** ou foi **expulsa** — nos dois casos ela perde o acesso ao painel",
+      "Quem foi desligado pode ser **readmitido** pela própria ficha",
+      "As **permissões** ficaram separadas por área: dá para liberar só a lore, só o baú, só as escalações e assim por diante",
+      "Ao editar uma patente, setor ou gerência, marque ou desmarque cada permissão — ou use **Marcar todas** em cada grupo",
+    ],
+  },
+  {
     id: "2026-11-13-preto",
     date: "2026-11-13",
     title: "Cards e menu em preto",

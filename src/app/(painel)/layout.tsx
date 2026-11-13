@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import { getViewer } from "@/lib/session";
+import { isGone } from "@/lib/members";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ContentScroll } from "@/components/layout/scroll-area";
@@ -18,7 +19,7 @@ async function signOutAction() {
 export default async function PainelLayout({ children }: LayoutProps<"/">) {
   const viewer = await getViewer();
   if (!viewer) redirect("/login");
-  if (!viewer.member || viewer.member.status === "EXPULSO") redirect("/sem-acesso");
+  if (!viewer.member || isGone(viewer.member.status)) redirect("/sem-acesso");
 
   // lembra se o menu estava aberto ou recolhido
   const sidebarState = (await cookies()).get("sidebar_state")?.value;

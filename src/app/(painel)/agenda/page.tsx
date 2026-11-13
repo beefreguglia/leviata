@@ -20,7 +20,7 @@ export const metadata = { title: "Agenda" };
 
 export default async function AgendaPage({ searchParams }: PageProps<"/agenda">) {
   const viewer = await requireViewer();
-  const canManage = viewer.can("operacoes.gerenciar");
+  const canManage = viewer.can("agenda.gerenciar");
   const sp = await searchParams;
   const [y, m] = parseMonth(typeof sp.mes === "string" ? sp.mes : null);
   const { from, to } = monthRange(y, m);

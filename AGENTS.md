@@ -13,6 +13,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Frontend segue a skill `.claude/skills/leviata-ui` (Andromeda/Rocketseat com ciano + sidebar-08). Leia antes de mexer em UI.
 - Ícones: Hugeicons via `@/components/icons` (não importe `lucide-react`). Tipografia: classes `type-*` (docs/TIPOGRAFIA.md).
 - Server Actions: sempre `runAction()` + `assertPermission()` + `audit()`; páginas usam `requireViewer(perm)`.
+- Permissões são granulares (uma chave por coisa, em `PERMISSION_GROUPS` de `src/lib/permissions.ts`). Área nova = chave nova no grupo certo; nunca reaproveite uma chave de outra área. Se renomear/dividir chaves, escreva uma migração que converta `Rank`, `Sector` e `Management` e registre o mapa em `LEGACY_PERMISSIONS`.
+- Membro fora da fac = `isGone(status)` / `inFactionWhere` (`src/lib/members.ts`), nunca `status !== "EXPULSO"`.
 - shadcn aqui é Base UI: use `render`, não `asChild`; navegação com cara de botão = `LinkButton`.
 - Testes: `npm test` (unit + integração no banco de teste) e `npm run test:e2e` (Playwright). Cada módulo novo ganha `tests/integration/<modulo>.test.ts` e `e2e/<modulo>.spec.ts`.
 - `cacheComponents` está desligado de propósito (painel todo autenticado).

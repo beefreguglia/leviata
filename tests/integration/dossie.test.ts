@@ -23,7 +23,7 @@ async function create(name = "Tony Sopro") {
 describe("dossiê: acesso", () => {
   it("quem não é da investigação não vê nem cria", async () => {
     await actAs("dev-soldado");
-    expect((await getViewer())?.can("dossie.gerenciar")).toBe(false);
+    expect((await getViewer())?.can("dossie.ver")).toBe(false);
     expect(await createDossier(ficha())).toEqual({ ok: false, error: "Sem permissão para esta ação" });
     expect(await db.dossier.count()).toBe(0);
   });
@@ -35,14 +35,14 @@ describe("dossiê: acesso", () => {
 
   it("o setor Vigília cria e edita, porque setor agora soma permissões", async () => {
     await ninaNaVigilia();
-    expect((await getViewer())?.can("dossie.gerenciar")).toBe(true);
+    expect((await getViewer())?.can("dossie.ver")).toBe(true);
     expect(await createDossier(ficha())).toEqual({ ok: true, message: "Ficha de Tony Sopro criada" });
   });
 
   it("G-Investigativa tem acesso; outras gerências não", () => {
-    const withAccess = LEVIATA_MANAGEMENTS.filter((g) => g.permissions.includes("dossie.gerenciar")).map((g) => g.name);
+    const withAccess = LEVIATA_MANAGEMENTS.filter((g) => g.permissions.includes("dossie.editar")).map((g) => g.name);
     expect(withAccess).toEqual(["G-Investigativa"]);
-    expect(LEVIATA_SECTORS.filter((s) => s.permissions?.includes("dossie.gerenciar")).map((s) => s.name)).toEqual(["Vigília"]);
+    expect(LEVIATA_SECTORS.filter((s) => s.permissions?.includes("dossie.editar")).map((s) => s.name)).toEqual(["Vigília"]);
   });
 
   it("permissão do setor é editável em Hierarquia e sai quando desmarcada", async () => {
@@ -51,7 +51,7 @@ describe("dossiê: acesso", () => {
     await actAs("dev-lider");
     expect((await updateSector(sector.id, form({ name: "Vigília", color: "#8b7cf6", order: "3", discordRoleId: "" }))).ok).toBe(true);
     await actAs("dev-soldado");
-    expect((await getViewer())?.can("dossie.gerenciar")).toBe(false);
+    expect((await getViewer())?.can("dossie.ver")).toBe(false);
   });
 });
 

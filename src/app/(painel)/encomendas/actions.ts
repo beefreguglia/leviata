@@ -27,7 +27,7 @@ async function parse(fd: FormData) {
 
 export async function createOrder(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("encomendas.gerenciar");
     const data = await parse(fd);
     const order = await db.order.create({ data: { ...data, createdById: viewer.member?.id }, include: { item: true } });
     await audit({
@@ -44,7 +44,7 @@ export async function createOrder(fd: FormData) {
 
 export async function updateOrder(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("encomendas.gerenciar");
     const current = await db.order.findUniqueOrThrow({ where: { id } });
     if (current.status === "ENTREGUE") throw new Error("Encomenda já entregue não pode ser editada");
     const order = await db.order.update({ where: { id }, data: await parse(fd) });
@@ -59,7 +59,7 @@ const statusSchema = z.enum(["ABERTA", "PRODUCAO", "PRONTA", "CANCELADA"]);
 /** Muda o status (a entrega tem ação própria). */
 export async function moveOrder(id: string, to: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("encomendas.gerenciar");
     const next = statusSchema.parse(to);
     const order = await db.order.findUniqueOrThrow({ where: { id } });
     if (!canMoveOrder(order.status, next)) throw new Error(`Não dá para ir de "${ORDER_STATUS[order.status].label}" para "${ORDER_STATUS[next].label}"`);
@@ -73,7 +73,7 @@ export async function moveOrder(id: string, to: string) {
 /** Entrega: opcionalmente tira o item do baú e lança o pagamento. */
 export async function deliverOrder(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("encomendas.gerenciar");
     const takeFromVault = fd.get("takeFromVault") === "on";
     const payment = z.enum(["NAO", "DINHEIRO_SUJO", "DINHEIRO_LIMPO"]).parse(fd.get("payment") ?? "NAO");
 
@@ -114,7 +114,7 @@ export async function deliverOrder(id: string, fd: FormData) {
 
 export async function deleteOrder(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("encomendas.gerenciar");
     const order = await db.order.findUniqueOrThrow({ where: { id } });
     if (order.status === "ENTREGUE") throw new Error("Encomenda entregue fica no histórico (estorne no baú se precisar)");
     await db.order.delete({ where: { id } });

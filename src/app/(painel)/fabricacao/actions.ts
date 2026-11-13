@@ -20,7 +20,7 @@ async function ensureItemNameFree(name: string, exceptId?: string) {
 
 export async function createItem(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("fabricacao.editar");
     const data = parseItemForm(fd);
     await ensureItemNameFree(data.name);
     const item = await db.item.create({ data });
@@ -32,7 +32,7 @@ export async function createItem(fd: FormData) {
 
 export async function updateItem(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("fabricacao.editar");
     const data = parseItemForm(fd);
     await ensureItemNameFree(data.name, id);
     const item = await db.item.update({ where: { id }, data });
@@ -44,7 +44,7 @@ export async function updateItem(id: string, fd: FormData) {
 
 export async function deleteItem(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("fabricacao.editar");
     const item = await db.item.findUniqueOrThrow({ where: { id }, include: { _count: { select: { usedIn: true, producedBy: true } } } });
     if (item._count.usedIn > 0) throw new Error(`${item.name} é insumo de ${item._count.usedIn} receita(s). Remova das receitas antes.`);
     await db.item.delete({ where: { id } });
@@ -77,7 +77,7 @@ async function ensureOneRecipePerItem(outputItemId: string, exceptId?: string) {
 
 export async function createRecipe(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("fabricacao.editar");
     const { inputs, ...data } = parseRecipeForm(fd);
     await ensureOneRecipePerItem(data.outputItemId);
     await ensureNoCycle({ id: "nova", outputItemId: data.outputItemId, outputQty: data.outputQty, minutes: data.minutes, inputs });
@@ -93,7 +93,7 @@ export async function createRecipe(fd: FormData) {
 
 export async function updateRecipe(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("fabricacao.editar");
     const { inputs, ...data } = parseRecipeForm(fd);
     await ensureOneRecipePerItem(data.outputItemId, id);
     await ensureNoCycle({ id, outputItemId: data.outputItemId, outputQty: data.outputQty, minutes: data.minutes, inputs });
@@ -109,7 +109,7 @@ export async function updateRecipe(id: string, fd: FormData) {
 
 export async function deleteRecipe(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("fabricacao.editar");
     const recipe = await db.recipe.delete({ where: { id }, include: { outputItem: true } });
     await audit({ userId: viewer.user.id, action: "recipe.delete", entity: "Recipe", entityId: id, summary: `Apagou a receita de ${recipe.outputItem.name}` });
     revalidate();

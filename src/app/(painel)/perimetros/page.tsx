@@ -20,7 +20,7 @@ export default async function PerimetrosPage() {
         title="Perímetros"
         description="A vista de cima de cada alvo, para combinar as posições antes da ação."
         actions={
-          viewer.can("operacoes.gerenciar") && (
+          viewer.can("perimetros.gerenciar") && (
             <LinkButton href="/perimetros/novo">
               <PlusIcon /> Novo perímetro
             </LinkButton>

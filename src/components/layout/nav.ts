@@ -64,7 +64,7 @@ export const NAV_MAIN: NavSection[] = [
     items: [
       { href: "/lore", label: "Lore", perm: "painel.ver" },
       { href: "/faccoes", label: "Facções", perm: "painel.ver" },
-      { href: "/dossie", label: "Dossiê", perm: "dossie.gerenciar" },
+      { href: "/dossie", label: "Dossiê", perm: "dossie.ver" },
     ],
   },
   {

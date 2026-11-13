@@ -8,6 +8,7 @@ export const MEMBER_STATUS: Record<MemberStatus, { label: string; className: str
   INATIVO: { label: "Inativo", className: "bg-grey-700 text-grey-300" },
   AFASTADO: { label: "Afastado", className: "bg-warning-low text-warning" },
   EXPULSO: { label: "Expulso", className: "bg-danger-low text-danger-light" },
+  SAIU: { label: "Saiu", className: "bg-grey-700 text-grey-300" },
 };
 
 export const ABSENT_BADGE = { label: "Ausente", className: "bg-warning-low text-warning" };
@@ -20,7 +21,7 @@ export const ABSENCE_STATUS: Record<AbsenceStatus, { label: string; className: s
 };
 
 /** Presença mostrada como bolinha no avatar (ausência ativa tem prioridade sobre o status). */
-export type Presence = "ATIVO" | "AUSENTE" | "AFASTADO" | "INATIVO" | "EXPULSO";
+export type Presence = "ATIVO" | "AUSENTE" | "AFASTADO" | "INATIVO" | "EXPULSO" | "SAIU";
 
 export const PRESENCE: Record<Presence, { label: string; dot: string }> = {
   ATIVO: { label: "Ativo", dot: "bg-success" },
@@ -28,6 +29,7 @@ export const PRESENCE: Record<Presence, { label: string; dot: string }> = {
   AFASTADO: { label: "Afastado", dot: "bg-danger-light" },
   INATIVO: { label: "Inativo", dot: "bg-grey-400" },
   EXPULSO: { label: "Expulso", dot: "bg-grey-600" },
+  SAIU: { label: "Saiu", dot: "bg-grey-600" },
 };
 
 export function presenceOf(status: MemberStatus, absentNow: boolean): Presence {

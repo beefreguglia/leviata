@@ -1,5 +1,6 @@
 import { GavelIcon, PlusIcon, TriangleAlertIcon } from "@/components/icons";
 import Link from "next/link";
+import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { activePunishmentWhere } from "@/lib/punishments";
@@ -16,7 +17,9 @@ export const metadata = { title: "Punições" };
 
 export default async function PunicoesPage() {
   const viewer = await requireViewer();
-  const canManage = viewer.can("punicoes.gerenciar");
+  const canApply = viewer.can("punicoes.aplicar");
+  const canRevoke = viewer.can("punicoes.revogar");
+  const canManage = canApply || canRevoke;
   const now = new Date();
   const include = { member: true, createdBy: true } as const;
 
@@ -30,7 +33,7 @@ export default async function PunicoesPage() {
     canManage
       ? db.punishment.groupBy({ by: ["memberId"], where: { kind: "ADVERTENCIA", ...activePunishmentWhere(now) }, _count: true })
       : Promise.resolve([]),
-    canManage ? db.member.findMany({ where: { status: { not: "EXPULSO" } }, include: { rank: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
+    canManage ? db.member.findMany({ where: inFactionWhere, include: { rank: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
     canManage ? db.rank.findMany({ orderBy: { order: "asc" } }) : Promise.resolve([]),
   ]);
   const warnCount = new Map(warnings.map((w) => [w.memberId, w._count]));
@@ -44,7 +47,7 @@ export default async function PunicoesPage() {
         title="Punições"
         description={canManage ? "Advertências, multas, suspensões, rebaixamentos e expulsões." : "Suas punições na Leviatã."}
         actions={
-          canManage && (
+          canApply && (
             <FormDialog
               title="Aplicar punição"
               action={createPunishment}
@@ -90,11 +93,11 @@ export default async function PunicoesPage() {
         ) : (
           <>
             <GroupedList header={`Valendo agora · ${active.length}`}>
-              {active.length === 0 ? <p className="px-5 py-4 text-base text-muted-foreground">Nenhuma.</p> : <PunishmentRows rows={active} canManage={canManage} showMember={canManage} />}
+              {active.length === 0 ? <p className="px-5 py-4 text-base text-muted-foreground">Nenhuma.</p> : <PunishmentRows rows={active} canManage={canRevoke} showMember={canManage} />}
             </GroupedList>
             {past.length > 0 && (
               <GroupedList header="Histórico">
-                <PunishmentRows rows={past} canManage={canManage} showMember={canManage} />
+                <PunishmentRows rows={past} canManage={canRevoke} showMember={canManage} />
               </GroupedList>
             )}
           </>

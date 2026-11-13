@@ -19,7 +19,7 @@ export default async function PerimeterPage({ params }: PageProps<"/perimetros/[
   const { id } = await params;
   const p = await db.perimeter.findUnique({ where: { id }, include: { author: true } });
   if (!p) notFound();
-  const canManage = viewer.can("operacoes.gerenciar");
+  const canManage = viewer.can("perimetros.gerenciar");
 
   return (
     <FadeIn className="mx-auto flex max-w-5xl flex-col gap-6">

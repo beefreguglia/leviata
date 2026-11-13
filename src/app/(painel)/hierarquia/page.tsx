@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PencilIcon, PlusIcon, Trash2Icon } from "@/components/icons";
+import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { activeAbsenceWhere } from "@/lib/absences";
@@ -21,22 +22,24 @@ export const metadata = { title: "Hierarquia" };
 
 export default async function HierarquiaPage() {
   const viewer = await requireViewer();
-  const canManage = viewer.can("hierarquia.gerenciar");
+  const canRanks = viewer.can("hierarquia.patentes");
+  const canSectors = viewer.can("hierarquia.setores");
+  const canManagements = viewer.can("hierarquia.gerencias");
 
   const memberInclude = { user: true, absences: { where: activeAbsenceWhere(), take: 1 } } as const;
-  const activeMembers = { where: { status: { not: "EXPULSO" as const } }, include: memberInclude, orderBy: { rpName: "asc" as const } };
+  const activeMembers = { where: inFactionWhere, include: memberInclude, orderBy: { rpName: "asc" as const } };
   const [ranks, noRank, sectors, managements] = await Promise.all([
     db.rank.findMany({
       orderBy: { order: "asc" },
       include: {
         members: {
-          where: { status: { not: "EXPULSO" } },
+          where: inFactionWhere,
           include: { user: true, absences: { where: activeAbsenceWhere(), take: 1 } },
           orderBy: { rpName: "asc" },
         },
       },
     }),
-    db.member.count({ where: { rankId: null, status: { not: "EXPULSO" } } }),
+    db.member.count({ where: { rankId: null, ...inFactionWhere } }),
     db.sector.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }], include: { members: activeMembers, managements: { include: { members: activeMembers } } } }),
     db.management.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }], include: { sector: true, members: activeMembers } }),
   ]);
@@ -48,7 +51,7 @@ export default async function HierarquiaPage() {
         title="Hierarquia"
         description="Patentes, setores e gerências. Tudo pode vir dos cargos do Discord."
         actions={
-          canManage && (
+          canRanks && (
             <FormDialog
               title="Nova patente"
               action={createRank}
@@ -77,7 +80,7 @@ export default async function HierarquiaPage() {
                     {rank.members.length}
                   </span>
                 </h2>
-                {canManage && (
+                {canRanks && (
                   <div className="flex items-center">
                     <FormDialog
                       title={`Editar ${rank.name}`}
@@ -130,7 +133,7 @@ export default async function HierarquiaPage() {
                   </ul>
                 )}
               </div>
-              {canManage && (
+              {canRanks && (
                 <p className="text-xs leading-base text-muted-foreground">
                   {rank.discordRoleId ? `Cargo Discord ${rank.discordRoleId}` : "Sem cargo do Discord vinculado"} ·{" "}
                   {rank.permissions.length === 0
@@ -157,7 +160,7 @@ export default async function HierarquiaPage() {
             </h2>
             <p className="type-small text-muted-foreground">Cada membro faz parte de um setor.</p>
           </div>
-          {canManage && (
+          {canSectors && (
             <FormDialog
               title="Novo setor"
               action={createSector}
@@ -189,7 +192,7 @@ export default async function HierarquiaPage() {
                       </h3>
                       {sector.description && <span className="type-label text-muted-foreground">{sector.description}</span>}
                     </div>
-                    {canManage && (
+                    {canSectors && (
                       <div className="flex items-center">
                         <FormDialog
                           title={`Editar ${sector.name}`}
@@ -240,7 +243,7 @@ export default async function HierarquiaPage() {
                       ))}
                     </ul>
                   )}
-                  {canManage && (
+                  {canSectors && (
                     <p className="type-caption text-muted-foreground">{sector.discordRoleId ? `Cargo Discord ${sector.discordRoleId}` : "Sem cargo do Discord vinculado"}</p>
                   )}
                 </article>
@@ -259,7 +262,7 @@ export default async function HierarquiaPage() {
             </h2>
             <p className="type-small text-muted-foreground">Somam permissões às da patente. Um membro pode ter mais de uma.</p>
           </div>
-          {canManage && (
+          {canManagements && (
             <FormDialog
               title="Nova gerência"
               action={createManagement}
@@ -293,14 +296,14 @@ export default async function HierarquiaPage() {
                     )}
                   </span>
                   <span className="type-small text-grey-300">{g.members.length ? g.members.map((m) => m.rpName).join(", ") : "Ninguém com esta gerência"}</span>
-                  {canManage && (
+                  {canManagements && (
                     <span className="type-caption text-muted-foreground">
                       {g.discordRoleId ? `Cargo Discord ${g.discordRoleId}` : "Sem cargo do Discord vinculado"} ·{" "}
                       {g.permissions.length ? g.permissions.map((p) => PERMISSIONS[p as Permission] ?? p).join(", ") : "não soma permissões"}
                     </span>
                   )}
                 </div>
-                {canManage && (
+                {canManagements && (
                   <div className="flex shrink-0 items-center">
                     <FormDialog
                       title={`Editar ${g.name}`}

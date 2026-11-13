@@ -86,7 +86,7 @@ describe("perímetros", () => {
     expect((await db.event.findUniqueOrThrow({ where: { id: ev.id } })).perimeterId).toBeNull();
   });
 
-  it("precisa de operacoes.gerenciar (soldado não cria)", async () => {
+  it("precisa de perimetros.gerenciar (soldado não cria)", async () => {
     await actAs("dev-soldado");
     expect((await createPerimeter(form({ name: "Fleeca", imageId: "x" }))).ok).toBe(false);
   });

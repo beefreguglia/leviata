@@ -22,7 +22,7 @@ const PRIORITY_COLOR = { NORMAL: 0x06d4ec, IMPORTANTE: 0xfba94c, URGENTE: 0xf75a
 
 export async function createNotice(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mural.editar");
     const { notifyDiscord, expiresAt, pollOptions, ...data } = parseNoticeForm(fd);
     const notice = await db.notice.create({
       data: {
@@ -49,7 +49,7 @@ export async function createNotice(fd: FormData) {
 
 export async function updateNotice(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mural.editar");
     const { notifyDiscord: _n, expiresAt, pollOptions, ...data } = parseNoticeForm(fd);
     void _n;
     const current = await db.notice.findUniqueOrThrow({ where: { id }, include: { pollOptions: { orderBy: { order: "asc" } }, _count: { select: { pollVotes: true } } } });
@@ -101,7 +101,7 @@ export async function votePoll(noticeId: string, optionId: string) {
 
 export async function toggleNoticePin(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mural.editar");
     const current = await db.notice.findUniqueOrThrow({ where: { id } });
     await db.notice.update({ where: { id }, data: { isPinned: !current.isPinned } });
     await audit({
@@ -118,7 +118,7 @@ export async function toggleNoticePin(id: string) {
 
 export async function deleteNotice(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mural.editar");
     const notice = await db.notice.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "notice.delete", entity: "Notice", entityId: id, summary: `Apagou o aviso "${notice.title}"`, data: { content: notice.content } });
     revalidate();
@@ -128,7 +128,7 @@ export async function deleteNotice(id: string) {
 
 export async function createFlyer(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mural.editar");
     const data = parseFlyerForm(fd);
     const [imageId] = await existingUploadIds([data.imageId]);
     if (!imageId) throw new Error("Envie a imagem do flyer");
@@ -141,7 +141,7 @@ export async function createFlyer(fd: FormData) {
 
 export async function deleteFlyer(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("mural.editar");
     const flyer = await db.flyer.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "flyer.delete", entity: "Flyer", entityId: id, summary: `Apagou o flyer "${flyer.title}"` });
     revalidate();

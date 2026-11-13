@@ -30,7 +30,7 @@ const TABS = [
 
 export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
   const viewer = await requireViewer();
-  const canEdit = viewer.can("conteudo.editar");
+  const canEdit = viewer.can("mural.editar");
   const sp = await searchParams;
   const tab = sp.aba === "flyers" ? "flyers" : "avisos";
   const now = new Date();

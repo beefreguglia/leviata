@@ -33,7 +33,7 @@ export default async function FarmGuidePage({ params }: PageProps<"/farm/[id]">)
             Por {guide.author?.rpName ?? "Leviatã"} · atualizado {fmtAgo(guide.updatedAt)}
           </p>
         </div>
-        {viewer.can("conteudo.editar") && (
+        {viewer.can("farm.editar") && (
           <LinkButton href={`/farm/${guide.id}/editar`} variant="secondary">
             <PencilIcon /> Editar
           </LinkButton>

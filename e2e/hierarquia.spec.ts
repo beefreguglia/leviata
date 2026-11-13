@@ -26,9 +26,17 @@ test.describe("hierarquia (líder)", () => {
     await page.getByRole("button", { name: `Editar ${name}` }).click();
     await page.getByRole("dialog").getByLabel("ID do cargo no Discord").fill("123456789");
     await page.getByRole("dialog").getByLabel("Editar regras").check();
+    // permissões uma por uma: marca o grupo Operações inteiro e tira só as escalações
+    const ops = page.getByRole("dialog").getByTestId("permission-group").filter({ hasText: "Operações" });
+    await ops.getByRole("button", { name: "Marcar todas" }).click();
+    await ops.getByLabel("Montar e publicar escalações").uncheck();
+    await expect(ops.getByRole("button", { name: "Marcar todas" })).toBeVisible();
     await page.getByRole("dialog").getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Patente atualizada");
-    await expect(page.getByText(/Cargo Discord 123456789 · Acessar o painel interno, Editar regras/)).toBeVisible();
+    const summary = page.getByText(/Cargo Discord 123456789 · Acessar o painel interno, Editar regras/);
+    await expect(summary).toContainText("Agendar ações e corridas e escrever relatórios");
+    await expect(summary).toContainText("Criar e editar perímetros");
+    await expect(summary).not.toContainText("escalações");
 
     await page.getByRole("button", { name: `Apagar ${name}` }).click();
     await page.getByRole("alertdialog").getByRole("button", { name: "Apagar" }).click();

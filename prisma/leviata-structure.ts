@@ -19,7 +19,7 @@ export const LEVIATA_RANKS = [
 export const LEVIATA_SECTORS = [
   { name: "Vanguarda", description: "Ações", order: 1, color: "#f75a68", discordRoleId: "1568727339481956553" },
   { name: "Propulsão", description: "Corrida", order: 2, color: "#fba94c", discordRoleId: "1568727551264821409" },
-  { name: "Vigília", description: "Investigativa", order: 3, color: "#8b7cf6", discordRoleId: "1568727668290093197", permissions: ["dossie.gerenciar"] },
+  { name: "Vigília", description: "Investigativa", order: 3, color: "#8b7cf6", discordRoleId: "1568727668290093197", permissions: ["dossie.ver", "dossie.editar"] },
   { name: "Comércio", description: "Vendas e encomendas", order: 4, color: "#04d361", discordRoleId: "1534404775171330106" },
 ];
 
@@ -30,17 +30,17 @@ export const LEVIATA_MANAGEMENTS = [
     order: 1,
     sector: null,
     discordRoleId: "1534404775188238466",
-    permissions: ["painel.ver", "economia.ver", "conteudo.editar", "operacoes.gerenciar", "financeiro.gerenciar", "radar.ver"],
+    permissions: ["painel.ver", "economia.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar", "radar.ver"],
   },
-  { name: "G-Ação", order: 2, sector: "Vanguarda", discordRoleId: "1534404775171330107", permissions: ["painel.ver", "operacoes.gerenciar", "radar.ver"] },
-  { name: "G-Corrida", order: 3, sector: "Propulsão", discordRoleId: "1568731925768835082", permissions: ["painel.ver", "operacoes.gerenciar", "radar.ver"] },
-  { name: "G-Investigativa", order: 4, sector: "Vigília", discordRoleId: "1534404775171330104", permissions: ["painel.ver", "conteudo.editar", "radar.ver", "dossie.gerenciar"] },
+  { name: "G-Ação", order: 2, sector: "Vanguarda", discordRoleId: "1534404775171330107", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "radar.ver"] },
+  { name: "G-Corrida", order: 3, sector: "Propulsão", discordRoleId: "1568731925768835082", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "radar.ver"] },
+  { name: "G-Investigativa", order: 4, sector: "Vigília", discordRoleId: "1534404775171330104", permissions: ["painel.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "radar.ver", "dossie.ver", "dossie.editar"] },
   {
     name: "G-Comércio",
     order: 5,
     sector: "Comércio",
     discordRoleId: "1534404775171330106",
-    permissions: ["painel.ver", "economia.ver", "financeiro.gerenciar", "radar.ver"],
+    permissions: ["painel.ver", "economia.ver", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar", "radar.ver"],
   },
 ];
 

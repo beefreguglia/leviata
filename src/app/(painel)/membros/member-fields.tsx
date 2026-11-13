@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, NativeSelect } from "@/components/forms/fields";
 import { MEMBER_STATUS } from "@/lib/labels";
+import { EDITABLE_STATUSES, isGone } from "@/lib/members";
 import { toDateInputBRT } from "@/lib/dates";
 import type { Member, Rank } from "@/generated/prisma/client";
 import { PhoneInput } from "@/components/forms/masked-inputs";
@@ -34,15 +35,17 @@ export function MemberFields({ member, ranks, canEditContact = true }: { member?
           </NativeSelect>
         </Field>
       )}
-      <Field label="Status" htmlFor="status">
-        <NativeSelect id="status" name="status" defaultValue={member?.status ?? "ATIVO"}>
-          {Object.entries(MEMBER_STATUS).map(([value, { label }]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </NativeSelect>
-      </Field>
+      {!isGone(member?.status) && (
+        <Field label="Status" htmlFor="status">
+          <NativeSelect id="status" name="status" defaultValue={member?.status ?? "ATIVO"}>
+            {EDITABLE_STATUSES.map((value) => (
+              <option key={value} value={value}>
+                {MEMBER_STATUS[value].label}
+              </option>
+            ))}
+          </NativeSelect>
+        </Field>
+      )}
       <Field label="Entrou na fac em" htmlFor="joinedAt">
         <Input id="joinedAt" name="joinedAt" type="date" defaultValue={toDateInputBRT(member?.joinedAt ?? new Date())} />
       </Field>

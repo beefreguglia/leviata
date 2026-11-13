@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isGone } from "@/lib/members";
 import { db } from "@/lib/db";
 import { getViewer } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -14,7 +15,7 @@ export async function saveMyRegistration(fd: FormData) {
     const viewer = await getViewer();
     if (!viewer) throw new Error("Não autenticado");
     const member = viewer.member;
-    if (!member || member.status === "EXPULSO") throw new Error("Sem permissão para esta ação");
+    if (!member || isGone(member.status)) throw new Error("Sem permissão para esta ação");
 
     const input = parseRegistrationForm(fd);
     assertCanChangeContact(viewer.isDev, member, input);

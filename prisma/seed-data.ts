@@ -5,7 +5,7 @@ import { LEVIATA_MANAGEMENTS, LEVIATA_SECTORS } from "./leviata-structure";
 export const ALL = ["admin"];
 /** Gerente: cria e edita operações, economia, cidade e comunicação.
  *  Não vê ausências dos outros, não pune, não edita regras nem vê auditoria. */
-export const GERENCIA = ["painel.ver", "economia.ver", "conteudo.editar", "operacoes.gerenciar", "financeiro.gerenciar"];
+export const GERENCIA = ["painel.ver", "economia.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"];
 /** Soldado e Recruta: só veem cidade, comunicação, operações, membros e hierarquia. */
 export const MEMBRO = ["painel.ver"];
 

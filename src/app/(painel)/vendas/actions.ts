@@ -20,7 +20,7 @@ function revalidate() {
 /** Registra a venda: tira o item do baú (se marcado) e lança o pagamento, tudo ou nada. */
 export async function createSale(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("vendas.gerenciar");
     const input = parseSaleForm(fd);
     const by = viewer.member?.id ?? null;
 
@@ -83,7 +83,7 @@ export async function createSale(fd: FormData) {
 /** Cancela a venda e desfaz no baú: o item volta e o dinheiro sai (precisa ter saldo). */
 export async function cancelSale(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("financeiro.gerenciar");
+    const viewer = await assertPermission("vendas.gerenciar");
     const reason = optionalText(300).parse(fd.get("reason") ?? "");
     const by = viewer.member?.id ?? null;
 

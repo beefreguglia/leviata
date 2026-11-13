@@ -29,7 +29,7 @@ async function parse(fd: FormData) {
 export async function createLore(fd: FormData) {
   let slug = "";
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("lore.editar");
     const data = await parse(fd);
     slug = await uniqueSlug(data.title);
     const article = await db.loreArticle.create({ data: { ...data, slug, authorId: viewer.member?.id } });
@@ -43,7 +43,7 @@ export async function createLore(fd: FormData) {
 export async function updateLore(id: string, fd: FormData) {
   let slug = "";
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("lore.editar");
     const data = await parse(fd);
     slug = await uniqueSlug(data.title, id);
     const article = await db.loreArticle.update({ where: { id }, data: { ...data, slug } });
@@ -56,7 +56,7 @@ export async function updateLore(id: string, fd: FormData) {
 
 export async function deleteLore(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("conteudo.editar");
+    const viewer = await assertPermission("lore.editar");
     const article = await db.loreArticle.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "lore.delete", entity: "LoreArticle", entityId: id, summary: `Apagou "${article.title}" da lore`, data: { content: article.content } });
     revalidatePath("/lore", "layout");

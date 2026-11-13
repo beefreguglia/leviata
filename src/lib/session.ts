@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { isGone } from "@/lib/members";
 import { db } from "@/lib/db";
 import { hasPermission, isDeveloper, type Permission } from "@/lib/permissions";
 
@@ -18,7 +19,7 @@ export const getViewer = cache(async () => {
   if (!user) return null;
 
   const member = user.member;
-  const blocked = !member || member.status === "EXPULSO";
+  const blocked = !member || isGone(member.status);
   // desenvolvedor: tudo liberado, mas a ficha continua mostrando a patente cadastrada
   // permissões = patente + setor + todas as gerências da pessoa
   const permissions: string[] =

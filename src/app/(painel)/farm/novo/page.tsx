@@ -7,7 +7,7 @@ import { createFarmGuide } from "../actions";
 export const metadata = { title: "Novo guia de farm" };
 
 export default async function NovoFarmPage() {
-  await requireViewer("conteudo.editar");
+  await requireViewer("farm.editar");
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
   return (
     <div className="mx-auto max-w-3xl">

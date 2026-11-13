@@ -14,7 +14,7 @@ export const metadata = { title: "Mapa" };
 
 export default async function MapaPage() {
   const viewer = await requireViewer();
-  const canEdit = viewer.can("conteudo.editar");
+  const canEdit = viewer.can("mapa.editar");
   const map = await getMapConfig();
 
   const canEconomy = viewer.can("economia.ver");

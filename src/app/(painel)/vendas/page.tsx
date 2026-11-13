@@ -36,7 +36,7 @@ const SALES_SERIES = [
 
 export default async function VendasPage({ searchParams }: PageProps<"/vendas">) {
   const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("financeiro.gerenciar");
+  const canManage = viewer.can("vendas.gerenciar");
   const sp = await searchParams;
   const filter = FILTERS.find((f) => f.key === sp.comprador)?.key ?? "todas";
   const where: Prisma.SaleWhereInput = filter === "faccao" ? { buyerKind: "FACCAO" } : filter === "player" ? { buyerKind: "PLAYER" } : {};

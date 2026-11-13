@@ -68,6 +68,36 @@ test.describe("membros (gerência)", () => {
     await expect(page.getByText(/Mandou bem/)).toBeVisible();
   });
 
+  test("desligar (quis sair) e readmitir", async ({ page }) => {
+    const name = `Saída ${uid()}`;
+    await page.goto("/membros");
+    await page.getByRole("button", { name: "Novo membro" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByLabel("Nome no RP").fill(name);
+    await dialog.getByLabel("Patente").selectOption({ label: "Recruta" });
+    await dialog.getByRole("button", { name: "Cadastrar" }).click();
+    await expectToast(page, `${name} cadastrado`);
+    await page.getByRole("link", { name: new RegExp(name) }).click();
+
+    await page.getByRole("button", { name: "Desligar" }).click();
+    await page.getByRole("dialog").getByLabel("Motivo").selectOption("SAIU");
+    await page.getByRole("dialog").getByLabel("Explique").fill("Pediu para sair no Discord");
+    await page.getByRole("dialog").getByRole("button", { name: "Desligar" }).click();
+    await expectToast(page, `${name} foi desligado`);
+    await expect(page.getByText("Pediu para sair no Discord")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Desligar" })).toBeHidden();
+
+    await page.goto("/membros");
+    await expect(page.getByRole("link", { name: new RegExp(name) })).toBeHidden();
+
+    await page.goto("/membros?status=SAIU");
+    await page.getByRole("link", { name: new RegExp(name) }).click();
+    await page.getByRole("button", { name: "Readmitir" }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "Readmitir" }).click();
+    await expectToast(page, `${name} voltou para a fac`);
+    await expect(page.getByRole("button", { name: "Desligar" })).toBeVisible();
+  });
+
   test("passaporte repetido mostra erro e mantém o diálogo aberto", async ({ page }) => {
     await page.goto("/membros");
     await page.getByRole("button", { name: "Novo membro" }).click();

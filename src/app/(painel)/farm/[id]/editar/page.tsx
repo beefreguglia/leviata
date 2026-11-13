@@ -11,7 +11,7 @@ import { deleteFarmGuide, updateFarmGuide } from "../../actions";
 export const metadata = { title: "Editar guia de farm" };
 
 export default async function EditarFarmPage({ params }: PageProps<"/farm/[id]/editar">) {
-  await requireViewer("conteudo.editar");
+  await requireViewer("farm.editar");
   const { id } = await params;
   const [guide, items] = await Promise.all([
     db.farmGuide.findUnique({ where: { id } }),

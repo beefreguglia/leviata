@@ -30,7 +30,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
     include: { events: { include: { author: true }, orderBy: { happenedAt: "desc" } } },
   });
   if (!faction) notFound();
-  const canEdit = viewer.can("conteudo.editar");
+  const canEdit = viewer.can("faccoes.editar");
   // negócios com a facção: só quem vê a economia
   const sales = viewer.can("economia.ver")
     ? await db.sale.findMany({ where: { factionId: id, cancelledAt: null }, include: { item: true }, orderBy: { createdAt: "desc" }, take: 10 })
