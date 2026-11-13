@@ -16,7 +16,7 @@ Base visual: **Andromeda** (https://andromeda.rocketseat.dev) — mesmas cores d
 | shape-primary (grey-800) | `bg-card` #202024 | modais |
 | shape-secondary (grey-700) | `bg-secondary`/`bg-muted`/`bg-grey-700` #29292E | botão secundário, chips, hover de linha |
 | shape-tertiary (grey-600) | `border-border`/`bg-accent` #323238 | bordas, hover em chips |
-| grey-950 | `bg-sidebar` #09090A | menu lateral |
+| preto | `bg-sidebar` #000 | menu lateral (e `glass-card` também é #000) |
 | text-title / text-base / text-support / placeholder | `text-grey-100` · `text-grey-200` · `text-muted-foreground` (grey-300) · grey-400 | título · corpo · apoio · placeholder |
 | success / danger / warning (light, base, low) | `text-success` + `bg-success-low`, `text-danger-light` + `bg-danger-low`, `text-warning` + `bg-warning-low` | status |
 

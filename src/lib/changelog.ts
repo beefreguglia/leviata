@@ -15,6 +15,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-13-preto",
+    date: "2026-11-13",
+    title: "Cards e menu em preto",
+    items: ["Os **cards** e o **menu lateral** agora são pretos, com mais contraste no painel"],
+  },
+  {
     id: "2026-11-13-ajustes-uso",
     date: "2026-11-13",
     title: "Painel mais fácil de usar",

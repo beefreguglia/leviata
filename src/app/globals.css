@@ -128,7 +128,7 @@
   --background: var(--grey-900); /* color-background */
   --foreground: var(--grey-100); /* text-title */
   --card: var(--grey-800); /* shape-primary: modais */
-  --card-glass: color-mix(in srgb, var(--grey-950) 45%, var(--grey-900)); /* cards das páginas */
+  --card-glass: #000; /* cards das páginas: preto puro */
   --card-foreground: var(--grey-100);
   --popover: var(--grey-700); /* dropdowns/menus */
   --popover-foreground: var(--grey-100);
@@ -153,7 +153,7 @@
   --chart-4: var(--danger-light);
   --chart-5: var(--success-light);
   --radius: 0.9375rem; /* base 15px → rounded-md = 12px (botões, inputs, menus) */
-  --sidebar: var(--grey-950);
+  --sidebar: #000; /* preto puro */
   --sidebar-foreground: var(--grey-200);
   --sidebar-primary: var(--cyan-mid);
   --sidebar-primary-foreground: var(--grey-950);
