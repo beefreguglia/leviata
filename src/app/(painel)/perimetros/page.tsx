@@ -11,7 +11,7 @@ import { Stagger, StaggerItem } from "@/components/motion";
 export const metadata = { title: "Perímetros" };
 
 export default async function PerimetrosPage() {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("perimetros.ver");
   const perimeters = await db.perimeter.findMany({ orderBy: { name: "asc" } });
 
   return (
@@ -20,7 +20,7 @@ export default async function PerimetrosPage() {
         title="Perímetros"
         description="A vista de cima de cada alvo, para combinar as posições antes da ação."
         actions={
-          viewer.can("perimetros.gerenciar") && (
+          viewer.can("perimetros.criar") && (
             <LinkButton href="/perimetros/novo">
               <PlusIcon /> Novo perímetro
             </LinkButton>

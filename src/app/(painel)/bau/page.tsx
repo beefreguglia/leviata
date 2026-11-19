@@ -60,8 +60,12 @@ function MoveLine({ m, actions }: { m: MoveRow; actions?: React.ReactNode }) {
 }
 
 export default async function BauPage() {
-  const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("bau.gerenciar");
+  const viewer = await requireViewer("bau.ver");
+  const canRegister = viewer.can("bau.criar");
+  const canReview = viewer.can("bau.editar");
+  const canReverse = viewer.can("bau.apagar");
+  // saldo, estoque e histórico: quem mexe no baú (ver sozinho = só entregar o próprio farm)
+  const canManage = canRegister || canReview || canReverse;
   const items = await db.item.findMany({ orderBy: { name: "asc" } });
 
   const [balances, pending, history, mine, members, balanceHistory] = await Promise.all([
@@ -77,7 +81,7 @@ export default async function BauPage() {
   const deliverDialog = (
     <FormDialog
       title="Entregar farm no baú"
-      description={canManage ? "Como você é da gerência, já entra confirmado." : "A gerência confere e a entrega passa a contar na sua meta."}
+      description={canReview ? "Como você confere entregas, a sua já entra confirmada." : "A gerência confere e a entrega passa a contar na sua meta."}
       action={deliverFarm}
       submitLabel="Entregar"
       trigger={
@@ -113,7 +117,7 @@ export default async function BauPage() {
         actions={
           <>
             {deliverDialog}
-            {canManage && (
+            {canRegister && (
               <FormDialog
                 title="Registrar movimentação"
                 action={registerMove}
@@ -165,7 +169,7 @@ export default async function BauPage() {
           </ChartCard>
         )}
 
-        {canManage && pending.length > 0 && (
+        {canReview && pending.length > 0 && (
           <GroupedList header={`Entregas para conferir · ${pending.length}`} footer="Confira no jogo antes de confirmar. Só entregas confirmadas contam no estoque e nas metas.">
             {pending.map((m) => (
               <MoveLine
@@ -245,7 +249,7 @@ export default async function BauPage() {
                   key={m.id}
                   m={m}
                   actions={
-                    m.status === "CONFIRMADA" ? (
+                    m.status === "CONFIRMADA" && canReverse ? (
                       <ConfirmButton
                         title="Estornar esta movimentação?"
                         description={`Ela deixa de contar no saldo. (${fmtDateTime(m.createdAt)})`}

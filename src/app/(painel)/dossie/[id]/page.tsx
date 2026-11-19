@@ -22,6 +22,7 @@ import { addDossierLink, addVehicle, deleteDossier, removeDossierLink, removeVeh
 export default async function DossierPage({ params }: PageProps<"/dossie/[id]">) {
   const viewer = await requireViewer("dossie.ver");
   const canEdit = viewer.can("dossie.editar");
+  const canDelete = viewer.can("dossie.apagar");
   const { id } = await params;
   const dossier = await db.dossier.findUnique({
     where: { id },
@@ -57,8 +58,9 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
             {dossier.author && ` · criada por ${dossier.author.rpName}`}
           </p>
         </div>
-        {canEdit && (
+        {(canEdit || canDelete) && (
         <div className="flex gap-2">
+          {canEdit && (
           <FormDialog
             title={`Editar ${dossier.name}`}
             size="lg"
@@ -71,6 +73,8 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
           >
             <DossierFields dossier={dossier} factions={factions} />
           </FormDialog>
+          )}
+          {canDelete && (
           <ConfirmButton
             title={`Apagar a ficha de ${dossier.name}?`}
             description="Placas e vínculos desta ficha também serão apagados."
@@ -83,6 +87,7 @@ export default async function DossierPage({ params }: PageProps<"/dossie/[id]">)
               </Button>
             }
           />
+          )}
         </div>
         )}
       </header>

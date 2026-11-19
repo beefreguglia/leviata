@@ -13,8 +13,8 @@ import { Stagger, StaggerItem } from "@/components/motion";
 export const metadata = { title: "Escalações" };
 
 export default async function EscalacoesPage() {
-  const viewer = await requireViewer();
-  const canManage = viewer.can("escalacoes.gerenciar");
+  const viewer = await requireViewer("escalacoes.ver");
+  const canManage = viewer.can("escalacoes.editar");
   const now = new Date();
   const since = new Date(now.getTime() - 3 * 3600_000);
 

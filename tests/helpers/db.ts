@@ -33,10 +33,7 @@ export async function setRankPerms(name: string, permissions: string[]) {
 }
 
 /** Gerência "completa" (configuração customizada) — usada nos testes das regras de cada ação. */
-export const GERENCIA_COMPLETA = [
-  "painel.ver", "economia.ver", "membros.cadastrar", "membros.editar", "membros.patente", "membros.setor", "membros.desligar", "regras.editar", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar",
-  "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar", "punicoes.aplicar", "punicoes.revogar", "ausencias.gerenciar", "auditoria.ver",
-];
+export const GERENCIA_COMPLETA = ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "farm.ver", "fabricacao.ver", "bau.ver", "metas.ver", "encomendas.ver", "vendas.ver", "membros.criar", "membros.editar", "membros.patente", "membros.setor", "membros.apagar", "regras.criar", "regras.editar", "regras.apagar", "lore.criar", "lore.editar", "lore.apagar", "faccoes.criar", "faccoes.editar", "faccoes.apagar", "farm.criar", "farm.editar", "farm.apagar", "fabricacao.criar", "fabricacao.editar", "fabricacao.apagar", "mural.criar", "mural.editar", "mural.apagar", "mapa.criar", "mapa.editar", "mapa.apagar", "lives.editar", "lives.apagar", "agenda.criar", "agenda.editar", "agenda.apagar", "escalacoes.editar", "perimetros.criar", "perimetros.editar", "perimetros.apagar", "bau.criar", "bau.editar", "bau.apagar", "metas.criar", "metas.editar", "metas.apagar", "encomendas.criar", "encomendas.editar", "encomendas.apagar", "vendas.criar", "vendas.apagar", "punicoes.ver", "punicoes.criar", "punicoes.editar", "punicoes.apagar", "ausencias.ver", "ausencias.editar", "ausencias.apagar", "auditoria.ver"];
 
 export const rankId = async (name: string) => (await db.rank.findUniqueOrThrow({ where: { name } })).id;
 export const memberByName = (rpName: string) => db.member.findFirstOrThrow({ where: { rpName }, include: { rank: true } });

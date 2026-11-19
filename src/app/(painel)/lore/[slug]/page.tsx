@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/lore/[slug]">) {
 }
 
 export default async function LoreArticlePage({ params }: PageProps<"/lore/[slug]">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("lore.ver");
   const { slug } = await params;
   const article = await db.loreArticle.findUnique({ where: { slug }, include: { author: true } });
   if (!article) notFound();

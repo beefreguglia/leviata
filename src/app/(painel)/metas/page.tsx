@@ -31,8 +31,11 @@ function Bar({ pct, complete }: { pct: number; complete: boolean }) {
 }
 
 export default async function MetasPage() {
-  const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("metas.gerenciar");
+  const viewer = await requireViewer("metas.ver");
+  const canCreate = viewer.can("metas.criar");
+  const canEdit = viewer.can("metas.editar");
+  const canDelete = viewer.can("metas.apagar");
+  const canManage = canCreate || canEdit || canDelete;
   const [{ from, to, goals, items, rows }, allItems, ranks, completion] = await Promise.all([
     weeklyGoals(),
     canManage ? db.item.findMany({ orderBy: { name: "asc" } }) : Promise.resolve([]),
@@ -52,7 +55,7 @@ export default async function MetasPage() {
         title="Metas de farm"
         description={`Semana de ${fmtDate(from)} a ${fmtDate(lastDay)}. Contam as entregas conferidas no baú.`}
         actions={
-          canManage && (
+          canCreate && (
             <FormDialog
               title="Nova meta semanal"
               action={createGoal}
@@ -154,6 +157,7 @@ export default async function MetasPage() {
                     <span className="text-sm text-muted-foreground"> · {g.rank ? `só ${g.rank.name}` : "todos"}</span>
                   </span>
                   <div className="flex">
+                    {canEdit && (
                     <FormDialog
                       title={`Meta de ${g.item.name}`}
                       action={updateGoalQuantity.bind(null, g.id)}
@@ -167,6 +171,8 @@ export default async function MetasPage() {
                         <Input id={`gq-${g.id}`} name="quantity" type="number" min={1} defaultValue={g.quantity} />
                       </Field>
                     </FormDialog>
+                    )}
+                    {canDelete && (
                     <ConfirmButton
                       title={`Remover a meta de ${g.item.name}?`}
                       confirmLabel="Remover"
@@ -178,6 +184,7 @@ export default async function MetasPage() {
                         </Button>
                       }
                     />
+                    )}
                   </div>
                 </div>
               ))}

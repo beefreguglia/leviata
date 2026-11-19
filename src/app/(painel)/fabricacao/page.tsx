@@ -34,8 +34,10 @@ function ItemFields({ item }: { item?: Item }) {
 }
 
 export default async function FabricacaoPage() {
-  const viewer = await requireViewer("economia.ver");
+  const viewer = await requireViewer("fabricacao.ver");
+  const canCreate = viewer.can("fabricacao.criar");
   const canEdit = viewer.can("fabricacao.editar");
+  const canDelete = viewer.can("fabricacao.apagar");
   const [items, recipes] = await Promise.all([
     db.item.findMany({ orderBy: { name: "asc" }, include: { farmGuides: { select: { id: true }, take: 1 }, _count: { select: { usedIn: true } } } }),
     db.recipe.findMany({ include: { outputItem: true, inputs: { include: { item: true } } }, orderBy: { outputItem: { name: "asc" } } }),
@@ -47,7 +49,7 @@ export default async function FabricacaoPage() {
         title="Fabricação"
         description="Calculadoras de materiais e as receitas da fac."
         actions={
-          canEdit && (
+          canCreate && (
             <>
               <FormDialog
                 title="Novo item"
@@ -135,8 +137,9 @@ export default async function FabricacaoPage() {
                         {[r.minutes != null && fmtMinutes(r.minutes), r.location].filter(Boolean).join(" · ") || "Sem tempo/local"}
                       </p>
                     </div>
-                    {canEdit && (
+                    {(canEdit || canDelete) && (
                       <div className="flex">
+                        {canEdit && (
                         <FormDialog
                           title={`Receita de ${r.outputItem.name}`}
                           size="lg"
@@ -149,6 +152,8 @@ export default async function FabricacaoPage() {
                         >
                           <RecipeFields items={items} recipe={r} />
                         </FormDialog>
+                        )}
+                        {canDelete && (
                         <ConfirmButton
                           title={`Apagar a receita de ${r.outputItem.name}?`}
                           confirmLabel="Apagar"
@@ -160,6 +165,7 @@ export default async function FabricacaoPage() {
                             </Button>
                           }
                         />
+                        )}
                       </div>
                     )}
                   </header>
@@ -188,8 +194,9 @@ export default async function FabricacaoPage() {
                   {it.isIllegal && <StatusBadge label="Ilegal" className="bg-danger-low text-danger-light" />}
                   {it.farmGuides.length > 0 && <StatusBadge label="Tem guia de farm" className="bg-success-low text-success" />}
                 </div>
-                {canEdit && (
+                {(canEdit || canDelete) && (
                   <div className="flex">
+                    {canEdit && (
                     <FormDialog
                       title={`Editar ${it.name}`}
                       action={updateItem.bind(null, it.id)}
@@ -201,6 +208,8 @@ export default async function FabricacaoPage() {
                     >
                       <ItemFields item={it} />
                     </FormDialog>
+                    )}
+                    {canDelete && (
                     <ConfirmButton
                       title={`Apagar o item ${it.name}?`}
                       confirmLabel="Apagar"
@@ -212,6 +221,7 @@ export default async function FabricacaoPage() {
                         </Button>
                       }
                     />
+                    )}
                   </div>
                 )}
               </div>

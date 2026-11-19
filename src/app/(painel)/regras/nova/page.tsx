@@ -6,7 +6,7 @@ import { createRule } from "../actions";
 export const metadata = { title: "Nova regra" };
 
 export default async function NovaRegraPage() {
-  await requireViewer("regras.editar");
+  await requireViewer("regras.criar");
   return (
     <div className="max-w-3xl">
       <PageHeader title="Nova página de regras" />

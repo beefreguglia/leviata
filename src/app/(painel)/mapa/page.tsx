@@ -13,11 +13,13 @@ import { createPin, deletePin, saveMapConfig, updatePin } from "./actions";
 export const metadata = { title: "Mapa" };
 
 export default async function MapaPage() {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("mapa.ver");
+  const canCreate = viewer.can("mapa.criar");
   const canEdit = viewer.can("mapa.editar");
+  const canDelete = viewer.can("mapa.apagar");
   const map = await getMapConfig();
 
-  const canEconomy = viewer.can("economia.ver");
+  const canEconomy = viewer.can("farm.ver");
   const [allPins, farmGuides, factions] = await Promise.all([
     db.mapPin.findMany({
       include: {
@@ -26,8 +28,8 @@ export default async function MapaPage() {
       },
       orderBy: { title: "asc" },
     }),
-    canEdit && canEconomy ? db.farmGuide.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }) : Promise.resolve([]),
-    canEdit ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
+    (canCreate || canEdit) && canEconomy ? db.farmGuide.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }) : Promise.resolve([]),
+    canCreate || canEdit ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
   ]);
 
   // sem acesso à economia: o pin aparece, mas sem o link para o guia de farm
@@ -51,7 +53,9 @@ export default async function MapaPage() {
           <MapView
             map={map}
             pins={pins}
+            canCreate={canCreate}
             canEdit={canEdit}
+            canDelete={canDelete}
             farmGuides={farmGuides}
             factions={factions}
             createPin={createPin}

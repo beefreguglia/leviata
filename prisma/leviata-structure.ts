@@ -5,7 +5,7 @@
 import { RANK_PALETTE } from "../src/lib/rank-colors";
 
 /** Recruta, Membro e Veterano: veem tudo (inclusive a economia), mas não editam. */
-const VER = ["painel.ver", "economia.ver"];
+const VER = ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "farm.ver", "fabricacao.ver", "bau.ver", "metas.ver", "encomendas.ver", "vendas.ver"];
 
 /** Patentes (escada): uma por pessoa. */
 export const LEVIATA_RANKS = [
@@ -19,7 +19,7 @@ export const LEVIATA_RANKS = [
 export const LEVIATA_SECTORS = [
   { name: "Vanguarda", description: "Ações", order: 1, color: "#f75a68", discordRoleId: "1568727339481956553" },
   { name: "Propulsão", description: "Corrida", order: 2, color: "#fba94c", discordRoleId: "1568727551264821409" },
-  { name: "Vigília", description: "Investigativa", order: 3, color: "#8b7cf6", discordRoleId: "1568727668290093197", permissions: ["dossie.ver", "dossie.editar"] },
+  { name: "Vigília", description: "Investigativa", order: 3, color: "#8b7cf6", discordRoleId: "1568727668290093197", permissions: ["dossie.ver", "dossie.criar", "dossie.editar", "dossie.apagar"] },
   { name: "Comércio", description: "Vendas e encomendas", order: 4, color: "#04d361", discordRoleId: "1534404775171330106" },
 ];
 
@@ -30,17 +30,17 @@ export const LEVIATA_MANAGEMENTS = [
     order: 1,
     sector: null,
     discordRoleId: "1534404775188238466",
-    permissions: ["painel.ver", "economia.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"],
+    permissions: ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "farm.ver", "fabricacao.ver", "bau.ver", "metas.ver", "encomendas.ver", "vendas.ver", "lore.criar", "lore.editar", "lore.apagar", "faccoes.criar", "faccoes.editar", "faccoes.apagar", "farm.criar", "farm.editar", "farm.apagar", "fabricacao.criar", "fabricacao.editar", "fabricacao.apagar", "mural.criar", "mural.editar", "mural.apagar", "mapa.criar", "mapa.editar", "mapa.apagar", "lives.editar", "lives.apagar", "agenda.criar", "agenda.editar", "agenda.apagar", "escalacoes.editar", "perimetros.criar", "perimetros.editar", "perimetros.apagar", "bau.criar", "bau.editar", "bau.apagar", "metas.criar", "metas.editar", "metas.apagar", "encomendas.criar", "encomendas.editar", "encomendas.apagar", "vendas.criar", "vendas.apagar"],
   },
-  { name: "G-Ação", order: 2, sector: "Vanguarda", discordRoleId: "1534404775171330107", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar"] },
-  { name: "G-Corrida", order: 3, sector: "Propulsão", discordRoleId: "1568731925768835082", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar"] },
-  { name: "G-Investigativa", order: 4, sector: "Vigília", discordRoleId: "1534404775171330104", permissions: ["painel.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "dossie.ver", "dossie.editar"] },
+  { name: "G-Ação", order: 2, sector: "Vanguarda", discordRoleId: "1534404775171330107", permissions: ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "agenda.criar", "agenda.editar", "agenda.apagar", "escalacoes.editar", "perimetros.criar", "perimetros.editar", "perimetros.apagar"] },
+  { name: "G-Corrida", order: 3, sector: "Propulsão", discordRoleId: "1568731925768835082", permissions: ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "agenda.criar", "agenda.editar", "agenda.apagar", "escalacoes.editar", "perimetros.criar", "perimetros.editar", "perimetros.apagar"] },
+  { name: "G-Investigativa", order: 4, sector: "Vigília", discordRoleId: "1534404775171330104", permissions: ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "lore.criar", "lore.editar", "lore.apagar", "faccoes.criar", "faccoes.editar", "faccoes.apagar", "farm.criar", "farm.editar", "farm.apagar", "fabricacao.criar", "fabricacao.editar", "fabricacao.apagar", "mural.criar", "mural.editar", "mural.apagar", "mapa.criar", "mapa.editar", "mapa.apagar", "lives.editar", "lives.apagar", "dossie.ver", "dossie.criar", "dossie.editar", "dossie.apagar"] },
   {
     name: "G-Comércio",
     order: 5,
     sector: "Comércio",
     discordRoleId: "1534404775171330106",
-    permissions: ["painel.ver", "economia.ver", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"],
+    permissions: ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "farm.ver", "fabricacao.ver", "bau.ver", "metas.ver", "encomendas.ver", "vendas.ver", "bau.criar", "bau.editar", "bau.apagar", "metas.criar", "metas.editar", "metas.apagar", "encomendas.criar", "encomendas.editar", "encomendas.apagar", "vendas.criar", "vendas.apagar"],
   },
 ];
 

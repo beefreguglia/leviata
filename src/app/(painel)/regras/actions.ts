@@ -11,7 +11,7 @@ import { parseRuleForm as parse, slugify } from "@/lib/schemas/rule";
 export async function createRule(fd: FormData) {
   let slug = "";
   const result = await runAction(async () => {
-    const viewer = await assertPermission("regras.editar");
+    const viewer = await assertPermission("regras.criar");
     const data = parse(fd);
     slug = slugify(data.title);
     if (await db.rulePage.findUnique({ where: { slug } })) slug = `${slug}-${Date.now().toString(36)}`;
@@ -44,7 +44,7 @@ export async function updateRule(id: string, fd: FormData) {
 
 export async function deleteRule(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("regras.editar");
+    const viewer = await assertPermission("regras.apagar");
     const page = await db.rulePage.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "rule.delete", entity: "RulePage", entityId: id, summary: `Apagou "${page.title}"`, data: { content: page.content } });
     revalidatePath("/regras", "layout");

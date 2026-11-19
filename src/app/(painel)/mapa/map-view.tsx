@@ -23,7 +23,9 @@ import type { MapPinData } from "./types";
 type Props = {
   map: { imageId: string; width: number; height: number };
   pins: MapPinData[];
+  canCreate: boolean;
   canEdit: boolean;
+  canDelete: boolean;
   farmGuides: { id: string; title: string }[];
   factions: { id: string; name: string }[];
   createPin: (fd: FormData) => Promise<ActionResult>;
@@ -33,7 +35,7 @@ type Props = {
 
 type DialogState = { mode: "create"; x: number; y: number } | { mode: "edit"; pin: MapPinData } | null;
 
-export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, updatePin, deletePin }: Props) {
+export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, factions, createPin, updatePin, deletePin }: Props) {
   const params = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -202,11 +204,14 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
                 </Link>
               )}
             </div>
-            {canEdit && (
+            {(canEdit || canDelete) && (
               <div className="mt-auto flex gap-2 pt-2">
-                <Button variant="secondary" onClick={() => setDialog({ mode: "edit", pin: selected })}>
-                  <PencilIcon /> Editar
-                </Button>
+                {canEdit && (
+                  <Button variant="secondary" onClick={() => setDialog({ mode: "edit", pin: selected })}>
+                    <PencilIcon /> Editar
+                  </Button>
+                )}
+                {canDelete && (
                 <ConfirmButton
                   title={`Remover "${selected.title}" do mapa?`}
                   confirmLabel="Remover"
@@ -222,6 +227,7 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
                     </Button>
                   }
                 />
+                )}
               </div>
             )}
           </section>
@@ -264,7 +270,7 @@ export function MapView({ map, pins, canEdit, farmGuides, factions, createPin, u
             </ul>
           </>
         )}
-        {canEdit && (
+        {canCreate && (
           <Button variant={adding ? "secondary" : "default"} onClick={() => setAdding((a) => !a)} aria-pressed={adding}>
             {adding ? <XIcon /> : <CrosshairIcon />}
             {adding ? "Cancelar marcação" : "Marcar lugar"}

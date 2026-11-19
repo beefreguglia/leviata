@@ -25,7 +25,7 @@ async function describe(asset: keyof typeof VAULT_ASSET, itemId: string | null, 
 /** Gerência registra entrada ou saída (já confirmada). */
 export async function registerMove(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("bau.gerenciar");
+    const viewer = await assertPermission("bau.criar");
     const data = parseVaultMoveForm(fd);
     const item = data.itemId ? await db.item.findUnique({ where: { id: data.itemId } }) : null;
     if (data.itemId && !item) throw new Error("Item inválido");
@@ -54,11 +54,11 @@ export async function registerMove(fd: FormData) {
 /** Membro entrega farm no baú (fica pendente até a gerência conferir). */
 export async function deliverFarm(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("economia.ver");
+    const viewer = await assertPermission("bau.ver");
     if (!viewer.member) throw new Error("Você não tem ficha de membro");
     const data = parseDeliveryForm(fd);
     if (!(await db.item.findUnique({ where: { id: data.itemId } }))) throw new Error("Item inválido");
-    const auto = viewer.can("bau.gerenciar");
+    const auto = viewer.can("bau.editar");
     const move = await db.vaultTransaction.create({
       data: {
         kind: "ENTRADA",
@@ -87,7 +87,7 @@ export async function deliverFarm(fd: FormData) {
 
 export async function confirmMove(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("bau.gerenciar");
+    const viewer = await assertPermission("bau.editar");
     const move = await db.vaultTransaction.findUniqueOrThrow({ where: { id }, include: { member: true } });
     if (move.status !== "PENDENTE") throw new Error("Essa movimentação já foi conferida");
     await db.vaultTransaction.update({ where: { id }, data: { status: "CONFIRMADA", confirmedById: viewer.member?.id, confirmedAt: new Date() } });
@@ -106,10 +106,12 @@ export async function confirmMove(id: string) {
 /** Estorna (anula) uma movimentação. Estornar uma ENTRADA não pode deixar o saldo negativo. */
 export async function reverseMove(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("bau.gerenciar");
+    const viewer = await assertPermission("bau.ver");
     const move = await db.$transaction(async (tx) => {
       const m = await tx.vaultTransaction.findUniqueOrThrow({ where: { id } });
       if (m.status === "ESTORNADA") throw new Error("Já estava estornada");
+      // recusar uma entrega pendente faz parte de conferir; estornar o que já valeu é apagar
+      if (!viewer.can(m.status === "PENDENTE" ? "bau.editar" : "bau.apagar")) throw new Error("Sem permissão para esta ação");
       if (m.status === "CONFIRMADA" && m.kind === "ENTRADA") {
         await assertCanTake(tx, m.asset, m.itemId, m.quantity, "estoque para estornar");
       }
@@ -132,7 +134,7 @@ export async function reverseMove(id: string) {
 /** Membro cancela a própria entrega ainda pendente. */
 export async function cancelMyDelivery(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("economia.ver");
+    const viewer = await assertPermission("bau.ver");
     const move = await db.vaultTransaction.findUniqueOrThrow({ where: { id } });
     if (move.memberId !== viewer.member?.id || move.createdById !== viewer.member?.id) throw new Error("Sem permissão");
     if (move.status !== "PENDENTE") throw new Error("Só dá para cancelar entregas ainda não conferidas");

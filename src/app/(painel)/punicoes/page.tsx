@@ -17,9 +17,10 @@ export const metadata = { title: "Punições" };
 
 export default async function PunicoesPage() {
   const viewer = await requireViewer();
-  const canApply = viewer.can("punicoes.aplicar");
-  const canRevoke = viewer.can("punicoes.revogar");
-  const canManage = canApply || canRevoke;
+  const canApply = viewer.can("punicoes.criar");
+  const canComplete = viewer.can("punicoes.editar");
+  const canRevoke = viewer.can("punicoes.apagar");
+  const canManage = viewer.can("punicoes.ver");
   const now = new Date();
   const include = { member: true, createdBy: true } as const;
 
@@ -93,11 +94,11 @@ export default async function PunicoesPage() {
         ) : (
           <>
             <GroupedList header={`Valendo agora · ${active.length}`}>
-              {active.length === 0 ? <p className="px-5 py-4 text-base text-muted-foreground">Nenhuma.</p> : <PunishmentRows rows={active} canManage={canRevoke} showMember={canManage} />}
+              {active.length === 0 ? <p className="px-5 py-4 text-base text-muted-foreground">Nenhuma.</p> : <PunishmentRows rows={active} canComplete={canComplete} canRevoke={canRevoke} showMember={canManage} />}
             </GroupedList>
             {past.length > 0 && (
               <GroupedList header="Histórico">
-                <PunishmentRows rows={past} canManage={canRevoke} showMember={canManage} />
+                <PunishmentRows rows={past} canComplete={canComplete} canRevoke={canRevoke} showMember={canManage} />
               </GroupedList>
             )}
           </>

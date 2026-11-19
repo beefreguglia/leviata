@@ -20,7 +20,7 @@ function revalidate(memberId?: string) {
 
 export async function createPunishment(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("punicoes.aplicar");
+    const viewer = await assertPermission("punicoes.criar");
     const data = parsePunishmentForm(fd);
     const target = await db.member.findUniqueOrThrow({ where: { id: data.memberId }, include: { rank: true } });
 
@@ -81,7 +81,7 @@ export async function createPunishment(fd: FormData) {
 /** Marca como cumprida (ex.: multa paga, suspensão encerrada antes). */
 export async function completePunishment(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("punicoes.revogar");
+    const viewer = await assertPermission("punicoes.editar");
     const p = await db.punishment.findUniqueOrThrow({ where: { id }, include: { member: true } });
     if (p.status !== "ATIVA") throw new Error("Essa punição já foi encerrada");
     await db.punishment.update({ where: { id }, data: { status: "CUMPRIDA", closedAt: new Date() } });
@@ -94,7 +94,7 @@ export async function completePunishment(id: string) {
 /** Revoga (anula). Revogar uma expulsão devolve o membro como ativo. */
 export async function revokePunishment(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("punicoes.revogar");
+    const viewer = await assertPermission("punicoes.apagar");
     const reason = z.string().trim().min(3, "Explique por que está revogando").parse(fd.get("revokeReason"));
     const p = await db.punishment.findUniqueOrThrow({ where: { id }, include: { member: true } });
     if (p.status === "REVOGADA") throw new Error("Já estava revogada");

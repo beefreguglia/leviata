@@ -28,7 +28,7 @@ function revalidate(id?: string) {
 
 export async function createFaction(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("faccoes.editar");
+    const viewer = await assertPermission("faccoes.criar");
     const data = await parse(fd);
     await ensureNameFree(data.name);
     const faction = await db.faction.create({ data });
@@ -73,7 +73,7 @@ export async function updateFaction(id: string, fd: FormData) {
 
 export async function deleteFaction(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission("faccoes.editar");
+    const viewer = await assertPermission("faccoes.apagar");
     const faction = await db.faction.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "faction.delete", entity: "Faction", entityId: id, summary: `Apagou a facção ${faction.name}` });
     revalidate();

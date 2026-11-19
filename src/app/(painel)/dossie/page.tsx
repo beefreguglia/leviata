@@ -34,7 +34,7 @@ export default async function DossiePage({ searchParams }: PageProps<"/dossie">)
         title="Dossiê"
         description="Pessoas da cidade, placas e vínculos. Acesso restrito à investigação."
         actions={
-          viewer.can("dossie.editar") && (
+          viewer.can("dossie.criar") && (
           <FormDialog
             title="Nova ficha"
             size="lg"

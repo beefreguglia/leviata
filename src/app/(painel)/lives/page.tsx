@@ -29,8 +29,10 @@ const CONFIGURED = {
 };
 
 export default async function LivesPage() {
-  const viewer = await requireViewer();
-  const canManage = viewer.can("lives.gerenciar");
+  const viewer = await requireViewer("lives.ver");
+  const canManage = viewer.can("lives.editar");
+  const canRemoveOthers = viewer.can("lives.apagar");
+  const canAdd = viewer.can("lives.criar");
   // atualiza em segundo plano se os dados estiverem velhos (a próxima visita/auto-refresh já mostra)
   after(() => refreshStreamsIfStale().catch((err) => console.error("Falha ao atualizar lives:", err)));
 
@@ -111,7 +113,7 @@ export default async function LivesPage() {
               />
             </div>
           ))}
-          {mine.length < 3 && (
+          {canAdd && mine.length < 3 && (
             <ActionForm action={addStreamChannel} resetOnSuccess className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-end">
               <Field label="Plataforma" htmlFor="platform" className="sm:w-40">
                 <NativeSelect id="platform" name="platform" defaultValue="TWITCH">
@@ -143,7 +145,7 @@ export default async function LivesPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="hidden text-xs text-muted-foreground sm:inline">{c.checkedAt ? `visto ${fmtAgo(c.checkedAt)}` : "ainda não verificado"}</span>
-                  {canManage && c.memberId !== viewer.member?.id && (
+                  {canRemoveOthers && c.memberId !== viewer.member?.id && (
                     <ConfirmButton
                       title={`Remover o canal de ${c.member.rpName}?`}
                       confirmLabel="Remover"

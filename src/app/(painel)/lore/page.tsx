@@ -24,7 +24,7 @@ const monthLabel = (d: Date | null) =>
     : "Sem data";
 
 export default async function LorePage({ searchParams }: PageProps<"/lore">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("lore.ver");
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
   const cat = typeof sp.categoria === "string" && sp.categoria in LORE_CATEGORY ? (sp.categoria as LoreCategory) : null;
@@ -70,7 +70,7 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
         title="Lore"
         description="A história da Cidade dos Anjos contada pela Leviatã."
         actions={
-          viewer.can("lore.editar") && (
+          viewer.can("lore.criar") && (
             <LinkButton href="/lore/novo">
               <PlusIcon /> Escrever
             </LinkButton>

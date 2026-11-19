@@ -25,11 +25,15 @@ describe("hasPermission", () => {
   });
 });
 
-describe("economia e desenvolvedor", () => {
-  it("gerenciar o financeiro implica ver a economia", async () => {
+describe("CRUD por área e desenvolvedor", () => {
+  it("criar, editar ou apagar numa área libera ver a área", async () => {
     const { hasPermission } = await import("@/lib/permissions");
-    expect(hasPermission(["bau.gerenciar"], "economia.ver")).toBe(true);
-    expect(hasPermission(["painel.ver"], "economia.ver")).toBe(false);
+    expect(hasPermission(["bau.criar"], "bau.ver")).toBe(true);
+    expect(hasPermission(["patentes.editar"], "hierarquia.ver")).toBe(true);
+    expect(hasPermission(["membros.patente"], "membros.ver")).toBe(true);
+    expect(hasPermission(["painel.ver"], "bau.ver")).toBe(false);
+    // avisar a própria ausência não mostra as ausências dos outros
+    expect(hasPermission(["ausencias.criar"], "ausencias.ver")).toBe(false);
   });
   it("isDeveloper lê a lista de IDs", async () => {
     const { isDeveloper } = await import("@/lib/permissions");
@@ -41,23 +45,28 @@ describe("economia e desenvolvedor", () => {
 });
 
 describe("permissões granulares", () => {
-  it("chaves antigas viram as novas (rede de segurança)", async () => {
+  it("chaves que não existem mais viram as atuais (rede de segurança)", async () => {
     const { expandPermissions, hasPermission } = await import("@/lib/permissions");
-    expect(expandPermissions(["painel.ver", "punicoes.gerenciar", "painel.ver"])).toEqual(["painel.ver", "punicoes.aplicar", "punicoes.revogar"]);
+    expect(expandPermissions(["painel.ver", "punicoes.gerenciar", "painel.ver"])).toEqual(["painel.ver", "punicoes.ver", "punicoes.criar", "punicoes.editar", "punicoes.apagar"]);
     expect(hasPermission(["conteudo.editar"], "mapa.editar")).toBe(true);
-    expect(hasPermission(["financeiro.gerenciar"], "economia.ver")).toBe(true);
+    expect(hasPermission(["economia.ver"], "vendas.ver")).toBe(true);
+    expect(hasPermission(["financeiro.gerenciar"], "bau.apagar")).toBe(true);
     expect(hasPermission(["conteudo.editar"], "regras.editar")).toBe(false);
   });
-  it("cada permissão libera só a sua área", async () => {
+  it("cada permissão libera só a sua operação", async () => {
     const { hasPermission } = await import("@/lib/permissions");
     expect(hasPermission(["lore.editar"], "mural.editar")).toBe(false);
-    expect(hasPermission(["dossie.editar"], "dossie.ver")).toBe(true);
+    expect(hasPermission(["lore.editar"], "lore.apagar")).toBe(false);
+    expect(hasPermission(["lore.criar"], "lore.editar")).toBe(false);
     expect(hasPermission(["dossie.ver"], "dossie.editar")).toBe(false);
-    expect(hasPermission(["punicoes.aplicar"], "punicoes.revogar")).toBe(false);
+    expect(hasPermission(["punicoes.criar"], "punicoes.apagar")).toBe(false);
   });
-  it("todas as chaves estão em algum grupo, sem repetir", async () => {
-    const { PERMISSION_GROUPS, ALL_PERMISSIONS } = await import("@/lib/permissions");
-    const keys = PERMISSION_GROUPS.flatMap((g) => Object.keys(g.items));
+  it("todas as chaves estão em alguma área, sem repetir", async () => {
+    const { PERMISSION_AREAS, GENERAL_PERMISSIONS, ALL_PERMISSIONS } = await import("@/lib/permissions");
+    const keys = [
+      ...Object.keys(GENERAL_PERMISSIONS),
+      ...PERMISSION_AREAS.flatMap((g) => g.areas.flatMap((a) => [...Object.keys(a.ops).map((op) => `${a.key}.${op}`), ...Object.keys("extras" in a ? a.extras : {})])),
+    ];
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.length).toBe(ALL_PERMISSIONS.length);
   });

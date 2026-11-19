@@ -22,7 +22,7 @@ import { createMember } from "./actions";
 export const metadata = { title: "Membros" };
 
 export default async function MembrosPage({ searchParams }: PageProps<"/membros">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("membros.ver");
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
   const status = typeof sp.status === "string" ? sp.status : "ATUAIS";
@@ -52,7 +52,7 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
     db.sector.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] }),
   ]);
 
-  const canManage = viewer.can("membros.cadastrar");
+  const canManage = viewer.can("membros.criar");
 
   return (
     <>

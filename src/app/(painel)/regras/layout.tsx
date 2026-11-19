@@ -18,7 +18,7 @@ export default async function RegrasLayout({ children }: LayoutProps<"/regras">)
       <aside className="flex flex-col gap-3 lg:sticky lg:top-0 lg:self-start">
         <h2 className="px-3 type-h2 text-grey-300">Páginas</h2>
         <RulesNav pages={pages} />
-        {viewer?.can("regras.editar") && (
+        {viewer?.can("regras.criar") && (
           <LinkButton href="/regras/nova" variant="ghost" className="justify-start text-primary">
             <PlusIcon /> Nova página
           </LinkButton>

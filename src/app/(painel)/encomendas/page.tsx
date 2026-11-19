@@ -28,16 +28,18 @@ const COLUMNS: OrderStatus[] = ["ABERTA", "PRODUCAO", "PRONTA"];
 const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { PRODUCAO: "Começar produção", PRONTA: "Marcar pronta", ABERTA: "Voltar para aberta" };
 
 export default async function EncomendasPage() {
-  const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("encomendas.gerenciar");
+  const viewer = await requireViewer("encomendas.ver");
+  const canCreate = viewer.can("encomendas.criar");
+  const canManage = viewer.can("encomendas.editar");
+  const canDelete = viewer.can("encomendas.apagar");
   const now = new Date();
 
   const [active, done, items, factions, members, recipes, balances] = await Promise.all([
     db.order.findMany({ where: { status: { in: COLUMNS } }, include, orderBy: [{ dueAt: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }] }),
     db.order.findMany({ where: { status: { in: ["ENTREGUE", "CANCELADA"] } }, include, orderBy: { updatedAt: "desc" }, take: 15 }),
     db.item.findMany({ select: { id: true, name: true, unit: true }, orderBy: { name: "asc" } }),
-    canManage ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
-    canManage ? db.member.findMany({ where: { status: "ATIVO" }, select: { id: true, rpName: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
+    canCreate || canManage ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
+    canCreate || canManage ? db.member.findMany({ where: { status: "ATIVO" }, select: { id: true, rpName: true }, orderBy: { rpName: "asc" } }) : Promise.resolve([]),
     db.recipe.findMany({ include: { inputs: true } }),
     canManage ? allBalances() : Promise.resolve(null),
   ]);
@@ -174,7 +176,7 @@ export default async function EncomendasPage() {
         title="Encomendas"
         description={active.length ? `${active.length} em andamento · ${money(openTotal)} a receber` : "Pedidos de clientes e outras facções."}
         actions={
-          canManage && (
+          canCreate && (
             <FormDialog
               title="Nova encomenda"
               size="lg"
@@ -228,7 +230,7 @@ export default async function EncomendasPage() {
                   <span className="flex items-center gap-2 text-sm text-muted-foreground">
                     {o.unitPrice > 0 && money(orderTotal(o))} · {fmtAgo(o.deliveredAt ?? o.updatedAt)}
                     <StatusBadge {...ORDER_STATUS[o.status]} />
-                    {canManage && o.status === "CANCELADA" && (
+                    {canDelete && o.status === "CANCELADA" && (
                       <ConfirmButton
                         title="Apagar de vez?"
                         confirmLabel="Apagar"

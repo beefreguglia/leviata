@@ -37,9 +37,10 @@ export async function generateMetadata({ params }: PageProps<"/agenda/[id]">) {
 }
 
 export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
-  const viewer = await requireViewer();
-  const canManage = viewer.can("agenda.gerenciar");
-  const canLineup = viewer.can("escalacoes.gerenciar");
+  const viewer = await requireViewer("agenda.ver");
+  const canManage = viewer.can("agenda.editar");
+  const canDelete = viewer.can("agenda.apagar");
+  const canLineup = viewer.can("escalacoes.editar");
   const { id } = await params;
   const ev = await db.event.findUnique({
     where: { id },
@@ -97,8 +98,10 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
           </div>
           {ev.description && <p className="max-w-2xl text-base whitespace-pre-wrap text-grey-300">{ev.description}</p>}
         </div>
-        {canManage && (
+        {(canManage || canDelete) && (
           <div className="flex shrink-0 flex-wrap gap-2 sm:flex-nowrap">
+            {canManage && (
+            <>
             <FormDialog
               title="Editar evento"
               size="lg"
@@ -131,6 +134,9 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
                 </SubmitButton>
               </ActionForm>
             )}
+            </>
+            )}
+            {canDelete && (
             <ConfirmButton
               title={`Apagar "${ev.title}"?`}
               description="Presenças, escalação e relatório também serão apagados."
@@ -143,6 +149,7 @@ export default async function EventPage({ params }: PageProps<"/agenda/[id]">) {
                 </Button>
               }
             />
+            )}
           </div>
         )}
       </FadeIn>

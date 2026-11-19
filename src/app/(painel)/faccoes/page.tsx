@@ -21,7 +21,7 @@ export const metadata = { title: "Facções" };
 const ORDER: FactionRelation[] = ["GUERRA", "INIMIGA", "TENSA", "NEUTRA", "ALIADA"];
 
 export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("faccoes.ver");
   const sp = await searchParams;
   const rel = typeof sp.relacao === "string" && sp.relacao in FACTION_RELATION ? (sp.relacao as FactionRelation) : null;
   const showInactive = sp.inativas === "1";
@@ -41,7 +41,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
         title="Facções"
         description="Quem é quem na cidade e como estamos com cada um."
         actions={
-          viewer.can("faccoes.editar") && (
+          viewer.can("faccoes.criar") && (
             <FormDialog
               title="Nova facção"
               size="lg"

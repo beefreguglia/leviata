@@ -11,7 +11,7 @@ import { deletePerimeter, updatePerimeter } from "../../actions";
 export const metadata = { title: "Editar perímetro" };
 
 export default async function EditarPerimetroPage({ params }: PageProps<"/perimetros/[id]/editar">) {
-  await requireViewer("perimetros.gerenciar");
+  const viewer = await requireViewer("perimetros.editar");
   const { id } = await params;
   const perimeter = await db.perimeter.findUnique({ where: { id } });
   if (!perimeter) notFound();
@@ -20,6 +20,7 @@ export default async function EditarPerimetroPage({ params }: PageProps<"/perime
       <PageHeader
         title="Editar perímetro"
         actions={
+          viewer.can("perimetros.apagar") && (
           <ConfirmButton
             title={`Apagar "${perimeter.name}"?`}
             description="Eventos que usam este perímetro continuam existindo (sem o vínculo)."
@@ -32,6 +33,7 @@ export default async function EditarPerimetroPage({ params }: PageProps<"/perime
               </Button>
             }
           />
+          )
         }
       />
       <PerimeterForm action={updatePerimeter.bind(null, perimeter.id)} perimeter={perimeter} submitLabel="Salvar alterações" />

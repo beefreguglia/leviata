@@ -18,7 +18,7 @@ async function ensurePassportFree(passport: string | null | undefined, exceptId?
 
 export async function createMember(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.cadastrar");
+    const viewer = await assertPermission("membros.criar");
     const input = memberSchema.parse(formToObject(fd));
     const rankId = (fd.get("rankId") as string) || null;
     await ensurePassportFree(input.passport);
@@ -118,7 +118,7 @@ export async function setMemberSector(id: string, fd: FormData) {
     const changedManagements =
       wantsManagements &&
       (managementIds.length !== before.managements.length || managementIds.some((m) => !before.managements.some((g) => g.id === m)));
-    if (changedManagements && !viewer.can("hierarquia.gerencias")) throw new Error("Só quem gerencia a hierarquia muda gerências");
+    if (changedManagements && !viewer.can("gerencias.editar")) throw new Error("Só quem gerencia a hierarquia muda gerências");
     if (managementIds.length) {
       const found = await db.management.count({ where: { id: { in: managementIds } } });
       if (found !== managementIds.length) throw new Error("Gerência inválida");
@@ -152,7 +152,7 @@ export async function setMemberSector(id: string, fd: FormData) {
  */
 export async function dismissMember(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.desligar");
+    const viewer = await assertPermission("membros.apagar");
     const { kind, reason } = parseDismissForm(fd);
     const target = await db.member.findUniqueOrThrow({ where: { id }, include: { rank: true } });
 
@@ -186,7 +186,7 @@ export async function dismissMember(id: string, fd: FormData) {
 /** Traz de volta quem saiu ou foi expulso (anula a expulsão ativa, se houver). */
 export async function readmitMember(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("membros.desligar");
+    const viewer = await assertPermission("membros.apagar");
     const target = await db.member.findUniqueOrThrow({ where: { id } });
     if (!isGone(target.status)) throw new Error(`${target.rpName} já está na fac`);
 

@@ -20,7 +20,7 @@ import { PunishmentRows } from "../../punicoes/punishment-list";
 import { changeRank, dismissMember, readmitMember, setMemberSector, updateMember } from "../actions";
 
 export default async function MemberPage({ params }: PageProps<"/membros/[id]">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("membros.ver");
   const { id } = await params;
 
   const member = await db.member.findUnique({
@@ -36,7 +36,7 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
   });
   if (!member) notFound();
 
-  const canSeePunishments = viewer.can("punicoes.aplicar") || viewer.can("punicoes.revogar") || viewer.member?.id === member.id;
+  const canSeePunishments = viewer.can("punicoes.ver") || viewer.member?.id === member.id;
   const [ranks, punishments, sectors, managements] = await Promise.all([
     db.rank.findMany({ orderBy: { order: "asc" } }),
     canSeePunishments
@@ -48,8 +48,8 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
   const canRank = viewer.can("membros.patente");
   const canSector = viewer.can("membros.setor");
   const canEdit = viewer.can("membros.editar");
-  const canLeave = viewer.can("membros.desligar");
-  const canManageHierarchy = viewer.can("hierarquia.gerencias");
+  const canLeave = viewer.can("membros.apagar");
+  const canManageHierarchy = viewer.can("gerencias.editar");
   const gone = isGone(member.status);
   // mesma regra das punições: só desliga quem está abaixo (admin pode tudo), nunca a si mesmo
   const canDismiss =
@@ -254,7 +254,7 @@ export default async function MemberPage({ params }: PageProps<"/membros/[id]">)
             {punishments.length === 0 ? (
               <GroupedRow label="Nenhuma punição" />
             ) : (
-              <PunishmentRows rows={punishments} canManage={viewer.can("punicoes.revogar")} showMember={false} />
+              <PunishmentRows rows={punishments} canComplete={viewer.can("punicoes.editar")} canRevoke={viewer.can("punicoes.apagar")} showMember={false} />
             )}
           </GroupedList>
         )}

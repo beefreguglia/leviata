@@ -15,11 +15,12 @@ export async function generateMetadata({ params }: PageProps<"/perimetros/[id]">
 }
 
 export default async function PerimeterPage({ params }: PageProps<"/perimetros/[id]">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("perimetros.ver");
   const { id } = await params;
   const p = await db.perimeter.findUnique({ where: { id }, include: { author: true } });
   if (!p) notFound();
-  const canManage = viewer.can("perimetros.gerenciar");
+  const canSchedule = viewer.can("agenda.criar");
+  const canManage = viewer.can("perimetros.editar");
 
   return (
     <FadeIn className="mx-auto flex max-w-5xl flex-col gap-6">
@@ -31,14 +32,18 @@ export default async function PerimeterPage({ params }: PageProps<"/perimetros/[
             {p.author ? ` por ${p.author.rpName}` : ""}
           </p>
         </div>
-        {canManage && (
+        {(canSchedule || canManage) && (
           <div className="flex gap-2">
-            <LinkButton href={`/agenda?novo=1&perimetro=${p.id}`} variant="secondary">
-              <CalendarPlusIcon /> Agendar ação
-            </LinkButton>
-            <LinkButton href={`/perimetros/${p.id}/editar`} variant="secondary">
-              <PencilIcon /> Editar
-            </LinkButton>
+            {canSchedule && (
+              <LinkButton href={`/agenda?novo=1&perimetro=${p.id}`} variant="secondary">
+                <CalendarPlusIcon /> Agendar ação
+              </LinkButton>
+            )}
+            {canManage && (
+              <LinkButton href={`/perimetros/${p.id}/editar`} variant="secondary">
+                <PencilIcon /> Editar
+              </LinkButton>
+            )}
           </div>
         )}
       </div>

@@ -19,7 +19,7 @@ function revalidate() {
 
 export async function addStreamChannel(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("painel.ver");
+    const viewer = await assertPermission("lives.criar");
     if (!viewer.member) throw new Error("Você não tem ficha de membro");
     const platform = z.enum(STREAM_PLATFORMS, { error: "Escolha a plataforma" }).parse(fd.get("platform"));
     const handle = normalizeStreamHandle(platform, String(fd.get("handle") ?? ""));
@@ -46,9 +46,9 @@ export async function addStreamChannel(fd: FormData) {
 
 export async function removeStreamChannel(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("painel.ver");
+    const viewer = await assertPermission("lives.ver");
     const channel = await db.streamChannel.findUniqueOrThrow({ where: { id }, include: { member: true } });
-    if (channel.memberId !== viewer.member?.id && !viewer.can("lives.gerenciar")) throw new Error("Sem permissão");
+    if (channel.memberId !== viewer.member?.id && !viewer.can("lives.apagar")) throw new Error("Sem permissão");
     await db.streamChannel.delete({ where: { id } });
     await audit({
       userId: viewer.user.id,
@@ -64,7 +64,7 @@ export async function removeStreamChannel(id: string) {
 
 export async function refreshStreamsNow() {
   return runAction(async () => {
-    await assertPermission("lives.gerenciar");
+    await assertPermission("lives.editar");
     const s = await refreshStreams();
     revalidate();
     return `Verificados ${s.checked} canais · ${s.live} ao vivo${s.errors ? ` · ${s.errors} com erro` : ""}`;

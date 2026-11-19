@@ -29,8 +29,10 @@ const TABS = [
 ] as const;
 
 export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("mural.ver");
+  const canCreate = viewer.can("mural.criar");
   const canEdit = viewer.can("mural.editar");
+  const canDelete = viewer.can("mural.apagar");
   const sp = await searchParams;
   const tab = sp.aba === "flyers" ? "flyers" : "avisos";
   const now = new Date();
@@ -41,7 +43,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
       include: noticeInclude(viewer.member?.id),
       orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
     }),
-    canEdit
+    canEdit || canDelete
       ? db.notice.findMany({ where: { expiresAt: { lt: now } }, include: noticeInclude(viewer.member?.id), orderBy: { expiresAt: "desc" }, take: 10 })
       : Promise.resolve([]),
     db.flyer.findMany({ include: { author: true }, orderBy: [{ eventDate: "desc" }, { createdAt: "desc" }] }),
@@ -53,7 +55,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
         title="Mural & Flyers"
         description="Avisos da liderança e os flyers da Leviatã."
         actions={
-          canEdit && (
+          canCreate && (
             <>
               <FormDialog
                 title="Novo flyer"
@@ -121,14 +123,14 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
           <Stagger className="flex flex-col gap-4">
             {notices.map((n) => (
               <StaggerItem key={n.id}>
-                <NoticeCard notice={n} canEdit={canEdit} />
+                <NoticeCard notice={n} canEdit={canEdit} canDelete={canDelete} />
               </StaggerItem>
             ))}
             {expired.length > 0 && (
               <StaggerItem className="mt-6 flex flex-col gap-4">
                 <h2 className="type-h2 text-grey-300">Expirados (só a gerência vê)</h2>
                 {expired.map((n) => (
-                  <NoticeCard key={n.id} notice={n} canEdit={canEdit} />
+                  <NoticeCard key={n.id} notice={n} canEdit={canEdit} canDelete={canDelete} />
                 ))}
               </StaggerItem>
             )}
@@ -147,7 +149,7 @@ export default async function MuralPage({ searchParams }: PageProps<"/mural">) {
                 <div className="flex flex-1 flex-col gap-2 p-5">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-base font-bold text-grey-100">{f.title}</h3>
-                    {canEdit && (
+                    {canDelete && (
                       <ConfirmButton
                         title={`Apagar o flyer "${f.title}"?`}
                         confirmLabel="Apagar"

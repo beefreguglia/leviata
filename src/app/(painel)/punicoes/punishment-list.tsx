@@ -15,7 +15,17 @@ import { completePunishment, revokePunishment } from "./actions";
 type Row = Punishment & { member: Member; createdBy: Member | null };
 
 /** Linhas de punição (usadas na página de punições e na ficha do membro). */
-export function PunishmentRows({ rows, canManage, showMember = true }: { rows: Row[]; canManage: boolean; showMember?: boolean }) {
+export function PunishmentRows({
+  rows,
+  canComplete,
+  canRevoke,
+  showMember = true,
+}: {
+  rows: Row[];
+  canComplete: boolean;
+  canRevoke: boolean;
+  showMember?: boolean;
+}) {
   const now = new Date();
   return rows.map((p) => {
     const expired = p.status === "ATIVA" && p.expiresAt && p.expiresAt <= now;
@@ -38,14 +48,14 @@ export function PunishmentRows({ rows, canManage, showMember = true }: { rows: R
         </div>
         <div className="flex items-center gap-1.5">
           <StatusBadge {...status} />
-          {canManage && p.status === "ATIVA" && !expired && (p.kind === "MULTA" || p.kind === "SUSPENSAO") && (
+          {canComplete && p.status === "ATIVA" && !expired && (p.kind === "MULTA" || p.kind === "SUSPENSAO") && (
             <ActionForm action={async () => { "use server"; return completePunishment(p.id); }}>
               <SubmitButton size="sm" variant="ghost">
                 <CheckIcon /> {p.kind === "MULTA" ? "Paga" : "Cumprida"}
               </SubmitButton>
             </ActionForm>
           )}
-          {canManage && p.status !== "REVOGADA" && (
+          {canRevoke && p.status !== "REVOGADA" && (
             <FormDialog
               title={`Revogar ${PUNISHMENT_KIND[p.kind].label.toLowerCase()}?`}
               description={p.kind === "EXPULSAO" ? `${p.member.rpName} volta como membro ativo.` : undefined}

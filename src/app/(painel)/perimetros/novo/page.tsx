@@ -6,7 +6,7 @@ import { createPerimeter } from "../actions";
 export const metadata = { title: "Novo perímetro" };
 
 export default async function NovoPerimetroPage() {
-  await requireViewer("perimetros.gerenciar");
+  await requireViewer("perimetros.criar");
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Novo perímetro" description="Um título e a foto do alvo vista de cima." />

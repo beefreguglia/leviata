@@ -35,8 +35,9 @@ const SALES_SERIES = [
 ];
 
 export default async function VendasPage({ searchParams }: PageProps<"/vendas">) {
-  const viewer = await requireViewer("economia.ver");
-  const canManage = viewer.can("vendas.gerenciar");
+  const viewer = await requireViewer("vendas.ver");
+  const canManage = viewer.can("vendas.criar");
+  const canCancel = viewer.can("vendas.apagar");
   const sp = await searchParams;
   const filter = FILTERS.find((f) => f.key === sp.comprador)?.key ?? "todas";
   const where: Prisma.SaleWhereInput = filter === "faccao" ? { buyerKind: "FACCAO" } : filter === "player" ? { buyerKind: "PLAYER" } : {};
@@ -181,7 +182,7 @@ export default async function VendasPage({ searchParams }: PageProps<"/vendas">)
                     <strong className={cn("block text-base tabular-nums text-grey-100", cancelled && "line-through")}>{money(total)}</strong>
                     <span className="text-xs text-muted-foreground">{VAULT_ASSET[s.payment].short}</span>
                   </span>
-                  {canManage && !cancelled && (
+                  {canCancel && !cancelled && (
                     <FormDialog
                       title="Cancelar venda?"
                       description="O item volta para o baú e o dinheiro sai. Fica registrado no histórico."

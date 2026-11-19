@@ -16,10 +16,12 @@ import { deleteNotice, toggleNoticePin, updateNotice } from "./actions";
 export function NoticeCard({
   notice,
   canEdit,
+  canDelete,
   compact,
 }: {
   notice: NoticeWithPoll;
   canEdit?: boolean;
+  canDelete?: boolean;
   compact?: boolean;
 }) {
   const p = NOTICE_PRIORITY[notice.priority];
@@ -44,8 +46,10 @@ export function NoticeCard({
         <div className="flex items-center gap-1.5">
           {notice.pollOptions.length > 0 && <StatusBadge label="Enquete" className="bg-cyan-low text-cyan-light" />}
           {notice.priority !== "NORMAL" && <StatusBadge {...p} />}
-          {canEdit && !compact && (
+          {(canEdit || canDelete) && !compact && (
             <>
+              {canEdit && (
+              <>
               <ActionForm action={async () => { "use server"; return toggleNoticePin(notice.id); }}>
                 <Button type="submit" variant="ghost" size="icon-sm" aria-label={notice.isPinned ? "Desafixar" : "Fixar"} title={notice.isPinned ? "Desafixar" : "Fixar"}>
                   {notice.isPinned ? <PinOffIcon /> : <PinIcon />}
@@ -63,6 +67,9 @@ export function NoticeCard({
               >
                 <NoticeFields notice={notice} />
               </FormDialog>
+              </>
+              )}
+              {canDelete && (
               <ConfirmButton
                 title={`Apagar "${notice.title}"?`}
                 confirmLabel="Apagar"
@@ -74,6 +81,7 @@ export function NoticeCard({
                   </Button>
                 }
               />
+              )}
             </>
           )}
         </div>

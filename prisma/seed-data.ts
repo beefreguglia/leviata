@@ -5,9 +5,9 @@ import { LEVIATA_MANAGEMENTS, LEVIATA_SECTORS } from "./leviata-structure";
 export const ALL = ["admin"];
 /** Gerente: cria e edita operações, economia, cidade e comunicação.
  *  Não vê ausências dos outros, não pune, não edita regras nem vê auditoria. */
-export const GERENCIA = ["painel.ver", "economia.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"];
+export const GERENCIA = ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar", "farm.ver", "fabricacao.ver", "bau.ver", "metas.ver", "encomendas.ver", "vendas.ver", "lore.criar", "lore.editar", "lore.apagar", "faccoes.criar", "faccoes.editar", "faccoes.apagar", "farm.criar", "farm.editar", "farm.apagar", "fabricacao.criar", "fabricacao.editar", "fabricacao.apagar", "mural.criar", "mural.editar", "mural.apagar", "mapa.criar", "mapa.editar", "mapa.apagar", "lives.editar", "lives.apagar", "agenda.criar", "agenda.editar", "agenda.apagar", "escalacoes.editar", "perimetros.criar", "perimetros.editar", "perimetros.apagar", "bau.criar", "bau.editar", "bau.apagar", "metas.criar", "metas.editar", "metas.apagar", "encomendas.criar", "encomendas.editar", "encomendas.apagar", "vendas.criar", "vendas.apagar"];
 /** Soldado e Recruta: só veem cidade, comunicação, operações, membros e hierarquia. */
-export const MEMBRO = ["painel.ver"];
+export const MEMBRO = ["painel.ver", "membros.ver", "hierarquia.ver", "ausencias.criar", "agenda.ver", "escalacoes.ver", "perimetros.ver", "mapa.ver", "lore.ver", "faccoes.ver", "mural.ver", "lives.ver", "lives.criar"];
 
 /** Tudo para dev e testes: patentes, regras e usuários de teste. */
 export async function seed(db: PrismaClient) {

@@ -22,7 +22,7 @@ const PRIORITY_COLOR = { NORMAL: 0x06d4ec, IMPORTANTE: 0xfba94c, URGENTE: 0xf75a
 
 export async function createNotice(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("mural.editar");
+    const viewer = await assertPermission("mural.criar");
     const { notifyDiscord, expiresAt, pollOptions, ...data } = parseNoticeForm(fd);
     const notice = await db.notice.create({
       data: {
@@ -77,7 +77,7 @@ function pollText(options: string[]) {
 /** Vota (ou troca o voto). Votar de novo na mesma opção tira o voto. */
 export async function votePoll(noticeId: string, optionId: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("painel.ver");
+    const viewer = await assertPermission("mural.ver");
     if (!viewer.member) throw new Error("Sem ficha de membro");
     const notice = await db.notice.findUniqueOrThrow({ where: { id: noticeId }, include: { pollOptions: true } });
     if (!notice.pollOptions.some((o) => o.id === optionId)) throw new Error("Opção inválida");
@@ -118,7 +118,7 @@ export async function toggleNoticePin(id: string) {
 
 export async function deleteNotice(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("mural.editar");
+    const viewer = await assertPermission("mural.apagar");
     const notice = await db.notice.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "notice.delete", entity: "Notice", entityId: id, summary: `Apagou o aviso "${notice.title}"`, data: { content: notice.content } });
     revalidate();
@@ -128,7 +128,7 @@ export async function deleteNotice(id: string) {
 
 export async function createFlyer(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("mural.editar");
+    const viewer = await assertPermission("mural.criar");
     const data = parseFlyerForm(fd);
     const [imageId] = await existingUploadIds([data.imageId]);
     if (!imageId) throw new Error("Envie a imagem do flyer");
@@ -141,7 +141,7 @@ export async function createFlyer(fd: FormData) {
 
 export async function deleteFlyer(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("mural.editar");
+    const viewer = await assertPermission("mural.apagar");
     const flyer = await db.flyer.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "flyer.delete", entity: "Flyer", entityId: id, summary: `Apagou o flyer "${flyer.title}"` });
     revalidate();

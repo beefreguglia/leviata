@@ -15,6 +15,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-19-permissoes-crud",
+    date: "2026-11-19",
+    title: "Permissões de ver, criar, editar e apagar",
+    items: [
+      "Cada área do painel agora tem permissões separadas para **ver**, **criar**, **editar** e **apagar**",
+      "No **Editar** de cada patente, setor e gerência, as permissões aparecem numa tabela: uma linha por área, com o botão **Tudo** para marcar a linha inteira",
+      "Ninguém perdeu acesso: o que cada cargo já podia fazer foi convertido para o novo formato",
+    ],
+  },
+  {
     id: "2026-11-19-logo-radar",
     date: "2026-11-19",
     title: "Logo novo",

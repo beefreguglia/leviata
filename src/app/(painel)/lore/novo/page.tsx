@@ -6,7 +6,7 @@ import { createLore } from "../actions";
 export const metadata = { title: "Escrever lore" };
 
 export default async function NovaLorePage() {
-  await requireViewer("lore.editar");
+  await requireViewer("lore.criar");
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Escrever na lore" description="Registre um fato, personagem, lugar ou aliança da cidade." />

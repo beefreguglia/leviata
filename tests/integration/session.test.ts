@@ -18,15 +18,15 @@ describe("sessão e permissões", () => {
     await actAs("dev-gerente");
     const v = await getViewer();
     expect(v?.member?.rank?.name).toBe("Gerente");
-    expect(v?.can("agenda.gerenciar")).toBe(true);
-    expect(v?.can("membros.cadastrar")).toBe(false);
-    expect(v?.can("hierarquia.patentes")).toBe(false);
+    expect(v?.can("agenda.criar")).toBe(true);
+    expect(v?.can("membros.criar")).toBe(false);
+    expect(v?.can("patentes.editar")).toBe(false);
   });
 
   it("líder (admin) pode tudo", async () => {
     await actAs("dev-lider");
     const v = await getViewer();
-    expect(v?.can("hierarquia.patentes")).toBe(true);
+    expect(v?.can("patentes.editar")).toBe(true);
     expect(v?.can("auditoria.ver")).toBe(true);
   });
 

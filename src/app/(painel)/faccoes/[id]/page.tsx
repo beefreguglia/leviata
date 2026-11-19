@@ -23,7 +23,7 @@ import { FactionFields } from "../faction-fields";
 import { addFactionEvent, deleteFaction, deleteFactionEvent, updateFaction } from "../actions";
 
 export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">) {
-  const viewer = await requireViewer();
+  const viewer = await requireViewer("faccoes.ver");
   const { id } = await params;
   const faction = await db.faction.findUnique({
     where: { id },
@@ -31,8 +31,9 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
   });
   if (!faction) notFound();
   const canEdit = viewer.can("faccoes.editar");
+  const canDelete = viewer.can("faccoes.apagar");
   // negócios com a facção: só quem vê a economia
-  const sales = viewer.can("economia.ver")
+  const sales = viewer.can("vendas.ver")
     ? await db.sale.findMany({ where: { factionId: id, cancelledAt: null }, include: { item: true }, orderBy: { createdAt: "desc" }, take: 10 })
     : null;
   const salesTotal = sales?.reduce((n, s) => n + s.quantity * s.unitPrice, 0) ?? 0;
@@ -63,8 +64,9 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
             )}
           </div>
         </div>
-        {canEdit && (
+        {(canEdit || canDelete) && (
           <div className="flex gap-2">
+            {canEdit && (
             <FormDialog
               title={`Editar ${faction.name}`}
               size="lg"
@@ -77,6 +79,8 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
             >
               <FactionFields faction={faction} />
             </FormDialog>
+            )}
+            {canDelete && (
             <ConfirmButton
               title={`Apagar ${faction.name}?`}
               description="O histórico dela também será apagado."
@@ -89,6 +93,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
                 </Button>
               }
             />
+            )}
           </div>
         )}
       </FadeIn>

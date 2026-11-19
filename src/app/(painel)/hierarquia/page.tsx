@@ -4,7 +4,7 @@ import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
 import { activeAbsenceWhere } from "@/lib/absences";
-import { PERMISSIONS, type Permission } from "@/lib/permissions";
+import { describePermissions } from "@/lib/permissions";
 import { PageHeader } from "@/components/layout/page-header";
 import { FormDialog } from "@/components/forms/form-dialog";
 import { ConfirmButton } from "@/components/forms/confirm-button";
@@ -21,10 +21,18 @@ import {
 export const metadata = { title: "Hierarquia" };
 
 export default async function HierarquiaPage() {
-  const viewer = await requireViewer();
-  const canRanks = viewer.can("hierarquia.patentes");
-  const canSectors = viewer.can("hierarquia.setores");
-  const canManagements = viewer.can("hierarquia.gerencias");
+  const viewer = await requireViewer("hierarquia.ver");
+  const can = (area: "patentes" | "setores" | "gerencias") => ({
+    create: viewer.can(`${area}.criar`),
+    edit: viewer.can(`${area}.editar`),
+    del: viewer.can(`${area}.apagar`),
+  });
+  const ranksCan = can("patentes");
+  const sectorsCan = can("setores");
+  const managementsCan = can("gerencias");
+  const canRanks = ranksCan.create || ranksCan.edit || ranksCan.del;
+  const canSectors = sectorsCan.create || sectorsCan.edit || sectorsCan.del;
+  const canManagements = managementsCan.create || managementsCan.edit || managementsCan.del;
 
   const memberInclude = { user: true, absences: { where: activeAbsenceWhere(), take: 1 } } as const;
   const activeMembers = { where: inFactionWhere, include: memberInclude, orderBy: { rpName: "asc" as const } };
@@ -51,9 +59,10 @@ export default async function HierarquiaPage() {
         title="Hierarquia"
         description="Patentes, setores e gerências. Tudo pode vir dos cargos do Discord."
         actions={
-          canRanks && (
+          ranksCan.create && (
             <FormDialog
               title="Nova patente"
+              size="lg"
               action={createRank}
               submitLabel="Criar"
               trigger={
@@ -80,10 +89,12 @@ export default async function HierarquiaPage() {
                     {rank.members.length}
                   </span>
                 </h2>
-                {canRanks && (
+                {(ranksCan.edit || ranksCan.del) && (
                   <div className="flex items-center">
+                    {ranksCan.edit && (
                     <FormDialog
                       title={`Editar ${rank.name}`}
+                      size="lg"
                       action={updateRank.bind(null, rank.id)}
                       trigger={
                         <Button variant="ghost" size="icon-sm" className="size-11 sm:size-8" aria-label={`Editar ${rank.name}`}>
@@ -93,6 +104,8 @@ export default async function HierarquiaPage() {
                     >
                       <RankFields rank={rank} />
                     </FormDialog>
+                    )}
+                    {ranksCan.del && (
                     <ConfirmButton
                       title={`Apagar ${rank.name}?`}
                       description="Só dá para apagar patentes sem membros."
@@ -105,6 +118,7 @@ export default async function HierarquiaPage() {
                         </Button>
                       }
                     />
+                    )}
                   </div>
                 )}
               </div>
@@ -138,7 +152,7 @@ export default async function HierarquiaPage() {
                   {rank.discordRoleId ? `Cargo Discord ${rank.discordRoleId}` : "Sem cargo do Discord vinculado"} ·{" "}
                   {rank.permissions.length === 0
                     ? "sem acesso ao painel"
-                    : rank.permissions.map((p) => PERMISSIONS[p as Permission] ?? p).join(", ")}
+                    : describePermissions(rank.permissions)}
                 </p>
               )}
             </section>
@@ -160,9 +174,10 @@ export default async function HierarquiaPage() {
             </h2>
             <p className="type-small text-muted-foreground">Cada membro faz parte de um setor.</p>
           </div>
-          {canSectors && (
+          {sectorsCan.create && (
             <FormDialog
               title="Novo setor"
+              size="lg"
               action={createSector}
               submitLabel="Criar"
               trigger={
@@ -192,10 +207,12 @@ export default async function HierarquiaPage() {
                       </h3>
                       {sector.description && <span className="type-label text-muted-foreground">{sector.description}</span>}
                     </div>
-                    {canSectors && (
+                    {(sectorsCan.edit || sectorsCan.del) && (
                       <div className="flex items-center">
+                        {sectorsCan.edit && (
                         <FormDialog
                           title={`Editar ${sector.name}`}
+                          size="lg"
                           action={updateSector.bind(null, sector.id)}
                           trigger={
                             <Button variant="ghost" size="icon-sm" className="size-11 sm:size-8" aria-label={`Editar setor ${sector.name}`}>
@@ -205,6 +222,8 @@ export default async function HierarquiaPage() {
                         >
                           <SectorFields sector={sector} />
                         </FormDialog>
+                        )}
+                        {sectorsCan.del && (
                         <ConfirmButton
                           title={`Apagar o setor ${sector.name}?`}
                           description="Só dá para apagar setores sem membros."
@@ -217,6 +236,7 @@ export default async function HierarquiaPage() {
                             </Button>
                           }
                         />
+                        )}
                       </div>
                     )}
                   </header>
@@ -262,9 +282,10 @@ export default async function HierarquiaPage() {
             </h2>
             <p className="type-small text-muted-foreground">Somam permissões às da patente. Um membro pode ter mais de uma.</p>
           </div>
-          {canManagements && (
+          {managementsCan.create && (
             <FormDialog
               title="Nova gerência"
+              size="lg"
               action={createManagement}
               submitLabel="Criar"
               trigger={
@@ -299,14 +320,16 @@ export default async function HierarquiaPage() {
                   {canManagements && (
                     <span className="type-caption text-muted-foreground">
                       {g.discordRoleId ? `Cargo Discord ${g.discordRoleId}` : "Sem cargo do Discord vinculado"} ·{" "}
-                      {g.permissions.length ? g.permissions.map((p) => PERMISSIONS[p as Permission] ?? p).join(", ") : "não soma permissões"}
+                      {g.permissions.length ? describePermissions(g.permissions) : "não soma permissões"}
                     </span>
                   )}
                 </div>
-                {canManagements && (
+                {(managementsCan.edit || managementsCan.del) && (
                   <div className="flex shrink-0 items-center">
+                    {managementsCan.edit && (
                     <FormDialog
                       title={`Editar ${g.name}`}
+                      size="lg"
                       action={updateManagement.bind(null, g.id)}
                       trigger={
                         <Button variant="ghost" size="icon-sm" className="size-11 sm:size-8" aria-label={`Editar gerência ${g.name}`}>
@@ -316,6 +339,8 @@ export default async function HierarquiaPage() {
                     >
                       <ManagementFields management={g} sectors={sectors} />
                     </FormDialog>
+                    )}
+                    {managementsCan.del && (
                     <ConfirmButton
                       title={`Apagar a gerência ${g.name}?`}
                       description="Quem tem esta gerência perde as permissões dela."
@@ -328,6 +353,7 @@ export default async function HierarquiaPage() {
                         </Button>
                       }
                     />
+                    )}
                   </div>
                 )}
               </div>

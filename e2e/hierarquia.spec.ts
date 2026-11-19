@@ -18,25 +18,27 @@ test.describe("hierarquia (líder)", () => {
     await page.getByRole("button", { name: "Nova patente" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Nome").fill(name);
-    await dialog.getByLabel("Acessar o painel interno").check();
+    await dialog.getByLabel("Acessar o painel (Início)").check();
     await dialog.getByRole("button", { name: "Criar" }).click();
     await expectToast(page, `Patente ${name} criada`);
     await expect(page.getByRole("heading", { name: new RegExp(name) })).toBeVisible();
 
     await page.getByRole("button", { name: `Editar ${name}` }).click();
-    await page.getByRole("dialog").getByLabel("ID do cargo no Discord").fill("123456789");
-    await page.getByRole("dialog").getByLabel("Editar regras").check();
-    // permissões uma por uma: marca o grupo Operações inteiro e tira só as escalações
-    const ops = page.getByRole("dialog").getByTestId("permission-group").filter({ hasText: "Operações" });
-    await ops.getByRole("button", { name: "Marcar todas" }).click();
-    await ops.getByLabel("Montar e publicar escalações").uncheck();
-    await expect(ops.getByRole("button", { name: "Marcar todas" })).toBeVisible();
-    await page.getByRole("dialog").getByRole("button", { name: "Salvar" }).click();
+    const d = page.getByRole("dialog");
+    await d.getByLabel("ID do cargo no Discord").fill("123456789");
+    // CRUD por área: Lore só ver e criar; Baú tudo menos apagar
+    await d.getByLabel("Lore: Ler a lore").check();
+    await d.getByLabel("Lore: Escrever artigos").check();
+    const bau = d.getByTestId("permission-row-bau");
+    await bau.getByRole("button", { name: "Marcar tudo em Baú" }).click();
+    await bau.getByLabel("Baú: Estornar movimentações").uncheck();
+    await expect(bau.getByRole("button", { name: "Marcar tudo em Baú" })).toBeVisible();
+    await d.getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Patente atualizada");
-    const summary = page.getByText(/Cargo Discord 123456789 · Acessar o painel interno, Editar regras/);
-    await expect(summary).toContainText("Agendar ações e corridas e escrever relatórios");
-    await expect(summary).toContainText("Criar e editar perímetros");
-    await expect(summary).not.toContainText("escalações");
+    const summary = page.getByText(/Cargo Discord 123456789 · Painel/);
+    await expect(summary).toContainText("Lore: ver, criar");
+    await expect(summary).toContainText("Baú: ver, criar, editar");
+    await expect(summary).not.toContainText("apagar");
 
     await page.getByRole("button", { name: `Apagar ${name}` }).click();
     await page.getByRole("alertdialog").getByRole("button", { name: "Apagar" }).click();

@@ -11,7 +11,7 @@ import { deleteFarmGuide, updateFarmGuide } from "../../actions";
 export const metadata = { title: "Editar guia de farm" };
 
 export default async function EditarFarmPage({ params }: PageProps<"/farm/[id]/editar">) {
-  await requireViewer("farm.editar");
+  const viewer = await requireViewer("farm.editar");
   const { id } = await params;
   const [guide, items] = await Promise.all([
     db.farmGuide.findUnique({ where: { id } }),
@@ -23,6 +23,7 @@ export default async function EditarFarmPage({ params }: PageProps<"/farm/[id]/e
       <PageHeader
         title="Editar guia de farm"
         actions={
+          viewer.can("farm.apagar") && (
           <ConfirmButton
             title={`Apagar "${guide.title}"?`}
             confirmLabel="Apagar"
@@ -34,6 +35,7 @@ export default async function EditarFarmPage({ params }: PageProps<"/farm/[id]/e
               </Button>
             }
           />
+          )
         }
       />
       <FarmForm action={updateFarmGuide.bind(null, guide.id)} guide={guide} items={items} submitLabel="Salvar alterações" />

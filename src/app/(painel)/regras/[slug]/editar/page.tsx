@@ -11,7 +11,7 @@ import { deleteRule, updateRule } from "../../actions";
 export const metadata = { title: "Editar regra" };
 
 export default async function EditarRegraPage({ params }: PageProps<"/regras/[slug]/editar">) {
-  await requireViewer("regras.editar");
+  const viewer = await requireViewer("regras.editar");
   const { slug } = await params;
   const page = await db.rulePage.findUnique({ where: { slug } });
   if (!page) notFound();
@@ -22,6 +22,7 @@ export default async function EditarRegraPage({ params }: PageProps<"/regras/[sl
         title="Editar regra"
         description="Cada vez que salvar, uma versão fica guardada no histórico."
         actions={
+          viewer.can("regras.apagar") && (
           <ConfirmButton
             title={`Apagar "${page.title}"?`}
             description="A página e o histórico serão apagados. O conteúdo fica salvo no log de auditoria."
@@ -34,6 +35,7 @@ export default async function EditarRegraPage({ params }: PageProps<"/regras/[sl
               </Button>
             }
           />
+          )
         }
       />
       <RuleForm action={updateRule.bind(null, page.id)} page={page} submitLabel="Salvar alterações" />

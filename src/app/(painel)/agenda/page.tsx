@@ -19,8 +19,8 @@ import { createEvent } from "./actions";
 export const metadata = { title: "Agenda" };
 
 export default async function AgendaPage({ searchParams }: PageProps<"/agenda">) {
-  const viewer = await requireViewer();
-  const canManage = viewer.can("agenda.gerenciar");
+  const viewer = await requireViewer("agenda.ver");
+  const canManage = viewer.can("agenda.criar");
   const sp = await searchParams;
   const [y, m] = parseMonth(typeof sp.mes === "string" ? sp.mes : null);
   const { from, to } = monthRange(y, m);

@@ -11,7 +11,7 @@ import { deleteLore, updateLore } from "../../actions";
 export const metadata = { title: "Editar lore" };
 
 export default async function EditarLorePage({ params }: PageProps<"/lore/[slug]/editar">) {
-  await requireViewer("lore.editar");
+  const viewer = await requireViewer("lore.editar");
   const { slug } = await params;
   const article = await db.loreArticle.findUnique({ where: { slug } });
   if (!article) notFound();
@@ -20,6 +20,7 @@ export default async function EditarLorePage({ params }: PageProps<"/lore/[slug]
       <PageHeader
         title="Editar lore"
         actions={
+          viewer.can("lore.apagar") && (
           <ConfirmButton
             title={`Apagar "${article.title}"?`}
             description="O texto fica guardado no log de auditoria."
@@ -32,6 +33,7 @@ export default async function EditarLorePage({ params }: PageProps<"/lore/[slug]
               </Button>
             }
           />
+          )
         }
       />
       <LoreForm action={updateLore.bind(null, article.id)} article={article} submitLabel="Salvar alterações" />

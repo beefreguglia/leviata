@@ -9,7 +9,6 @@ import { runAction } from "@/lib/actions";
 import { parseDossierForm, parseDossierLinkForm, parseVehicleForm } from "@/lib/schemas/dossier";
 import { existingUploadIds } from "@/lib/uploads";
 
-const PERM = "dossie.editar";
 
 async function parse(fd: FormData) {
   const data = parseDossierForm(fd);
@@ -24,7 +23,7 @@ function revalidate(id?: string) {
 
 export async function createDossier(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.criar");
     const data = await parse(fd);
     const dossier = await db.dossier.create({ data: { ...data, authorId: viewer.member?.id ?? null } });
     await audit({ userId: viewer.user.id, action: "dossier.create", entity: "Dossier", entityId: dossier.id, summary: `Criou a ficha de ${dossier.name}` });
@@ -35,7 +34,7 @@ export async function createDossier(fd: FormData) {
 
 export async function updateDossier(id: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.editar");
     const data = await parse(fd);
     const dossier = await db.dossier.update({ where: { id }, data });
     await audit({ userId: viewer.user.id, action: "dossier.update", entity: "Dossier", entityId: id, summary: `Editou a ficha de ${dossier.name}` });
@@ -46,7 +45,7 @@ export async function updateDossier(id: string, fd: FormData) {
 
 export async function deleteDossier(id: string) {
   const result = await runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.apagar");
     const dossier = await db.dossier.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "dossier.delete", entity: "Dossier", entityId: id, summary: `Apagou a ficha de ${dossier.name}` });
     revalidate();
@@ -57,7 +56,7 @@ export async function deleteDossier(id: string) {
 
 export async function addVehicle(dossierId: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.editar");
     const data = parseVehicleForm(fd);
     const vehicle = await db.dossierVehicle.create({ data: { ...data, dossierId }, include: { dossier: true } });
     await audit({ userId: viewer.user.id, action: "dossier.vehicle.add", entity: "Dossier", entityId: dossierId, summary: `Adicionou a placa ${vehicle.plate} à ficha de ${vehicle.dossier.name}` });
@@ -68,7 +67,7 @@ export async function addVehicle(dossierId: string, fd: FormData) {
 
 export async function removeVehicle(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.editar");
     const vehicle = await db.dossierVehicle.delete({ where: { id }, include: { dossier: true } });
     await audit({ userId: viewer.user.id, action: "dossier.vehicle.remove", entity: "Dossier", entityId: vehicle.dossierId, summary: `Removeu a placa ${vehicle.plate} da ficha de ${vehicle.dossier.name}` });
     revalidate(vehicle.dossierId);
@@ -78,7 +77,7 @@ export async function removeVehicle(id: string) {
 
 export async function addDossierLink(fromId: string, fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.editar");
     const data = parseDossierLinkForm(fd);
     if (data.toId === fromId) throw new Error("Uma ficha não pode ter vínculo com ela mesma");
     const existing = await db.dossierLink.findFirst({ where: { OR: [{ fromId, toId: data.toId }, { fromId: data.toId, toId: fromId }] } });
@@ -93,7 +92,7 @@ export async function addDossierLink(fromId: string, fd: FormData) {
 
 export async function removeDossierLink(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission(PERM);
+    const viewer = await assertPermission("dossie.editar");
     const link = await db.dossierLink.delete({ where: { id }, include: { from: true, to: true } });
     await audit({ userId: viewer.user.id, action: "dossier.link.remove", entity: "Dossier", entityId: link.fromId, summary: `Removeu o vínculo entre ${link.from.name} e ${link.to.name}` });
     revalidate(link.fromId);

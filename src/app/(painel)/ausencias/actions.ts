@@ -18,7 +18,7 @@ function revalidate() {
 
 export async function createAbsence(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("painel.ver");
+    const viewer = await assertPermission("ausencias.criar");
     if (!viewer.member) throw new Error("Você não tem ficha de membro");
     const input = parseAbsenceForm(fd);
     const startsAt = startOfDayBRT(input.startsAt);
@@ -38,7 +38,7 @@ export async function createAbsence(fd: FormData) {
     if (overlap) throw new Error("Você já tem uma ausência nesse período");
 
     // quem pode aprovar já sai com o aviso aprovado
-    const autoApprove = viewer.can("ausencias.gerenciar");
+    const autoApprove = viewer.can("ausencias.editar");
     const absence = await db.absence.create({
       data: {
         memberId: viewer.member.id,
@@ -74,7 +74,7 @@ export async function createAbsence(fd: FormData) {
 
 export async function reviewAbsence(id: string, approve: boolean) {
   return runAction(async () => {
-    const viewer = await assertPermission("ausencias.gerenciar");
+    const viewer = await assertPermission("ausencias.editar");
     const absence = await db.absence.update({
       where: { id },
       data: { status: approve ? "APROVADA" : "RECUSADA", reviewerId: viewer.member?.id, reviewedAt: new Date() },
@@ -97,7 +97,7 @@ export async function cancelAbsence(id: string) {
     const viewer = await assertPermission("painel.ver");
     const absence = await db.absence.findUniqueOrThrow({ where: { id }, include: { member: true } });
     const own = absence.memberId === viewer.member?.id;
-    if (!own && !viewer.can("ausencias.gerenciar")) throw new Error("Sem permissão");
+    if (!own && !viewer.can("ausencias.apagar")) throw new Error("Sem permissão");
 
     // se já começou, encerra hoje em vez de cancelar
     const now = new Date();

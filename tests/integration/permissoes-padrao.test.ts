@@ -36,7 +36,7 @@ describe("permissões padrão das patentes", () => {
     expect(await allowed(createLore(form({ title: "Origem", content: "x" })))).toBe(true);
     expect(await allowed(createNotice(form({ title: "Aviso", content: "x" })))).toBe(true);
     expect(await allowed(registerMove(form({ kind: "ENTRADA", asset: "DINHEIRO_SUJO", quantity: "100", reason: "Loot" })))).toBe(true);
-    await expect(requireViewer("economia.ver")).resolves.toBeTruthy();
+    await expect(requireViewer("bau.ver")).resolves.toBeTruthy();
   });
 
   it("gerente NÃO pune, não edita regras, não aprova ausências, não vê auditoria nem cadastra membros", async () => {
@@ -56,7 +56,7 @@ describe("permissões padrão das patentes", () => {
   it.each(["dev-soldado", "dev-recruta"])("%s vê o painel, mas não a economia nem cria nada", async (who) => {
     await actAs(who);
     await expect(requireViewer()).resolves.toBeTruthy();
-    await expect(requireViewer("economia.ver")).rejects.toMatchObject({ digest: expect.stringContaining("/sem-acesso") });
+    await expect(requireViewer("bau.ver")).rejects.toMatchObject({ digest: expect.stringContaining("/sem-acesso") });
     const metal = await db.item.create({ data: { name: "Metal" } });
     expect(await allowed(deliverFarm(form({ itemId: metal.id, quantity: "10" })))).toBe(false);
     expect(await allowed(createEvent(form({ title: "Ação", kind: "ACAO", startsAt: inHours(24) })))).toBe(false);

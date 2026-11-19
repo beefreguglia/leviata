@@ -22,7 +22,9 @@ const INACTIVE_DAYS = 7;
 
 export default async function AusenciasPage() {
   const viewer = await requireViewer();
-  const canManage = viewer.can("ausencias.gerenciar");
+  const canManage = viewer.can("ausencias.ver");
+  const canReview = viewer.can("ausencias.editar");
+  const canCancelOthers = viewer.can("ausencias.apagar");
   const now = new Date();
   const include = { member: true } as const;
 
@@ -66,9 +68,10 @@ export default async function AusenciasPage() {
         title="Ausências"
         description="Vai ficar fora? Avise aqui — você sai das escalações nesse período."
         actions={
+          viewer.can("ausencias.criar") && (
           <FormDialog
             title="Avisar ausência"
-            description={canManage ? "Como você é da gerência, o aviso já sai aprovado." : "A liderança recebe o aviso no Discord."}
+            description={canReview ? "Como você aprova ausências, o aviso já sai aprovado." : "A liderança recebe o aviso no Discord."}
             action={createAbsence}
             submitLabel="Enviar aviso"
             trigger={
@@ -89,15 +92,16 @@ export default async function AusenciasPage() {
               <Textarea id="reason" name="reason" required rows={3} placeholder="Ex.: viagem, prova, trabalho…" />
             </Field>
           </FormDialog>
+          )
         }
       />
 
       <Stagger className="flex flex-col gap-10">
-        {canManage && pending.length > 0 && (
+        {canReview && pending.length > 0 && (
           <StaggerItem>
             <GroupedList header={`Aguardando aprovação · ${pending.length}`}>
               {pending.map((a) => (
-                <AbsenceRow key={a.id} absence={a} canReview canCancel />
+                <AbsenceRow key={a.id} absence={a} canReview canCancel={canCancelOthers} />
               ))}
             </GroupedList>
           </StaggerItem>
@@ -112,7 +116,7 @@ export default async function AusenciasPage() {
             ) : (
               <GroupedList header={`Fora agora · ${current.length}`}>
                 {current.map((a) => (
-                  <AbsenceRow key={a.id} absence={a} canCancel />
+                  <AbsenceRow key={a.id} absence={a} canCancel={canCancelOthers || a.memberId === viewer.member?.id} />
                 ))}
               </GroupedList>
             )}
@@ -123,7 +127,7 @@ export default async function AusenciasPage() {
           <StaggerItem>
             <GroupedList header="Próximas">
               {upcoming.map((a) => (
-                <AbsenceRow key={a.id} absence={a} canCancel={canManage || a.memberId === viewer.member?.id} />
+                <AbsenceRow key={a.id} absence={a} canCancel={canCancelOthers || a.memberId === viewer.member?.id} />
               ))}
             </GroupedList>
           </StaggerItem>

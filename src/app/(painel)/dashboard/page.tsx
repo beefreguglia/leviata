@@ -60,9 +60,9 @@ export default async function DashboardPage() {
   if (!viewer.can("painel.ver")) redirect(registered ? "/regras" : "/registro");
 
   const now = new Date();
-  const canManage = viewer.can("ausencias.gerenciar");
+  const canManage = viewer.can("ausencias.ver");
   after(() => refreshStreamsIfStale().catch((err) => console.error("Falha ao atualizar lives:", err)));
-  const canFinance = viewer.can("bau.gerenciar");
+  const canFinance = viewer.can("bau.criar") || viewer.can("bau.editar") || viewer.can("bau.apagar");
   const [activeCount, absentNow, pendingCount, recent, pinnedNotices, liveNow, nextEvents, balances, myGoals, pendingDeliveries, balanceHistory] = await Promise.all([
     db.member.count({ where: { status: "ATIVO" } }),
     canManage

@@ -40,7 +40,7 @@ async function parse(fd: FormData) {
 
 export async function createPin(fd: FormData) {
   return runAction(async () => {
-    const viewer = await assertPermission("mapa.editar");
+    const viewer = await assertPermission("mapa.criar");
     const pin = await db.mapPin.create({ data: { ...(await parse(fd)), authorId: viewer.member?.id } });
     await audit({ userId: viewer.user.id, action: "pin.create", entity: "MapPin", entityId: pin.id, summary: `Marcou "${pin.title}" no mapa` });
     revalidate();
@@ -60,7 +60,7 @@ export async function updatePin(id: string, fd: FormData) {
 
 export async function deletePin(id: string) {
   return runAction(async () => {
-    const viewer = await assertPermission("mapa.editar");
+    const viewer = await assertPermission("mapa.apagar");
     const pin = await db.mapPin.delete({ where: { id } });
     await audit({ userId: viewer.user.id, action: "pin.delete", entity: "MapPin", entityId: id, summary: `Removeu "${pin.title}" do mapa` });
     revalidate();
