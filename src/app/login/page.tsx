@@ -54,7 +54,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       <div className="relative w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <h1 className="sr-only">Leviatã</h1>
-          <BrandLogo alt="" className="w-72 drop-shadow-[0_0_40px_rgba(6,212,236,0.25)] sm:w-80" />
+          <BrandLogo alt="" className="w-56 drop-shadow-[0_0_40px_rgba(6,212,236,0.25)] sm:w-64" />
           <p className="mt-2 type-label text-grey-300">Cidade dos Anjos · Painel interno</p>
         </div>
 

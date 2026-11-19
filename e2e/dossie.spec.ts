@@ -50,23 +50,15 @@ test.describe("dossiê (liderança)", () => {
     await page.getByRole("alertdialog").getByRole("button", { name: "Apagar" }).click();
     await expect(page).toHaveURL(/\/dossie$/);
   });
-
-  test("radar abre para a liderança", async ({ page }) => {
-    await page.goto("/radar");
-    await expect(page.getByRole("heading", { name: "Radar de inatividade" })).toBeVisible();
-  });
 });
 
 test.describe("acesso restrito (soldado)", () => {
   test.use(as("soldado"));
 
-  test("não vê no menu e é barrado no dossiê e no radar", async ({ page }) => {
+  test("não vê no menu e é barrado no dossiê", async ({ page }) => {
     await page.goto("/dashboard");
     await expect(page.getByRole("link", { name: "Dossiê" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Radar de inatividade" })).toHaveCount(0);
-    for (const path of ["/dossie", "/radar"]) {
-      await page.goto(path);
-      await expect(page).toHaveURL(/sem-acesso/);
-    }
+    await page.goto("/dossie");
+    await expect(page).toHaveURL(/sem-acesso/);
   });
 });

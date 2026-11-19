@@ -65,7 +65,6 @@ export const PERMISSION_GROUPS = [
       "punicoes.aplicar": "Aplicar punições",
       "punicoes.revogar": "Encerrar e revogar punições",
       "ausencias.gerenciar": "Aprovar e recusar avisos de ausência",
-      "radar.ver": "Ver o radar de inatividade",
       "auditoria.ver": "Ver o log de auditoria",
       "dossie.ver": "Ver o dossiê de pessoas da cidade",
       "dossie.editar": "Editar o dossiê",
@@ -93,6 +92,8 @@ export const LEGACY_PERMISSIONS: Record<string, Permission[]> = {
   "financeiro.gerenciar": ["bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"],
   "punicoes.gerenciar": ["punicoes.aplicar", "punicoes.revogar"],
   "dossie.gerenciar": ["dossie.ver", "dossie.editar"],
+  // radar de inatividade removido (migração 20261119120000_remove_radar)
+  "radar.ver": [],
 };
 
 /** Troca chaves antigas pelas novas e remove repetidas. */

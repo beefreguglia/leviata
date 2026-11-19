@@ -1,7 +1,7 @@
 /**
  * Gera os arquivos da identidade visual a partir de brand/ (rode: npm run brand).
- *   brand/leviata-logo.png → logo com o dragão (menu, login, prévia de link)
- *   brand/lvt.png          → monograma LVT (favicon, ícones do app)
+ *   brand/leviata-logo.png → dragão + LVT (menu, login, prévia de link)
+ *   brand/lvt.png          → dragão sólido ciano (favicon, ícones do app, telas de erro)
  */
 import sharp from "sharp";
 import { writeFile } from "node:fs/promises";

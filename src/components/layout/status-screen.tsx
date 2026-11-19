@@ -31,7 +31,7 @@ export function StatusScreen({
       aria-labelledby="status-title"
       className={cn("flex flex-col items-center justify-center px-4 text-center", fullscreen ? "min-h-svh py-12" : "min-h-[60svh] py-10")}
     >
-      {fullscreen && <BrandMark alt="Leviatã" className="mb-10 w-24 opacity-90" />}
+      {fullscreen && <BrandMark alt="Leviatã" className="mb-10 w-20 opacity-90" />}
       <span className={cn("flex size-20 items-center justify-center rounded-card", toneClass)}>
         <Icon className="size-9" aria-hidden="true" />
       </span>

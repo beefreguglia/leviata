@@ -29,7 +29,7 @@ export function AppSidebar({
           aria-label="Leviatã — ir para o início"
           className="group/brand flex items-center justify-center rounded-md px-3 py-2 outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-3 focus-visible:ring-ring/50"
         >
-          <BrandLogo alt="" className="w-40 transition-[filter] duration-300 group-hover/brand:drop-shadow-[0_0_12px_rgba(6,212,236,0.45)]" />
+          <BrandLogo alt="" className="w-28 transition-[filter] duration-300 group-hover/brand:drop-shadow-[0_0_12px_rgba(6,212,236,0.45)]" />
         </Link>
       </SidebarHeader>
       <SidebarContent>

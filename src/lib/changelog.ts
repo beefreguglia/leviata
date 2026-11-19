@@ -15,6 +15,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-19-logo-radar",
+    date: "2026-11-19",
+    title: "Logo novo",
+    items: [
+      "O painel ganhou o **novo logo da Leviatã**: dragão com LVT no login e no menu, e o dragão ciano no ícone da aba e do app no celular",
+      "O **radar de inatividade** saiu do painel",
+    ],
+  },
+  {
     id: "2026-11-13-desligar-permissoes",
     date: "2026-11-13",
     title: "Desligar membros e permissões uma por uma",

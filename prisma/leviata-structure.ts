@@ -30,17 +30,17 @@ export const LEVIATA_MANAGEMENTS = [
     order: 1,
     sector: null,
     discordRoleId: "1534404775188238466",
-    permissions: ["painel.ver", "economia.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar", "radar.ver"],
+    permissions: ["painel.ver", "economia.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"],
   },
-  { name: "G-Ação", order: 2, sector: "Vanguarda", discordRoleId: "1534404775171330107", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "radar.ver"] },
-  { name: "G-Corrida", order: 3, sector: "Propulsão", discordRoleId: "1568731925768835082", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar", "radar.ver"] },
-  { name: "G-Investigativa", order: 4, sector: "Vigília", discordRoleId: "1534404775171330104", permissions: ["painel.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "radar.ver", "dossie.ver", "dossie.editar"] },
+  { name: "G-Ação", order: 2, sector: "Vanguarda", discordRoleId: "1534404775171330107", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar"] },
+  { name: "G-Corrida", order: 3, sector: "Propulsão", discordRoleId: "1568731925768835082", permissions: ["painel.ver", "agenda.gerenciar", "escalacoes.gerenciar", "perimetros.gerenciar"] },
+  { name: "G-Investigativa", order: 4, sector: "Vigília", discordRoleId: "1534404775171330104", permissions: ["painel.ver", "lore.editar", "faccoes.editar", "farm.editar", "fabricacao.editar", "mural.editar", "mapa.editar", "lives.gerenciar", "dossie.ver", "dossie.editar"] },
   {
     name: "G-Comércio",
     order: 5,
     sector: "Comércio",
     discordRoleId: "1534404775171330106",
-    permissions: ["painel.ver", "economia.ver", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar", "radar.ver"],
+    permissions: ["painel.ver", "economia.ver", "bau.gerenciar", "metas.gerenciar", "encomendas.gerenciar", "vendas.gerenciar"],
   },
 ];
 
