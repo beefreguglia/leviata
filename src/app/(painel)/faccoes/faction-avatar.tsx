@@ -1,5 +1,6 @@
 import { UploadImage } from "@/components/upload-image";
 import { cn } from "@/lib/utils";
+import { textToneOn } from "@/lib/contrast";
 
 /** Fundo das iniciais: uma cor, ou duas divididas na diagonal. */
 export function factionBackground(color: string, color2?: string | null) {
@@ -23,11 +24,14 @@ export function FactionAvatar({
   className?: string;
 }) {
   if (logoId) return <UploadImage id={logoId} alt="" className={cn("size-12 shrink-0 rounded-md", className)} />;
+  const light = textToneOn(color, ...(color2 ? [color2] : [])) === "light";
   return (
     <span
       className={cn(
         "flex size-12 shrink-0 items-center justify-center rounded-md text-sm font-bold",
-        color2 ? "text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]" : "text-grey-950",
+        light ? "text-white" : "text-grey-950",
+        // com duas cores a sigla fica em cima da divisão: sombra no tom oposto segura a leitura nos dois lados
+        color2 && (light ? "[text-shadow:0_1px_3px_rgb(0_0_0/0.85)]" : "[text-shadow:0_0_3px_rgb(255_255_255/0.85)]"),
         className,
       )}
       style={{ background: factionBackground(color, color2) }}

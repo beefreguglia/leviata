@@ -15,6 +15,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-19-faccoes-contraste",
+    date: "2026-11-19",
+    title: "Siglas das facções mais legíveis",
+    items: ["A sigla no ícone da facção fica **branca em cores escuras** e **escura em cores claras**, para dar sempre para ler"],
+  },
+  {
     id: "2026-11-19-faccoes-01-02",
     date: "2026-11-19",
     title: "Facções: 01, 02 e duas cores",
