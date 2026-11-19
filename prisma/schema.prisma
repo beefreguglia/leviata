@@ -262,10 +262,12 @@ model Faction {
   name        String          @unique
   tag         String? // sigla
   color       String          @default("#8d8d99")
+  color2      String? // segunda cor (facções de duas cores, ex.: camuflado preto e vermelho)
   relation    FactionRelation @default(NEUTRA)
   kind        String? // ex.: "Gangue", "Máfia", "MC", "Polícia"
   territory   String?
-  leader      String?
+  leader      String? // 01
+  viceLeader  String? // 02
   description String? // markdown
   isActive    Boolean         @default(true)
   createdAt   DateTime        @default(now())

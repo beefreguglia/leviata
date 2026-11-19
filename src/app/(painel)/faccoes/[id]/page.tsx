@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CrownIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from "@/components/icons";
+import { CrownIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon, UserIcon, XIcon } from "@/components/icons";
 import { db } from "@/lib/db";
 import { money } from "@/lib/finance";
 import { requireViewer } from "@/lib/session";
@@ -41,7 +41,7 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
   return (
     <div className="mx-auto max-w-3xl">
       <FadeIn className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-start">
-        <FactionAvatar name={faction.name} tag={faction.tag} color={faction.color} logoId={faction.logoId} className="size-20 text-xl" />
+        <FactionAvatar name={faction.name} tag={faction.tag} color={faction.color} color2={faction.color2} logoId={faction.logoId} className="size-20 text-xl" />
         <div className="flex flex-1 flex-col gap-2">
           <h1 className="type-h1 text-grey-100">
             {faction.name} {faction.tag && <span className="text-lg font-normal text-muted-foreground">[{faction.tag}]</span>}
@@ -53,8 +53,13 @@ export default async function FactionPage({ params }: PageProps<"/faccoes/[id]">
           </div>
           <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-grey-300">
             {faction.leader && (
-              <span className="flex items-center gap-1.5">
-                <CrownIcon className="size-4 text-muted-foreground" /> {faction.leader}
+              <span className="flex items-center gap-1.5" title="01 · Líder">
+                <CrownIcon className="size-4 text-muted-foreground" /> <span className="font-bold tabular-nums text-cyan-light">01</span> {faction.leader}
+              </span>
+            )}
+            {faction.viceLeader && (
+              <span className="flex items-center gap-1.5" title="02 · Vice-líder">
+                <UserIcon className="size-4 text-muted-foreground" /> <span className="font-bold tabular-nums text-cyan-light">02</span> {faction.viceLeader}
               </span>
             )}
             {faction.territory && (

@@ -1,0 +1,1 @@
+ALTER TABLE "Faction" ADD COLUMN "color2" TEXT;

@@ -15,6 +15,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-19-faccoes-01-02",
+    date: "2026-11-19",
+    title: "Facções: 01, 02 e duas cores",
+    items: [
+      "Cada facção agora tem o **01 (Líder)** e o **02 (Vice-líder)**, mostrados no topo da página dela",
+      "Facções de duas cores (ex.: camuflado preto e vermelho): marque **Usar 2ª cor** no cadastro e o ícone fica dividido nas duas",
+    ],
+  },
+  {
     id: "2026-11-19-permissoes-crud",
     date: "2026-11-19",
     title: "Permissões de ver, criar, editar e apagar",

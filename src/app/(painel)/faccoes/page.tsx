@@ -97,7 +97,7 @@ export default async function FaccoesPage({ searchParams }: PageProps<"/faccoes"
                 data-testid="faction-card"
                 className={cn("flex h-full items-start gap-4 rounded-card glass-card glass-card-interactive p-5", !f.isActive && "opacity-60")}
               >
-                <FactionAvatar name={f.name} tag={f.tag} color={f.color} logoId={f.logoId} />
+                <FactionAvatar name={f.name} tag={f.tag} color={f.color} color2={f.color2} logoId={f.logoId} />
                 <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <h3 className="text-lg font-bold text-grey-100">{f.name}</h3>

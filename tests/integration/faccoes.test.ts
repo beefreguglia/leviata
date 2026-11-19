@@ -11,6 +11,25 @@ describe("facções", () => {
     expect(await createFaction(ballas({ name: "BALLAS" }))).toEqual({ ok: false, error: "Já existe a facção Ballas" });
   });
 
+  it("salva o 01 (líder) e o 02 (vice-líder)", async () => {
+    await actAs("dev-gerente");
+    await createFaction(ballas({ leader: "Big T", viceLeader: "Little D" }));
+    const f = await db.faction.findFirstOrThrow();
+    expect(f).toMatchObject({ leader: "Big T", viceLeader: "Little D" });
+    await updateFaction(f.id, ballas({ leader: "Big T", viceLeader: "" }));
+    expect((await db.faction.findUniqueOrThrow({ where: { id: f.id } })).viceLeader).toBeNull();
+  });
+
+  it("segunda cor só vale com a caixa marcada", async () => {
+    await actAs("dev-gerente");
+    await createFaction(ballas({ color2: "#000000", hasColor2: "on" }));
+    const f = await db.faction.findFirstOrThrow();
+    expect(f.color2).toBe("#000000");
+    await updateFaction(f.id, ballas({ color2: "#000000" }));
+    expect((await db.faction.findUniqueOrThrow({ where: { id: f.id } })).color2).toBeNull();
+    expect((await updateFaction(f.id, ballas({ color2: "vermelho", hasColor2: "on" }))).ok).toBe(false);
+  });
+
   it("mudar a relação registra no histórico automaticamente", async () => {
     await actAs("dev-gerente");
     await createFaction(ballas());
