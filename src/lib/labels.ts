@@ -1,4 +1,5 @@
 import type {
+  DiaryKind,
   AttendanceStatus, EventKind, EventResult, EventStatus, MapPinCategory,
   AbsenceStatus, DossierStatus, FactionEventKind, FactionRelation, LoreCategory, MemberStatus, NoticePriority, Risk, StreamPlatform,
 } from "@/generated/prisma/client";
@@ -167,3 +168,12 @@ export const PUNISHMENT_STATUS = {
   CUMPRIDA: { label: "Cumprida", className: "bg-success-low text-success" },
   REVOGADA: { label: "Revogada", className: "bg-grey-600 text-grey-300" },
 } as const;
+
+export const DIARY_KIND: Record<DiaryKind, { label: string; className: string }> = {
+  ACAO: { label: "Ação", className: "bg-cyan-low text-cyan-light" },
+  CONFLITO: { label: "Conflito", className: "bg-danger-low text-danger-light" },
+  POLICIA: { label: "Polícia", className: "bg-warning-low text-warning" },
+  NEGOCIO: { label: "Negócio", className: "bg-success-low text-success" },
+  EVENTO: { label: "Evento", className: "bg-grey-600 text-grey-100" },
+  OUTRO: { label: "Outro", className: "bg-grey-700 text-grey-300" },
+};

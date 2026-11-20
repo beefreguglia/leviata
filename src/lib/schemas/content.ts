@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { startOfDayBRT } from "@/lib/dates";
+import { fromDateTimeInputBRT, startOfDayBRT } from "@/lib/dates";
 
 /** Texto opcional: "" vira null. */
 export const optionalText = (max = 2000) =>
@@ -307,3 +307,27 @@ export const STREAM_HANDLE_HINT: Record<StreamPlatformKey, string> = {
   KICK: "Link ou nome do canal (ex.: kick.com/leviatarp)",
   YOUTUBE: "Link com o ID do canal (youtube.com/channel/UC…). Em Configurações avançadas do YouTube você encontra o ID.",
 };
+
+// ---------------- Diário ----------------
+export const DIARY_KINDS = ["ACAO", "CONFLITO", "POLICIA", "NEGOCIO", "EVENTO", "OUTRO"] as const;
+
+export const diarySchema = z.object({
+  title: z.string().trim().min(3, "Descreva o que aconteceu").max(160),
+  kind: z.enum(DIARY_KINDS, { error: "Tipo inválido" }),
+  happenedAt: z
+    .string({ error: "Informe a data e hora" })
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "Informe a data e hora")
+    .transform(fromDateTimeInputBRT),
+  factionId: z.string().nullable(),
+  content: optionalText(4000),
+});
+
+export function parseDiaryForm(fd: FormData) {
+  return diarySchema.parse({
+    title: str(fd, "title"),
+    kind: str(fd, "kind") ?? "OUTRO",
+    happenedAt: str(fd, "happenedAt"),
+    factionId: str(fd, "factionId") || null,
+    content: str(fd, "content"),
+  });
+}

@@ -15,7 +15,7 @@ setup("aquecer páginas", async ({ browser }) => {
   const page = await ctx.newPage();
   for (const path of [
     "/dashboard", "/membros", "/hierarquia", "/ausencias", "/regras/estatuto", "/regras/nova", "/auditoria",
-    "/mural", "/lore", "/lore/novo", "/faccoes", "/fabricacao", "/farm", "/farm/novo", "/lives", "/sem-acesso",
+    "/mural", "/lore", "/lore/novo", "/diario", "/faccoes", "/fabricacao", "/farm", "/farm/novo", "/lives", "/sem-acesso",
     "/mapa", "/perimetros", "/perimetros/novo", "/agenda", "/escalacoes",
     "/bau", "/metas", "/encomendas", "/punicoes", "/dossie",
   ]) {

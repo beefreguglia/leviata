@@ -71,6 +71,11 @@ export const PERMISSION_AREAS = [
     areas: [
       { key: "lore", label: "Lore", ops: { ver: "Ler a lore", criar: "Escrever artigos", editar: "Editar artigos", apagar: "Apagar artigos" } },
       { key: "faccoes", label: "Facções", ops: { ver: "Ver as facções", criar: "Cadastrar facções", editar: "Editar facções e o histórico", apagar: "Apagar facções" } },
+      {
+        key: "diario",
+        label: "Diário",
+        ops: { ver: "Ler o diário", criar: "Registrar acontecimentos (e mexer nos próprios)", editar: "Editar os registros dos outros", apagar: "Apagar os registros dos outros" },
+      },
       { key: "dossie", label: "Dossiê", ops: { ver: "Ver o dossiê", criar: "Criar fichas", editar: "Editar fichas, placas e vínculos", apagar: "Apagar fichas" } },
     ],
   },

@@ -62,6 +62,7 @@ export const NAV_MAIN: NavSection[] = [
     icon: BookOpenIcon,
     items: [
       { href: "/lore", label: "Lore", perm: "lore.ver" },
+      { href: "/diario", label: "Diário", perm: "diario.ver" },
       { href: "/faccoes", label: "Facções", perm: "faccoes.ver" },
       { href: "/dossie", label: "Dossiê", perm: "dossie.ver" },
     ],

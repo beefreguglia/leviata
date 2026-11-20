@@ -15,6 +15,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-19-diario",
+    date: "2026-11-19",
+    title: "Diário da cidade",
+    items: [
+      "Página nova **Diário** (em Cidade): registre o que aconteceu no dia — ações, conflitos, polícia, negócios e eventos",
+      "Cada registro tem a hora, o tipo e, se quiser, a facção envolvida e os detalhes",
+      "Use as setas ou a faixa da semana para ver os outros dias; um pontinho mostra os dias com registro",
+    ],
+  },
+  {
     id: "2026-11-19-faccoes-contraste",
     date: "2026-11-19",
     title: "Siglas das facções mais legíveis",

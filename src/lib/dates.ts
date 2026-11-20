@@ -73,3 +73,24 @@ export function fmtTime(date: Date) {
 export function fmtWeekday(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "numeric", month: "short", timeZone: "America/Sao_Paulo" }).format(date);
 }
+
+/** "2026-11-19" + n dias → "2026-11-20" (só calendário, sem fuso). */
+export function shiftDay(dateStr: string, days: number) {
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** "2026-11-19" → "quarta-feira, 19 de novembro de 2026" */
+export function fmtDayLong(dateStr: string) {
+  return new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${dateStr}T12:00:00Z`));
+}
+
+/** "2026-11-19" → { weekday: "qua.", day: "19" } (para a faixa de dias) */
+export function fmtDayChip(dateStr: string) {
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  return {
+    weekday: new Intl.DateTimeFormat("pt-BR", { weekday: "short", timeZone: "UTC" }).format(d),
+    day: String(d.getUTCDate()),
+  };
+}

@@ -68,6 +68,7 @@ model Member {
   factionEvents FactionEvent[]  @relation("FactionEventAuthor")
   farmGuides    FarmGuide[]     @relation("FarmGuideAuthor")
   notices       Notice[]        @relation("NoticeAuthor")
+  diaryEntries  DiaryEntry[]    @relation("DiaryAuthor")
   pollVotes     PollVote[]
   flyers        Flyer[]         @relation("FlyerAuthor")
   streams       StreamChannel[]
@@ -281,6 +282,7 @@ model Faction {
   orders   Order[]
   sales    Sale[]
   dossiers Dossier[]
+  diary    DiaryEntry[]
 }
 
 enum FactionEventKind {
@@ -900,4 +902,31 @@ model DossierLink {
   to     Dossier @relation("DossierLinkTo", fields: [toId], references: [id], onDelete: Cascade)
 
   @@unique([fromId, toId])
+}
+
+enum DiaryKind {
+  ACAO
+  CONFLITO
+  POLICIA
+  NEGOCIO
+  EVENTO
+  OUTRO
+}
+
+/// Diário: o que aconteceu na cidade em cada dia.
+model DiaryEntry {
+  id         String    @id @default(cuid())
+  title      String
+  content    String? // markdown
+  kind       DiaryKind @default(OUTRO)
+  happenedAt DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  authorId  String?
+  author    Member?  @relation("DiaryAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  factionId String?
+  faction   Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
+
+  @@index([happenedAt])
 }

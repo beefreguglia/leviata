@@ -30,6 +30,7 @@ export const SEASON_WIPED_TABLES = [
   "DossierLink",
   "DossierVehicle",
   "Dossier",
+  "DiaryEntry",
   "FactionEvent",
   "Faction",
   "LoreArticle",
