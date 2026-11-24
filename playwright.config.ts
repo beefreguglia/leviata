@@ -37,7 +37,7 @@ export default defineConfig({
     // servidor separado (porta e pasta próprias) para não brigar com o `npm run dev`
     command: `npx next dev --port ${PORT}`,
     url: `http://localhost:${PORT}/login`,
-    env: { ...testEnv, NEXT_DIST_DIR: ".next-e2e", STREAM_REFRESH_DISABLED: "true" },
+    env: { ...testEnv, NEXT_DIST_DIR: ".next-e2e", STREAM_REFRESH_DISABLED: "true", AI_FAKE: "true" },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

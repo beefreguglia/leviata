@@ -127,3 +127,39 @@ test.describe("mapa: zoom", () => {
     expect(Math.round(end.width / start.width)).toBe(8);
   });
 });
+
+test.describe("mapa: rotas de coleta", () => {
+  test.use(as("soldado"));
+  test("abre a rota, marca paradas, volta uma e o progresso fica salvo", async ({ page }) => {
+    await page.goto("/mapa");
+    await page.getByLabel("Rotas").getByRole("button", { name: /Containers Sul/ }).click();
+    await expect(page).toHaveURL(/rota=containers-sul/);
+    const panel = page.getByTestId("route-panel");
+    const next = panel.getByTestId("route-next");
+    // começa do zero (limpa se sobrou de outra execução)
+    if ((await next.textContent())?.trim() !== "1de 30") {
+      await panel.getByRole("button", { name: "Recomeçar" }).click();
+      await page.getByRole("alertdialog").getByRole("button", { name: "Recomeçar" }).click();
+    }
+    await expect(next).toHaveText(/^1\s*de 30/);
+    await expect(page.getByTestId("map").locator(".leviata-stop")).toHaveCount(30);
+
+    await panel.getByRole("button", { name: "Parada 1 feita" }).click();
+    await panel.getByRole("button", { name: "Parada 2 feita" }).click();
+    await expect(next).toHaveText(/^3\s*de 30/);
+    await panel.getByRole("button", { name: "Voltar uma" }).click();
+    await expect(next).toHaveText(/^2\s*de 30/);
+    // tocar numa parada do grid marca fora de ordem
+    await panel.getByRole("button", { name: "Parada 5", exact: true }).click();
+    await expect(panel.getByRole("button", { name: "Parada 5 (feita)" })).toBeVisible();
+
+    await page.waitForTimeout(1200); // salva depois de meio segundo sem cliques
+    await page.reload();
+    await expect(page.getByTestId("route-panel").getByTestId("route-next")).toHaveText(/^2\s*de 30/);
+    await expect(page.getByTestId("route-panel").getByRole("button", { name: "Parada 5 (feita)" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Sair da rota" }).click();
+    await expect(page).not.toHaveURL(/rota=/);
+    await expect(page.getByTestId("route-panel")).toHaveCount(0);
+  });
+});

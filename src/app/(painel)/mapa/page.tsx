@@ -8,7 +8,8 @@ import { EmptyState } from "@/components/layout/grouped-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapView } from "./map-view";
 import { MapConfigDialog } from "./map-config-dialog";
-import { createPin, deletePin, saveMapConfig, updatePin } from "./actions";
+import { MAP_ROUTES } from "@/lib/map-routes";
+import { createPin, deletePin, saveMapConfig, saveRouteProgress, updatePin } from "./actions";
 
 export const metadata = { title: "Mapa" };
 
@@ -20,7 +21,7 @@ export default async function MapaPage() {
   const map = await getMapConfig();
 
   const canEconomy = viewer.can("farm.ver");
-  const [allPins, farmGuides, factions] = await Promise.all([
+  const [allPins, farmGuides, factions, progressRows] = await Promise.all([
     db.mapPin.findMany({
       include: {
         farmGuide: { select: { id: true, title: true } },
@@ -30,7 +31,9 @@ export default async function MapaPage() {
     }),
     (canCreate || canEdit) && canEconomy ? db.farmGuide.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }) : Promise.resolve([]),
     canCreate || canEdit ? db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
+    viewer.member ? db.mapRouteProgress.findMany({ where: { memberId: viewer.member.id } }) : Promise.resolve([]),
   ]);
+  const progress = Object.fromEntries(progressRows.map((r) => [r.routeKey, r.done]));
 
   // sem acesso à economia: o pin aparece, mas sem o link para o guia de farm
   const pins = canEconomy ? allPins : allPins.map((p) => ({ ...p, farmGuide: null }));
@@ -39,7 +42,7 @@ export default async function MapaPage() {
     <>
       <PageHeader
         title="Mapa"
-        description="Bases, farms, desmanches, rotas de fuga e territórios — com prints."
+        description="Bases, farms, desmanches, rotas de fuga e territórios — com prints. Em Rotas, siga as rotas de coleta parada por parada."
         actions={canEdit && <MapConfigDialog action={saveMapConfig} current={map} />}
       />
       {!map ? (
@@ -61,6 +64,9 @@ export default async function MapaPage() {
             createPin={createPin}
             updatePin={updatePin}
             deletePin={deletePin}
+            routes={MAP_ROUTES}
+            progress={progress}
+            saveRouteProgress={saveRouteProgress}
           />
         </Suspense>
       )}

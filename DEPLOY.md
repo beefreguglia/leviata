@@ -96,6 +96,9 @@ npm run setup:storage         # bucket privado "leviata" (só imagens, até 8 MB
 | `DISCORD_WEBHOOK_NOVIDADES` | (opcional) canal onde o painel posta o que mudou a cada deploy |
 | `CRON_SECRET` | gere com `openssl rand -hex 24` |
 | `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` / `YOUTUBE_API_KEY` | opcionais (lives) |
+| `GROQ_API_KEY` | (opcional) assistente de IA grátis — crie em console.groq.com/keys. Sem ela o botão do assistente avisa que não está configurado |
+| `GEMINI_API_KEY` / `OPENROUTER_API_KEY` | (opcionais) reservas do assistente: entram quando o Groq bate o limite |
+| `AI_LIMITE_DIARIO` | (opcional) mensagens por membro por dia, padrão 50 |
 
 > **Não** crie `AUTH_DEV_LOGIN` na Vercel. (Mesmo se criar, o login de teste é desligado em produção.)
 

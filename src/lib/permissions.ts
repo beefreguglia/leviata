@@ -83,6 +83,7 @@ export const PERMISSION_AREAS = [
     label: "Comunicação",
     areas: [
       { key: "mural", label: "Mural & Flyers", ops: { ver: "Ver o mural e votar", criar: "Publicar avisos e flyers", editar: "Editar e fixar avisos", apagar: "Apagar avisos e flyers" } },
+      { key: "assistente", label: "Assistente (IA)", ops: { ver: "Usar o chat do assistente" } },
       { key: "lives", label: "Ao vivo", ops: { ver: "Ver quem está ao vivo", criar: "Adicionar o próprio canal", editar: "Atualizar as lives agora", apagar: "Remover canais de outros" } },
     ],
   },

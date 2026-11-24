@@ -15,6 +15,26 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-24-mapa-rotas",
+    date: "2026-11-24",
+    title: "Rotas de coleta no mapa",
+    items: [
+      "No **Mapa**, em **Rotas**, escolha **Containers Sul** (30 paradas) ou **Caixas CPT** (108 paradas): a rota aparece desenhada com as paradas numeradas",
+      "O painel mostra a próxima parada; marque cada uma como feita (ou toque no número), volte uma ou recomece. Seu progresso fica salvo",
+      "Os pontos do mapa ficaram menores, para marcar os lugares com mais precisão",
+    ],
+  },
+  {
+    id: "2026-11-24-assistente",
+    date: "2026-11-24",
+    title: "Assistente de IA no painel",
+    items: [
+      "Botão **Assistente** no canto da tela: pergunte como usar o painel ou peça para ele fazer algo",
+      "Ele consulta a agenda, suas metas, o diário, o mural, as facções e os membros, sempre dentro do que o seu cargo pode ver",
+      "Também prepara registros no diário, avisos de ausência, entregas de farm, avisos e eventos, e **nada é salvo antes de você clicar em Confirmar**",
+    ],
+  },
+  {
     id: "2026-11-19-diario",
     date: "2026-11-19",
     title: "Diário da cidade",

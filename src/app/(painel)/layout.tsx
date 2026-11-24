@@ -5,6 +5,8 @@ import { signOut } from "@/auth";
 import { getViewer } from "@/lib/session";
 import { isGone } from "@/lib/members";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AssistantChat } from "@/components/assistant/assistant-chat";
+import { aiConfigured } from "@/lib/ai/providers";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ContentScroll } from "@/components/layout/scroll-area";
 import { FlashToast } from "@/components/flash-toast";
@@ -31,6 +33,15 @@ export default async function PainelLayout({ children }: LayoutProps<"/">) {
     memberId: viewer.member.id,
   };
 
+  // sugestões do chat de acordo com o que o membro pode fazer
+  const suggestions = [
+    viewer.can("metas.ver") && "Quanto falta da minha meta de farm?",
+    viewer.can("agenda.ver") && "O que tem na agenda essa semana?",
+    viewer.can("diario.criar") && "Registra no diário: perseguição da polícia na ponte agora há pouco",
+    viewer.can("ausencias.criar") && "Quero avisar que vou ficar fora de sexta a domingo",
+    "O que eu consigo fazer no painel?",
+  ].filter((s): s is string => Boolean(s)).slice(0, 4);
+
   return (
     // altura travada na tela: o header fica fixo e só o conteúdo do card rola
     <SidebarProvider defaultOpen={sidebarState !== "false"} className="h-svh overflow-hidden">
@@ -53,8 +64,9 @@ export default async function PainelLayout({ children }: LayoutProps<"/">) {
           <FlashToast />
         </Suspense>
         <ContentScroll>
-          <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8">{children}</div>
+          <div className="mx-auto w-full max-w-6xl px-4 pt-6 pb-24 md:px-8 md:pt-8">{children}</div>
         </ContentScroll>
+        {viewer.can("assistente.ver") && <AssistantChat enabled={aiConfigured()} suggestions={suggestions} />}
       </SidebarInset>
     </SidebarProvider>
   );

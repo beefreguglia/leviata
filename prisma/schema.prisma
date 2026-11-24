@@ -64,13 +64,14 @@ model Member {
   ruleVersions     RuleVersion[]
 
   uploads       Upload[]
-  loreArticles  LoreArticle[]   @relation("LoreAuthor")
-  factionEvents FactionEvent[]  @relation("FactionEventAuthor")
-  farmGuides    FarmGuide[]     @relation("FarmGuideAuthor")
-  notices       Notice[]        @relation("NoticeAuthor")
-  diaryEntries  DiaryEntry[]    @relation("DiaryAuthor")
+  loreArticles  LoreArticle[]      @relation("LoreAuthor")
+  factionEvents FactionEvent[]     @relation("FactionEventAuthor")
+  farmGuides    FarmGuide[]        @relation("FarmGuideAuthor")
+  notices       Notice[]           @relation("NoticeAuthor")
+  diaryEntries  DiaryEntry[]       @relation("DiaryAuthor")
+  routeProgress MapRouteProgress[]
   pollVotes     PollVote[]
-  flyers        Flyer[]         @relation("FlyerAuthor")
+  flyers        Flyer[]            @relation("FlyerAuthor")
   streams       StreamChannel[]
 
   dossiers      Dossier[]     @relation("DossierAuthor")
@@ -929,4 +930,25 @@ model DiaryEntry {
   faction   Faction? @relation(fields: [factionId], references: [id], onDelete: SetNull)
 
   @@index([happenedAt])
+}
+
+/// Quantas mensagens cada usuário mandou ao assistente por dia (limite da cota grátis).
+model AssistantUsage {
+  userId String
+  day    String // "2026-11-24" (Brasília)
+  count  Int    @default(0)
+
+  @@id([userId, day])
+}
+
+/// Até onde cada membro chegou numa rota do mapa (rotas fixas em src/lib/map-routes.ts).
+model MapRouteProgress {
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  routeKey  String
+  /// paradas feitas (índice a partir de 0)
+  done      Int[]
+  updatedAt DateTime @updatedAt
+
+  @@id([memberId, routeKey])
 }

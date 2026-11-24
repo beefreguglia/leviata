@@ -266,11 +266,23 @@
 .leaflet-bar a:hover { background: var(--grey-700) !important; }
 .leaflet-control-attribution { display: none; }
 .leviata-pin { background: none; border: 0; }
+/* ponto de 8px no centro de uma área de clique de 20px (o centro é o lugar exato) */
+.leviata-pin { display: flex; align-items: center; justify-content: center; }
 .leviata-pin span {
-  display: block; width: 100%; height: 100%; border-radius: 9999px; background: var(--c);
-  box-shadow: 0 0 0 3px var(--grey-950), 0 0 0 5px color-mix(in oklch, var(--c) 45%, transparent);
+  display: block; width: 8px; height: 8px; border-radius: 9999px; background: var(--c);
+  box-shadow: 0 0 0 1.5px var(--grey-950), 0 0 0 3px color-mix(in oklch, var(--c) 45%, transparent);
   transition: transform 150ms;
 }
-.leviata-pin:hover span { transform: scale(1.2); }
-.leviata-pin.is-selected span { transform: scale(1.35); box-shadow: 0 0 0 3px var(--grey-950), 0 0 0 6px var(--c); }
+.leviata-pin:hover span { transform: scale(1.4); }
+.leviata-pin.is-selected span { transform: scale(1.6); box-shadow: 0 0 0 1.5px var(--grey-950), 0 0 0 3px var(--c); }
 .leaflet-container.is-adding { cursor: crosshair; }
+/* paradas das rotas de coleta: número numa bolinha na cor da rota */
+.leviata-stop { display: flex; align-items: center; justify-content: center; background: none; border: 0; }
+.leviata-stop span {
+  display: block; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 9999px;
+  background: var(--c); color: var(--grey-950); font: 700 10px/20px var(--font-sans, sans-serif); text-align: center;
+  box-shadow: 0 0 0 1.5px var(--grey-950); transition: transform 150ms;
+}
+.leviata-stop:hover span { transform: scale(1.2); }
+.leviata-stop.is-done span { background: var(--grey-600); color: var(--grey-300); opacity: 0.7; }
+.leviata-stop.is-next span { transform: scale(1.35); box-shadow: 0 0 0 2px #fff, 0 0 14px 2px var(--c); }

@@ -9,6 +9,7 @@
 import { forwardRef } from "react";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import {
+  AiChat02Icon as H_AiChat02Icon,
   Alert02Icon as H_Alert02Icon,
   ArrowDown01Icon as H_ArrowDown01Icon,
   ArrowDownLeft01Icon as H_ArrowDownLeft01Icon,
@@ -60,6 +61,7 @@ import {
   Plant01Icon as H_Plant01Icon,
   PlusSignIcon as H_PlusSignIcon,
   RefreshIcon as H_RefreshIcon,
+  Route02Icon as H_Route02Icon,
   RotateLeft01Icon as H_RotateLeft01Icon,
   Search01Icon as H_Search01Icon,
   SearchRemoveIcon as H_SearchRemoveIcon,
@@ -100,6 +102,7 @@ function icon(svg: IconSvgElement, name: string): AppIcon {
   return C;
 }
 
+export const AiChatIcon = icon(H_AiChat02Icon, "AiChatIcon");
 export const ArrowDownLeftIcon = icon(H_ArrowDownLeft01Icon, "ArrowDownLeftIcon");
 export const ArrowUpDownIcon = icon(H_ArrowUpDownIcon, "ArrowUpDownIcon");
 export const ArrowUpRightIcon = icon(H_ArrowUpRight01Icon, "ArrowUpRightIcon");
@@ -156,6 +159,7 @@ export const PinOffIcon = icon(H_PinOffIcon, "PinOffIcon");
 export const PlusIcon = icon(H_PlusSignIcon, "PlusIcon");
 export const RadioIcon = icon(H_LiveStreaming02Icon, "RadioIcon");
 export const RefreshCwIcon = icon(H_RefreshIcon, "RefreshCwIcon");
+export const RouteIcon = icon(H_Route02Icon, "RouteIcon");
 export const RotateCcwIcon = icon(H_RotateLeft01Icon, "RotateCcwIcon");
 export const ScrollTextIcon = icon(H_LegalDocument01Icon, "ScrollTextIcon");
 export const SearchIcon = icon(H_Search01Icon, "SearchIcon");

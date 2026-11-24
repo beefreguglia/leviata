@@ -8,6 +8,7 @@ import { runAction } from "@/lib/actions";
 import { getMapConfig } from "@/lib/map-config";
 import { assertInsideMap, mapConfigSchema, parsePinForm } from "@/lib/schemas/ops";
 import { existingUploadIds } from "@/lib/uploads";
+import { getRoute } from "@/lib/map-routes";
 
 function revalidate() {
   revalidatePath("/mapa");
@@ -65,5 +66,26 @@ export async function deletePin(id: string) {
     await audit({ userId: viewer.user.id, action: "pin.delete", entity: "MapPin", entityId: id, summary: `Removeu "${pin.title}" do mapa` });
     revalidate();
     return "Marcador removido";
+  });
+}
+
+/**
+ * Salva até onde o membro chegou numa rota (paradas feitas). É pessoal e muda a cada clique,
+ * então não vai para a auditoria (como a presença na agenda).
+ */
+export async function saveRouteProgress(routeKey: string, done: number[]) {
+  return runAction(async () => {
+    const viewer = await assertPermission("mapa.ver");
+    if (!viewer.member) throw new Error("Você não tem ficha de membro");
+    const route = getRoute(routeKey);
+    if (!route) throw new Error("Rota não encontrada");
+    if (!Array.isArray(done) || done.some((i) => !Number.isInteger(i) || i < 0 || i >= route.points.length)) throw new Error("Parada inválida");
+    const clean = [...new Set(done)].sort((a, b) => a - b);
+    const memberId = viewer.member.id;
+    await db.mapRouteProgress.upsert({
+      where: { memberId_routeKey: { memberId, routeKey } },
+      create: { memberId, routeKey, done: clean },
+      update: { done: clean },
+    });
   });
 }

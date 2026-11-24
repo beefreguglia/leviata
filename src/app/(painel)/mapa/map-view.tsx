@@ -2,10 +2,11 @@
 
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import type { Map as LeafletMap, Marker } from "leaflet";
-import { CrosshairIcon, MapPinIcon, PencilIcon, SearchIcon, Trash2Icon, XIcon } from "@/components/icons";
+import type { LayerGroup, Map as LeafletMap, Marker } from "leaflet";
+import { toast } from "sonner";
+import { CrosshairIcon, MapPinIcon, PencilIcon, RouteIcon, SearchIcon, Trash2Icon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,7 +18,9 @@ import { uploadUrl } from "@/lib/images";
 import { cn } from "@/lib/utils";
 import type { ActionResult } from "@/lib/actions";
 import type { MapPinCategory } from "@/generated/prisma/client";
+import type { MapRoute } from "@/lib/map-routes";
 import { PinFields } from "./pin-fields";
+import { RoutePanel } from "./route-panel";
 import type { MapPinData } from "./types";
 
 type Props = {
@@ -31,11 +34,15 @@ type Props = {
   createPin: (fd: FormData) => Promise<ActionResult>;
   updatePin: (id: string, fd: FormData) => Promise<ActionResult>;
   deletePin: (id: string) => Promise<ActionResult>;
+  /** rotas de coleta (camada "Rotas") e o progresso salvo do membro em cada uma */
+  routes: MapRoute[];
+  progress: Record<string, number[]>;
+  saveRouteProgress: (routeKey: string, done: number[]) => Promise<ActionResult>;
 };
 
 type DialogState = { mode: "create"; x: number; y: number } | { mode: "edit"; pin: MapPinData } | null;
 
-export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, factions, createPin, updatePin, deletePin }: Props) {
+export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, factions, createPin, updatePin, deletePin, routes, progress, saveRouteProgress }: Props) {
   const params = useSearchParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -47,13 +54,22 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
   const [dialog, setDialog] = useState<DialogState>(null);
+  const routeLayerRef = useRef<LayerGroup | null>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [routeKey, setRouteKey] = useState<string | null>(() => (routes.some((r) => r.key === params.get("rota")) ? params.get("rota") : null));
+  const [doneByRoute, setDoneByRoute] = useState<Record<string, number[]>>(progress);
+  const doneRef = useRef(progress);
+  const toggleRef = useRef<(i: number) => void>(() => {});
+  const route = routes.find((r) => r.key === routeKey) ?? null;
+  const done = useMemo(() => new Set(route ? (doneByRoute[route.key] ?? []) : []), [route, doneByRoute]);
+  const next = route ? route.points.findIndex((_, i) => !done.has(i)) : -1;
 
   const visible = useMemo(
     () =>
-      pins.filter(
-        (p) => !hidden.has(p.category) && (!query || p.title.toLowerCase().includes(query.toLowerCase())),
-      ),
-    [pins, hidden, query],
+      routeKey
+        ? [] // com uma rota aberta, só a rota aparece no mapa
+        : pins.filter((p) => !hidden.has(p.category) && (!query || p.title.toLowerCase().includes(query.toLowerCase()))),
+    [pins, hidden, query, routeKey],
   );
   const selected = pins.find((p) => p.id === selectedId) ?? null;
   const counts = useMemo(() => {
@@ -64,6 +80,8 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
 
   // pixel (x,y a partir do canto superior esquerdo) <-> latlng do CRS.Simple
   const toLatLng = (x: number, y: number) => [map.height - y, x] as [number, number];
+  /** parada da rota (coordenada relativa 0–1) → latlng */
+  const stopLatLng = useCallback((p: [number, number]) => [map.height - p[1] * map.height, p[0] * map.width] as [number, number], [map.width, map.height]);
 
   // cria o mapa uma vez
   useEffect(() => {
@@ -129,8 +147,9 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
         const icon = L.divIcon({
           className: cn("leviata-pin", isSel && "is-selected"),
           html: `<span style="--c:${PIN_CATEGORY[p.category].color}"></span>`,
-          iconSize: [18, 18],
-          iconAnchor: [9, 9],
+          // ponto pequeno (8px) para marcar com precisão; a área de clique continua com 20px
+          iconSize: [20, 20],
+          iconAnchor: [10, 10],
         });
         const mk = L.marker(toLatLng(p.x, p.y), { icon, title: p.title, keyboard: true, riseOnHover: true })
           .addTo(m)
@@ -157,6 +176,101 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
+  // camada da rota: linha + paradas numeradas (feita / próxima / pendente)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const L = (await import("leaflet")).default;
+      const m = mapRef.current;
+      if (cancelled || !m) return;
+      routeLayerRef.current?.remove();
+      routeLayerRef.current = null;
+      if (!route) return;
+      const group = L.layerGroup();
+      const pts = route.points.map(stopLatLng);
+      L.polyline(pts, { color: route.color, weight: 3, opacity: 0.8, interactive: false }).addTo(group);
+      route.points.forEach((p, i) => {
+        const state = done.has(i) ? "is-done" : i === next ? "is-next" : "";
+        const icon = L.divIcon({
+          className: cn("leviata-stop", state),
+          html: `<span style="--c:${route.color}">${i + 1}</span>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+        });
+        L.marker(stopLatLng(p), { icon, title: `Parada ${i + 1}`, keyboard: true, zIndexOffset: i === next ? 1000 : done.has(i) ? -500 : 0 })
+          .on("click", () => toggleRef.current(i))
+          .addTo(group);
+      });
+      group.addTo(m);
+      routeLayerRef.current = group;
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [route, done, next, stopLatLng]);
+
+  // ao abrir uma rota: enquadra a rota inteira
+  useEffect(() => {
+    if (!route) return;
+    let tries = 0;
+    const fit = async () => {
+      const L = (await import("leaflet")).default;
+      const m = mapRef.current;
+      if (!m) {
+        if (tries++ < 20) setTimeout(fit, 100);
+        return;
+      }
+      m.flyToBounds(L.latLngBounds(route.points.map(stopLatLng)), { padding: [40, 40], duration: 0.6 });
+    };
+    fit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só quando troca de rota
+  }, [route?.key]);
+
+  /** muda as paradas feitas da rota aberta e salva (com um pequeno atraso para juntar cliques seguidos) */
+  const updateDone = (key: string, fn: (prev: number[]) => number[]) => {
+    const nextDone = fn(doneRef.current[key] ?? []);
+    doneRef.current = { ...doneRef.current, [key]: nextDone };
+    setDoneByRoute(doneRef.current);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const r = await saveRouteProgress(key, nextDone);
+      if (!r.ok) toast.error(r.error);
+    }, 500);
+  };
+  const toggleStop = (i: number) => {
+    if (!route) return;
+    updateDone(route.key, (prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]));
+  };
+  useEffect(() => {
+    toggleRef.current = toggleStop;
+  });
+  const focusStop = (i: number) => {
+    if (!route || i < 0) return;
+    mapRef.current?.flyTo(stopLatLng(route.points[i]), Math.max(mapRef.current.getZoom(), mapRef.current.getMinZoom() + 2), { duration: 0.6 });
+  };
+  const doneNext = () => {
+    if (!route || next < 0) return;
+    updateDone(route.key, (prev) => [...prev, next]);
+    const after = route.points.findIndex((_, i) => i !== next && !done.has(i) && i > next);
+    focusStop(after >= 0 ? after : route.points.findIndex((_, i) => i !== next && !done.has(i)));
+  };
+  const undo = () => {
+    if (!route || done.size === 0) return;
+    const last = Math.max(...done);
+    updateDone(route.key, (prev) => prev.filter((x) => x !== last));
+    focusStop(last);
+  };
+  const openRoute = (key: string | null) => {
+    setSelectedId(null);
+    setAdding(false);
+    setRouteKey(key);
+    const url = new URL(window.location.href);
+    if (key) url.searchParams.set("rota", key);
+    else url.searchParams.delete("rota");
+    url.searchParams.delete("pin");
+    window.history.replaceState(null, "", url);
+  };
+
   const toggleCat = (c: MapPinCategory) =>
     setHidden((h) => {
       const n = new Set(h);
@@ -168,7 +282,49 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
   return (
     <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
       <aside className="flex min-h-0 flex-col gap-3 lg:h-[calc(100svh-15rem)]">
-        {selected ? (
+        {routes.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5" aria-label="Rotas">
+            <span className="mr-1 inline-flex items-center gap-1 text-xs font-bold text-grey-300">
+              <RouteIcon className="size-4" /> Rotas
+            </span>
+            {routes.map((r) => {
+              const n = (doneByRoute[r.key] ?? []).length;
+              const on = r.key === routeKey;
+              return (
+                <button
+                  key={r.key}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => openRoute(on ? null : r.key)}
+                  className={cn(
+                    "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-bold transition-colors",
+                    on ? "bg-primary text-primary-foreground" : "bg-grey-700 text-grey-100 hover:bg-grey-600",
+                  )}
+                >
+                  <span className="size-2 rounded-full" style={{ background: r.color }} />
+                  {r.name}
+                  <span className="font-normal opacity-70 tabular-nums">
+                    {n > 0 ? `${n}/` : ""}
+                    {r.points.length}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {route ? (
+          <RoutePanel
+            route={route}
+            done={done}
+            next={next}
+            onToggle={toggleStop}
+            onDoneNext={doneNext}
+            onUndo={undo}
+            onReset={() => updateDone(route.key, () => [])}
+            onFocusNext={() => focusStop(next)}
+            onClose={() => openRoute(null)}
+          />
+        ) : selected ? (
           <section className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto rounded-card glass-card p-5" data-testid="pin-panel">
             <div className="flex items-start justify-between gap-2">
               <div className="flex flex-col gap-1.5">
@@ -270,7 +426,7 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
             </ul>
           </>
         )}
-        {canCreate && (
+        {canCreate && !route && (
           <Button variant={adding ? "secondary" : "default"} onClick={() => setAdding((a) => !a)} aria-pressed={adding}>
             {adding ? <XIcon /> : <CrosshairIcon />}
             {adding ? "Cancelar marcação" : "Marcar lugar"}

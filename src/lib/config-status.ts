@@ -11,6 +11,8 @@ export function configStatus(env: Record<string, string | undefined> = process.e
     webhooks: { avisos: has("DISCORD_WEBHOOK_AVISOS"), acoes: has("DISCORD_WEBHOOK_ACOES"), lives: has("DISCORD_WEBHOOK_LIVES") },
     lives: { twitch: has("TWITCH_CLIENT_ID") && has("TWITCH_CLIENT_SECRET"), youtube: has("YOUTUBE_API_KEY"), cron: has("CRON_SECRET") },
     bootstrapAdmins: has("BOOTSTRAP_ADMIN_DISCORD_IDS"),
+    /** assistente de IA: quais provedores grátis têm chave (a fila vai nessa ordem) */
+    ai: { groq: has("GROQ_API_KEY"), gemini: has("GEMINI_API_KEY"), openrouter: has("OPENROUTER_API_KEY") },
     devLoginOn: env.AUTH_DEV_LOGIN === "true" && env.NODE_ENV !== "production",
   };
 }
