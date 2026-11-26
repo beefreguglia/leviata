@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid, pick } from "./helpers";
 
 async function newItem(page: Page, name: string) {
   await page.getByRole("button", { name: "Novo item" }).click();
@@ -13,11 +13,11 @@ async function newItem(page: Page, name: string) {
 async function newRecipe(page: Page, output: string, inputs: [string, number][], qty = 1) {
   await page.getByRole("button", { name: "Nova receita" }).click();
   const d = page.getByRole("dialog");
-  await d.getByLabel("Produz").selectOption({ label: output });
+  await pick(d.getByLabel("Produz"), { label: output });
   await d.getByLabel("Quantidade", { exact: true }).fill(String(qty));
   for (const [i, [item, n]] of inputs.entries()) {
     if (i > 0) await d.getByRole("button", { name: "Adicionar insumo" }).click();
-    await d.getByLabel(`Insumo ${i + 1}`, { exact: true }).selectOption({ label: item });
+    await pick(d.getByLabel(`Insumo ${i + 1}`, { exact: true }), { label: item });
     await d.getByLabel(`Quantidade do insumo ${i + 1}`).fill(String(n));
   }
   await d.getByRole("button", { name: "Salvar receita" }).click();
@@ -40,7 +40,7 @@ test.describe("fabricação", () => {
     await expect(page.getByTestId("recipe").filter({ hasText: pistola })).toContainText(`2 ${peca}`);
 
     const calc = page.getByTestId("calculator");
-    await calc.getByLabel("Quero fabricar").selectOption({ label: pistola });
+    await pick(calc.getByLabel("Quero fabricar"), { label: pistola });
     await calc.getByLabel("Quantidade").fill("3");
     await expect(calc.getByTestId("calc-raw")).toContainText(metal);
     await expect(calc.getByTestId("calc-raw")).toContainText("42");

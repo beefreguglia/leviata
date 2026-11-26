@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { FIXTURE, as, expectToast, uid, uploadImages } from "./helpers";
+import { FIXTURE, as, expectToast, uid, uploadImages, pick } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -45,7 +45,7 @@ test.describe("mapa (gerência)", () => {
     expect(covered, "algo do mapa está por cima do diálogo").toEqual([]);
     await d.getByLabel("Nome do lugar").click();
     await d.getByLabel("Nome do lugar").fill(name);
-    await d.getByLabel("Categoria").selectOption("DESMANCHE");
+    await pick(d.getByLabel("Categoria"), "DESMANCHE");
     await d.getByLabel("Descrição").fill("Só depois das 22h");
     await d.getByRole("button", { name: "Marcar" }).click();
     await expectToast(page, `"${name}" marcado no mapa`);
@@ -78,7 +78,7 @@ test.describe("mapa (gerência)", () => {
     // perto do centro (a imagem de teste é pequena e fica centralizada)
     await page.mouse.click(box.x + box.width / 2 + 25, box.y + box.height / 2 - 25);
     await page.getByRole("dialog").getByLabel("Nome do lugar").fill(name);
-    await page.getByRole("dialog").getByLabel("Categoria").selectOption("BASE");
+    await pick(page.getByRole("dialog").getByLabel("Categoria"), "BASE");
     await page.getByRole("dialog").getByRole("button", { name: "Marcar" }).click();
     await expectToast(page, "marcado no mapa");
     const list = page.getByRole("list", { name: "Lugares no mapa" });

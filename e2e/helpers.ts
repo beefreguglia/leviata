@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export const ROLES = {
   lider: { name: "Dante Moretti", file: "e2e/.auth/lider.json" },
@@ -45,4 +45,24 @@ export async function uploadImages(scope: Page | import("@playwright/test").Loca
 export async function expectImageLoaded(img: import("@playwright/test").Locator) {
   await expect(img).toBeVisible();
   await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+}
+
+/**
+ * Escolhe uma opção num select do painel (agora um autocomplete): pelo valor ("POLICIA")
+ * ou pelo texto ({ label: "Ballas" }) — mesma ideia do antigo `selectOption`.
+ */
+export async function pick(field: Locator, option: string | { label: string }) {
+  const page = field.page();
+  await field.click();
+  const list = page.getByRole("listbox");
+  if (!(await list.isVisible().catch(() => false))) await field.press("ArrowDown");
+  await list.waitFor();
+  if (typeof option !== "string") {
+    await list.getByRole("option", { name: option.label, exact: true }).first().click();
+  } else {
+    const byValue = list.locator(`[data-value="${option.replace(/"/g, '\\"')}"]`);
+    if (await byValue.count()) await byValue.first().click();
+    else await list.getByRole("option", { name: option, exact: true }).first().click();
+  }
+  await list.waitFor({ state: "hidden" });
 }

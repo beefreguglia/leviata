@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid, pick } from "./helpers";
 
 test.describe("dossiê (liderança)", () => {
   test.use(as("lider"));
@@ -31,7 +31,7 @@ test.describe("dossiê (liderança)", () => {
     await expect(page.getByTestId("dossier-vehicle").filter({ visible: true })).toContainText(plate);
 
     await page.getByRole("button", { name: "Vínculo" }).click();
-    await page.getByRole("dialog").getByLabel("Pessoa").selectOption({ label: other });
+    await pick(page.getByRole("dialog").getByLabel("Pessoa"), { label: other });
     await page.getByRole("dialog").getByLabel("Qual é o vínculo").fill("irmã");
     await page.getByRole("dialog").getByRole("button", { name: "Adicionar" }).click();
     await expectToast(page, "Vínculo adicionado");
@@ -39,6 +39,7 @@ test.describe("dossiê (liderança)", () => {
 
     await page.goto("/dossie");
     await page.getByRole("searchbox", { name: "Buscar no dossiê" }).or(page.getByLabel("Buscar no dossiê")).fill(plate);
+    await page.keyboard.press("Escape"); // fecha as sugestões
     await page.getByRole("button", { name: "Buscar" }).click();
     await expect(page).toHaveURL(new RegExp(`q=${plate}`));
     const rows = page.getByTestId("dossier-row").filter({ visible: true });

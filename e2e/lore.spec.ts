@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { FIXTURE, as, expectImageLoaded, uid, uploadImages } from "./helpers";
+import { FIXTURE, as, expectImageLoaded, uid, uploadImages, pick } from "./helpers";
 
 test.describe("lore (gerência)", () => {
   test.use(as("gerente"));
@@ -13,7 +13,7 @@ test.describe("lore (gerência)", () => {
     await uploadImages(page, "Adicionar capa", [FIXTURE.print]);
     await expectImageLoaded(page.getByRole("img", { name: /print\.png|Imagem enviada/ }));
     await page.getByLabel("Título").fill(title);
-    await page.getByLabel("Categoria").selectOption("EVENTO");
+    await pick(page.getByLabel("Categoria"), "EVENTO");
     await page.getByLabel("Quando aconteceu na cidade").fill("2026-10-20");
     await page.getByLabel(/^Resumo/).fill("O dia em que tudo mudou");
     await page.getByLabel("Tags").fill(`${tag}, porto`);

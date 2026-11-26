@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRightIcon, PlusIcon, SearchIcon, UsersIcon } from "@/components/icons";
+import { ChevronRightIcon, PlusIcon, UsersIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
 import { inFactionWhere } from "@/lib/members";
 import { db } from "@/lib/db";
@@ -12,7 +12,8 @@ import { EmptyState } from "@/components/layout/grouped-list";
 import { FormDialog } from "@/components/forms/form-dialog";
 import { NativeSelect } from "@/components/forms/fields";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchSuggest } from "@/components/forms/search-suggest";
+import { tokensWhere } from "@/lib/search";
 import { RankBadge, SectorBadge } from "@/components/status-badge";
 import { PresenceAvatar, PresenceLegend } from "@/components/presence-avatar";
 import { Stagger, StaggerItem } from "@/components/motion";
@@ -29,19 +30,22 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
   const setor = typeof sp.setor === "string" ? sp.setor : "";
 
   const where: Prisma.MemberWhereInput = {};
-  if (q) {
-    where.OR = [
-      { rpName: { contains: q, mode: "insensitive" } },
-      { passport: { contains: q } },
-      { user: { username: { contains: q, mode: "insensitive" } } },
-    ];
-  }
+  // cada palavra precisa aparecer no nome, passaporte ou Discord (pedaço basta, em qualquer ordem)
+  if (q)
+    Object.assign(
+      where,
+      tokensWhere<Prisma.MemberWhereInput>(q, (t) => [
+        { rpName: { contains: t, mode: "insensitive" } },
+        { passport: { contains: t } },
+        { user: { username: { contains: t, mode: "insensitive" } } },
+      ]),
+    );
   if (status === "ATUAIS") Object.assign(where, inFactionWhere);
   else if (status in MEMBER_STATUS) where.status = status as keyof typeof MEMBER_STATUS;
   if (setor === "nenhum") where.sectorId = null;
   else if (setor) where.sectorId = setor;
 
-  const [members, ranks, total, sectors] = await Promise.all([
+  const [members, ranks, total, sectors, suggestions] = await Promise.all([
     db.member.findMany({
       where,
       include: { rank: true, sector: true, user: true, absences: { where: activeAbsenceWhere(), take: 1 } },
@@ -50,6 +54,8 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
     db.rank.findMany({ orderBy: { order: "asc" } }),
     db.member.count({ where: inFactionWhere }),
     db.sector.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] }),
+    // sugestões da busca: todo mundo da fac (nome, passaporte e Discord)
+    db.member.findMany({ where: inFactionWhere, select: { id: true, rpName: true, passport: true, rank: { select: { name: true } }, user: { select: { username: true } } }, orderBy: { rpName: "asc" } }),
   ]);
 
   const canManage = viewer.can("membros.criar");
@@ -79,10 +85,19 @@ export default async function MembrosPage({ searchParams }: PageProps<"/membros"
       />
 
       <form className="mb-6 flex flex-col gap-3 sm:flex-row" role="search">
-        <div className="relative flex-1">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-          <Input name="q" defaultValue={q} aria-label="Buscar membros" placeholder="Buscar por nome, passaporte ou Discord…" autoComplete="off" spellCheck={false} className="bg-card pl-12" />
-        </div>
+        <SearchSuggest
+          name="q"
+          defaultValue={q}
+          aria-label="Buscar membros"
+          placeholder="Buscar por nome, passaporte ou Discord…"
+          className="flex-1"
+          items={suggestions.map((m) => ({
+            id: m.id,
+            label: m.rpName,
+            hint: [m.rank?.name, m.passport && `Passaporte ${m.passport}`, m.user?.username].filter(Boolean).join(" · "),
+            href: `/membros/${m.id}`,
+          }))}
+        />
         <div className="grid grid-cols-2 gap-3 sm:flex">
           <NativeSelect name="status" defaultValue={status} className="bg-card sm:w-44" aria-label="Filtrar por status">
             <option value="ATUAIS">Atuais</option>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpenIcon, PinIcon, PlusIcon, SearchIcon } from "@/components/icons";
+import { BookOpenIcon, PinIcon, PlusIcon } from "@/components/icons";
 import type { LoreCategory, Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
@@ -12,7 +12,8 @@ import { NativeSelect } from "@/components/forms/fields";
 import { StatusBadge } from "@/components/status-badge";
 import { UploadImage } from "@/components/upload-image";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchSuggest } from "@/components/forms/search-suggest";
+import { tokensWhere } from "@/lib/search";
 import { LinkButton } from "@/components/ui/link-button";
 import { Stagger, StaggerItem } from "@/components/motion";
 
@@ -31,18 +32,28 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
   const tag = typeof sp.tag === "string" ? sp.tag : null;
 
   const where: Prisma.LoreArticleWhereInput = {};
-  if (q) where.OR = [{ title: { contains: q, mode: "insensitive" } }, { summary: { contains: q, mode: "insensitive" } }, { content: { contains: q, mode: "insensitive" } }];
+  if (q)
+    Object.assign(
+      where,
+      tokensWhere<Prisma.LoreArticleWhereInput>(q, (t) => [
+        { title: { contains: t, mode: "insensitive" } },
+        { summary: { contains: t, mode: "insensitive" } },
+        { content: { contains: t, mode: "insensitive" } },
+        { tags: { has: t.toLowerCase() } },
+      ]),
+    );
   if (cat) where.category = cat;
   if (tag) where.tags = { has: tag };
   const filtering = Boolean(q || cat || tag);
 
-  const [articles, allTags] = await Promise.all([
+  const [articles, allTags, suggestions] = await Promise.all([
     db.loreArticle.findMany({
       where,
       include: { author: true },
       orderBy: [{ happenedAt: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }],
     }),
     db.loreArticle.findMany({ select: { tags: true } }),
+    db.loreArticle.findMany({ select: { id: true, slug: true, title: true, summary: true, category: true, tags: true }, orderBy: { title: "asc" } }),
   ]);
   const tagCounts = new Map<string, number>();
   for (const a of allTags) for (const t of a.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
@@ -79,10 +90,14 @@ export default async function LorePage({ searchParams }: PageProps<"/lore">) {
       />
 
       <form className="mb-4 flex flex-col gap-3 sm:flex-row" role="search">
-        <div className="relative flex-1">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-          <Input name="q" defaultValue={q} aria-label="Buscar na lore" placeholder="Buscar na lore…" autoComplete="off" spellCheck={false} className="bg-card pl-12" />
-        </div>
+        <SearchSuggest
+          name="q"
+          defaultValue={q}
+          aria-label="Buscar na lore"
+          placeholder="Buscar na lore…"
+          className="flex-1"
+          items={suggestions.map((a) => ({ id: a.id, label: a.title, hint: [LORE_CATEGORY[a.category].label, a.summary].filter(Boolean).join(" · "), keywords: a.tags.join(" "), href: `/lore/${a.slug}` }))}
+        />
         <div className="flex gap-3">
           <NativeSelect name="categoria" defaultValue={cat ?? ""} className="bg-card sm:w-44" aria-label="Categoria">
             <option value="">Todas</option>

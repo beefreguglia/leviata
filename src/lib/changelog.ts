@@ -15,6 +15,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: "2026-11-26-busca-autocomplete",
+    date: "2026-11-26",
+    title: "Selects e buscas com autocomplete",
+    items: [
+      "Todas as listas de escolha agora aceitam digitar: escreva **parte do nome** e as opções se filtram (sem precisar de acento ou maiúscula)",
+      "As buscas de **Membros**, **Lore**, **Dossiê** e do **Mapa** mostram sugestões enquanto você digita; clique numa para abrir direto",
+      "Dá para buscar com as palavras em qualquer ordem (\"torres nina\" acha Nina Torres) e até abreviado (\"blls\" acha Ballas)",
+    ],
+  },
+  {
     id: "2026-11-24-mapa-rotas",
     date: "2026-11-24",
     title: "Rotas de coleta no mapa",

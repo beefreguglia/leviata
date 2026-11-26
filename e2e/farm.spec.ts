@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { FIXTURE, as, expectImageLoaded, expectToast, uid, uploadImages } from "./helpers";
+import { FIXTURE, as, expectImageLoaded, expectToast, uid, uploadImages, pick } from "./helpers";
 
 test.describe("farm (gerência)", () => {
   test.use(as("gerente"));
@@ -17,8 +17,8 @@ test.describe("farm (gerência)", () => {
 
     await page.goto("/farm/novo");
     await page.getByLabel("Título").fill(title);
-    await page.getByLabel("Item que rende").selectOption({ label: item });
-    await page.getByLabel("Risco").selectOption("MEDIO");
+    await pick(page.getByLabel("Item que rende"), { label: item });
+    await pick(page.getByLabel("Risco"), "MEDIO");
     await page.getByLabel("Local").fill("Pedreira de Sandy Shores");
     await page.getByLabel("Quanto rende por rodada").fill("12");
     await page.getByLabel("Minutos por rodada").fill("6");

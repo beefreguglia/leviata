@@ -6,9 +6,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { LayerGroup, Map as LeafletMap, Marker } from "leaflet";
 import { toast } from "sonner";
-import { CrosshairIcon, MapPinIcon, PencilIcon, RouteIcon, SearchIcon, Trash2Icon, XIcon } from "@/components/icons";
+import { CrosshairIcon, MapPinIcon, PencilIcon, RouteIcon, Trash2Icon, XIcon } from "@/components/icons";
+import { SearchSuggest } from "@/components/forms/search-suggest";
+import { matchScore } from "@/lib/search";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ActionForm, SubmitButton } from "@/components/forms/action-form";
 import { ConfirmButton } from "@/components/forms/confirm-button";
@@ -68,7 +69,7 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
     () =>
       routeKey
         ? [] // com uma rota aberta, só a rota aparece no mapa
-        : pins.filter((p) => !hidden.has(p.category) && (!query || p.title.toLowerCase().includes(query.toLowerCase()))),
+        : pins.filter((p) => !hidden.has(p.category) && (!query.trim() || matchScore(query, `${p.title} ${PIN_CATEGORY[p.category].label} ${p.description ?? ""}`) > 0)),
     [pins, hidden, query, routeKey],
   );
   const selected = pins.find((p) => p.id === selectedId) ?? null;
@@ -389,10 +390,14 @@ export function MapView({ map, pins, canCreate, canEdit, canDelete, farmGuides, 
           </section>
         ) : (
           <>
-            <div className="relative">
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar lugar…" autoComplete="off" spellCheck={false} className="bg-card pl-12" aria-label="Buscar lugar" />
-            </div>
+            <SearchSuggest
+              value={query}
+              onValueChange={setQuery}
+              aria-label="Buscar lugar"
+              placeholder="Buscar lugar…"
+              items={pins.map((p) => ({ id: p.id, label: p.title, hint: PIN_CATEGORY[p.category].label, keywords: p.description ?? "" }))}
+              onPick={(item) => setSelectedId(item.id)}
+            />
             <div className="flex flex-wrap gap-1.5" aria-label="Categorias">
               {(Object.keys(PIN_CATEGORY) as MapPinCategory[])
                 .filter((c) => counts.get(c))

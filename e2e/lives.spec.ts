@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid, pick } from "./helpers";
 
 test.describe("ao vivo", () => {
   test.use(as("soldado"));
@@ -8,7 +8,7 @@ test.describe("ao vivo", () => {
     const handle = `nina${uid()}`;
     await page.goto("/lives");
     await expect(page.getByText("Ninguém ao vivo agora")).toBeVisible();
-    await page.getByLabel("Plataforma").selectOption("KICK");
+    await pick(page.getByLabel("Plataforma"), "KICK");
     await page.getByLabel("Canal").fill(`https://kick.com/${handle}`);
     await page.getByRole("button", { name: "Adicionar" }).click();
     await expectToast(page, /Canal cadastrado/);
@@ -23,7 +23,7 @@ test.describe("ao vivo", () => {
 
   test("canal inválido mostra erro", async ({ page }) => {
     await page.goto("/lives");
-    await page.getByLabel("Plataforma").selectOption("YOUTUBE");
+    await pick(page.getByLabel("Plataforma"), "YOUTUBE");
     await page.getByLabel("Canal").fill("@leviata");
     await page.getByRole("button", { name: "Adicionar" }).click();
     await expectToast(page, /ID do canal/);

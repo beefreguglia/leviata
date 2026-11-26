@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid, pick } from "./helpers";
 
 test.describe("diário (soldado)", () => {
   test.use(as("soldado"));
@@ -13,7 +13,7 @@ test.describe("diário (soldado)", () => {
     await page.getByRole("button", { name: "Registrar" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("O que aconteceu").fill(title);
-    await dialog.getByLabel("Tipo").selectOption("POLICIA");
+    await pick(dialog.getByLabel("Tipo"), "POLICIA");
     await dialog.getByRole("button", { name: "Registrar" }).click();
     await expectToast(page, "Registrado no diário");
 

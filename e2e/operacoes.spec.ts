@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { FIXTURE, ROLES, as, expectImageLoaded, expectToast, uid, uploadImages } from "./helpers";
+import { FIXTURE, ROLES, as, expectImageLoaded, expectToast, uid, uploadImages, pick } from "./helpers";
 
 /** "YYYY-MM-DDTHH:mm" daqui a N horas (Brasília). */
 function inHours(h: number) {
@@ -51,10 +51,10 @@ test.describe("perímetros, agenda e escalação", () => {
     while ((await page.getByTestId("lineup-row").count()) < 2) await page.getByRole("button", { name: "Adicionar vaga" }).click();
     await expect(page.getByTestId("lineup-row")).toHaveCount(2);
     await page.getByLabel("Função da vaga 1").fill("Piloto");
-    await page.getByLabel("Membro da vaga 1").selectOption({ label: "Rafa Cardoso (vou)" });
+    await pick(page.getByLabel("Membro da vaga 1"), { label: "Rafa Cardoso (vou)" });
     await page.getByLabel("Veículo da vaga 1").fill("Sultan RS");
     await page.getByLabel("Função da vaga 2").fill("Hacker");
-    await page.getByLabel("Membro da vaga 2").selectOption({ label: "Nina Torres" });
+    await pick(page.getByLabel("Membro da vaga 2"), { label: "Nina Torres" });
     await page.getByRole("button", { name: "Salvar escalação" }).click();
     await expectToast(page, "Escalação salva");
     await expect(page.getByTestId("my-slot")).toContainText("Piloto");
@@ -90,7 +90,7 @@ test.describe("perímetros, agenda e escalação", () => {
     await page.goto("/agenda");
     await page.getByRole("button", { name: "Novo evento" }).click();
     await page.getByRole("dialog").getByLabel("Título").fill(`Corrida ${s}`);
-    await page.getByRole("dialog").getByLabel("Tipo").selectOption("CORRIDA");
+    await pick(page.getByRole("dialog").getByLabel("Tipo"), "CORRIDA");
     await page.getByRole("dialog").getByLabel("Começa").fill(inHours(30));
     await page.getByRole("dialog").getByRole("button", { name: "Agendar" }).click();
     await expect(page.getByRole("heading", { name: `Corrida ${s}` })).toBeVisible();

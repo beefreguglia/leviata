@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { FIXTURE, as, expectImageLoaded, expectToast, uid, uploadImages } from "./helpers";
+import { FIXTURE, as, expectImageLoaded, expectToast, uid, uploadImages, pick } from "./helpers";
 
 test.describe("mural (gerência)", () => {
   test.use(as("gerente"));
@@ -11,7 +11,7 @@ test.describe("mural (gerência)", () => {
     await page.getByRole("button", { name: "Novo aviso" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Título").fill(title);
-    await dialog.getByLabel("Prioridade").selectOption("IMPORTANTE");
+    await pick(dialog.getByLabel("Prioridade"), "IMPORTANTE");
     await dialog.locator('textarea[name="content"]').fill("Presença **obrigatória**");
     await dialog.getByLabel("Fixar no topo do mural e do início").check();
     await dialog.getByRole("button", { name: "Publicar" }).click();

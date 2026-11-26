@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { as, expectToast } from "./helpers";
+import { as, expectToast, pick } from "./helpers";
 
 test.describe("setores e gerências", () => {
   test.use(as("lider"));
@@ -18,7 +18,7 @@ test.describe("setores e gerências", () => {
     await page.getByRole("main").getByRole("link", { name: /Nina Torres/ }).click();
     await page.getByRole("button", { name: "Setor" }).click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("Setor").selectOption({ label: "Vanguarda (Ações)" });
+    await pick(d.getByLabel("Setor"), { label: "Vanguarda (Ações)" });
     await d.getByLabel("G-Ação").check();
     await d.getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Setor e gerências atualizados");
@@ -30,7 +30,7 @@ test.describe("setores e gerências", () => {
     await expect(vanguarda).toContainText("G-Ação");
 
     await page.goto("/membros");
-    await page.getByLabel("Filtrar por setor").selectOption({ label: "Vanguarda" });
+    await pick(page.getByLabel("Filtrar por setor"), { label: "Vanguarda" });
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/setor=/);
     await expect(page.getByRole("main").getByRole("link", { name: /Nina Torres/ })).toBeVisible();

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid, pick } from "./helpers";
 
 test.describe("membros (gerência)", () => {
   test.use(as("lider"));
@@ -11,6 +11,7 @@ test.describe("membros (gerência)", () => {
     await expect(names.first()).toHaveText("Dante Moretti");
 
     await page.getByPlaceholder("Buscar por nome, passaporte ou Discord").fill("1187");
+    await page.keyboard.press("Escape"); // fecha as sugestões
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/q=1187/);
     await expect(names).toHaveCount(1);
@@ -25,6 +26,30 @@ test.describe("membros (gerência)", () => {
     await expect(page.getByRole("list", { name: "Legenda de presença" })).toContainText("Ausente");
   });
 
+  test("sugestões da busca: parte do nome, sem acento e em qualquer ordem; abre a ficha", async ({ page }) => {
+    await page.goto("/membros");
+    const box = page.getByRole("combobox", { name: "Buscar membros" });
+    await box.fill("torr ni");
+    const suggestion = page.getByTestId("search-suggestion").filter({ hasText: "Nina Torres" });
+    await expect(suggestion).toBeVisible();
+    await suggestion.click();
+    await expect(page).toHaveURL(/\/membros\/[a-z0-9]+$/);
+    await expect(page.getByRole("heading", { name: "Nina Torres" })).toBeVisible();
+  });
+
+  test("select com busca: digitar parte do nome filtra as opções", async ({ page }) => {
+    await page.goto("/membros");
+    const status = page.getByRole("combobox", { name: "Filtrar por status" });
+    await status.click();
+    await status.fill("expu");
+    const options = page.getByRole("listbox").getByRole("option");
+    await expect(options).toHaveCount(1);
+    await expect(options.first()).toHaveText(/Expulso/);
+    await page.keyboard.press("Enter");
+    await page.getByRole("button", { name: "Filtrar" }).click();
+    await expect(page).toHaveURL(/status=EXPULSO/);
+  });
+
   test("busca sem resultado mostra estado vazio", async ({ page }) => {
     await page.goto("/membros?q=ninguem-tem-esse-nome");
     await expect(page.getByText("Nenhum membro encontrado")).toBeVisible();
@@ -37,7 +62,7 @@ test.describe("membros (gerência)", () => {
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Nome no RP").fill(name);
     await dialog.getByLabel("Passaporte / ID").fill(String(Date.now()).slice(-6));
-    await dialog.getByLabel("Patente").selectOption({ label: "Recruta" });
+    await pick(dialog.getByLabel("Patente"), { label: "Recruta" });
     await dialog.getByRole("button", { name: "Cadastrar" }).click();
     await expectToast(page, `${name} cadastrado`);
     await expect(dialog).toBeHidden();
@@ -51,7 +76,7 @@ test.describe("membros (gerência)", () => {
     // telefone vazio pode ser preenchido; a máscara formata enquanto digita
     await page.getByRole("dialog").getByLabel("Telefone no jogo").pressSequentially("055123456");
     await expect(page.getByRole("dialog").getByLabel("Telefone no jogo")).toHaveValue("(055) 123-456");
-    await page.getByRole("dialog").getByLabel("Status").selectOption("AFASTADO");
+    await pick(page.getByRole("dialog").getByLabel("Status"), "AFASTADO");
     await page.getByRole("dialog").getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Ficha atualizada");
     await expect(page.getByText("(055) 123-456")).toBeVisible();
@@ -60,7 +85,7 @@ test.describe("membros (gerência)", () => {
 
     // promover
     await page.getByRole("button", { name: "Patente" }).click();
-    await page.getByRole("dialog").getByLabel("Nova patente").selectOption({ label: "Soldado" });
+    await pick(page.getByRole("dialog").getByLabel("Nova patente"), { label: "Soldado" });
     await page.getByRole("dialog").getByLabel("Motivo").fill("Mandou bem");
     await page.getByRole("dialog").getByRole("button", { name: "Salvar" }).click();
     await expectToast(page, "Patente alterada");
@@ -74,13 +99,13 @@ test.describe("membros (gerência)", () => {
     await page.getByRole("button", { name: "Novo membro" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Nome no RP").fill(name);
-    await dialog.getByLabel("Patente").selectOption({ label: "Recruta" });
+    await pick(dialog.getByLabel("Patente"), { label: "Recruta" });
     await dialog.getByRole("button", { name: "Cadastrar" }).click();
     await expectToast(page, `${name} cadastrado`);
     await page.getByRole("link", { name: new RegExp(name) }).click();
 
     await page.getByRole("button", { name: "Desligar" }).click();
-    await page.getByRole("dialog").getByLabel("Motivo").selectOption("SAIU");
+    await pick(page.getByRole("dialog").getByLabel("Motivo"), "SAIU");
     await page.getByRole("dialog").getByLabel("Explique").fill("Pediu para sair no Discord");
     await page.getByRole("dialog").getByRole("button", { name: "Desligar" }).click();
     await expectToast(page, `${name} foi desligado`);
@@ -111,7 +136,7 @@ test.describe("membros (gerência)", () => {
 
   test("filtro por status", async ({ page }) => {
     await page.goto("/membros");
-    await page.getByLabel("Filtrar por status").selectOption("EXPULSO");
+    await pick(page.getByLabel("Filtrar por status"), "EXPULSO");
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/status=EXPULSO/);
     // membros ativos somem da lista (outros testes podem ter deixado alguém expulso)

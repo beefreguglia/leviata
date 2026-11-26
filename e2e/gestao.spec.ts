@@ -1,10 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { as, expectToast, uid } from "./helpers";
+import { as, expectToast, uid, pick } from "./helpers";
 
 /** Escolhe a opção de um <select> pelo começo do texto (ex.: "Alvo x · Soldado"). */
 async function selectByText(select: Locator, text: string) {
   const value = await select.locator("option", { hasText: text }).first().getAttribute("value");
-  await select.selectOption(value!);
+  await pick(select, value!);
 }
 
 async function newItem(page: Page, name: string) {
@@ -19,7 +19,7 @@ async function newMember(page: Page, name: string) {
   await page.goto("/membros");
   await page.getByRole("button", { name: "Novo membro" }).click();
   await page.getByRole("dialog").getByLabel("Nome no RP").fill(name);
-  await page.getByRole("dialog").getByLabel("Patente").selectOption({ label: "Soldado" });
+  await pick(page.getByRole("dialog").getByLabel("Patente"), { label: "Soldado" });
   await page.getByRole("dialog").getByRole("button", { name: "Cadastrar" }).click();
   await expectToast(page, `${name} cadastrado`);
 }
@@ -33,8 +33,8 @@ test.describe("baú e metas", () => {
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
       const d = page.getByRole("dialog");
-      await d.getByLabel("Movimento").selectOption(kind);
-      await d.getByLabel("O quê").selectOption("DINHEIRO_LIMPO");
+      await pick(d.getByLabel("Movimento"), kind);
+      await pick(d.getByLabel("O quê"), "DINHEIRO_LIMPO");
       await d.getByLabel("Valor (R$)").fill(value);
       await d.getByLabel("Motivo").fill(`Teste ${uid()}`);
       await d.getByRole("button", { name: "Registrar" }).click();
@@ -53,14 +53,14 @@ test.describe("baú e metas", () => {
     await newItem(page, item);
     await page.goto("/metas");
     await page.getByRole("button", { name: "Nova meta" }).click();
-    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: item });
+    await pick(page.getByRole("dialog").getByLabel("Item"), { label: item });
     await page.getByRole("dialog").getByLabel("Quantidade por semana").fill("50");
     await page.getByRole("dialog").getByRole("button", { name: "Criar meta" }).click();
     await expectToast(page, "Meta criada");
 
     await page.goto("/bau");
     await page.getByRole("button", { name: "Entregar farm" }).click();
-    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: item });
+    await pick(page.getByRole("dialog").getByLabel("Item"), { label: item });
     await page.getByRole("dialog").getByLabel("Quantidade").fill("30");
     await page.getByRole("dialog").getByRole("button", { name: "Entregar" }).click();
     await expectToast(page, "Entrega registrada");
@@ -78,8 +78,8 @@ test.describe("baú e metas", () => {
     await page.goto("/bau");
     await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("Movimento").selectOption("ENTRADA");
-    await d.getByLabel("O quê").selectOption("DINHEIRO_SUJO");
+    await pick(d.getByLabel("Movimento"), "ENTRADA");
+    await pick(d.getByLabel("O quê"), "DINHEIRO_SUJO");
     await d.getByLabel("Valor (R$)").fill("12345");
     await d.getByLabel("Motivo").fill(`Gráfico ${uid()}`);
     await d.getByRole("button", { name: "Registrar" }).click();
@@ -95,7 +95,7 @@ test.describe("baú e metas", () => {
     await newItem(page, item);
     await page.goto("/metas");
     await page.getByRole("button", { name: "Nova meta" }).click();
-    await page.getByRole("dialog").getByLabel("Item").selectOption({ label: item });
+    await pick(page.getByRole("dialog").getByLabel("Item"), { label: item });
     await page.getByRole("dialog").getByLabel("Quantidade por semana").fill("50");
     await page.getByRole("dialog").getByRole("button", { name: "Criar meta" }).click();
     await expectToast(page, "Meta criada");
@@ -116,8 +116,8 @@ test.describe("encomendas", () => {
     await page.goto("/bau");
     await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("O quê").selectOption("ITEM");
-    await d.getByLabel("Item").selectOption({ label: item });
+    await pick(d.getByLabel("O quê"), "ITEM");
+    await pick(d.getByLabel("Item"), { label: item });
     await d.getByLabel("Quantidade").fill("4");
     await d.getByRole("button", { name: "Registrar" }).click();
     await expectToast(page, "Entrada registrada");
@@ -126,7 +126,7 @@ test.describe("encomendas", () => {
     await page.getByRole("button", { name: "Nova encomenda" }).click();
     const o = page.getByRole("dialog");
     await o.getByLabel("Cliente", { exact: true }).fill(customer);
-    await o.getByLabel("Item").selectOption({ label: item });
+    await pick(o.getByLabel("Item"), { label: item });
     await o.getByLabel("Quantidade").fill("3");
     await o.getByLabel("Preço unitário (R$)").fill("2000");
     await o.getByRole("button", { name: "Criar encomenda" }).click();
@@ -140,7 +140,7 @@ test.describe("encomendas", () => {
     await expect(page.getByTestId("orders-PRONTA").getByTestId("order-card").filter({ hasText: customer })).toContainText("tem no baú");
 
     await card().getByRole("button", { name: "Entregar" }).click();
-    await page.getByRole("dialog").getByLabel("Pagamento").selectOption("DINHEIRO_SUJO");
+    await pick(page.getByRole("dialog").getByLabel("Pagamento"), "DINHEIRO_SUJO");
     await page.getByRole("dialog").getByRole("button", { name: "Confirmar entrega" }).click();
     await expectToast(page, "Encomenda entregue");
     await expect(page.getByTestId("order-done").filter({ hasText: customer })).toContainText("Entregue");
@@ -172,7 +172,7 @@ test.describe("punições", () => {
     await page.getByRole("button", { name: "Aplicar punição" }).click();
     const d = page.getByRole("dialog");
     await selectByText(d.getByLabel("Membro"), name);
-    await d.getByLabel("Tipo").selectOption("EXPULSAO");
+    await pick(d.getByLabel("Tipo"), "EXPULSAO");
     await expect(d.getByText("perde o acesso ao painel")).toBeVisible();
     await d.getByLabel("Motivo").fill("Quarta falta grave");
     await d.getByRole("button", { name: "Aplicar" }).click();
@@ -218,8 +218,8 @@ test.describe("vendas", () => {
     await page.goto("/bau");
     await page.getByRole("main").getByRole("button", { name: "Registrar" }).click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("O quê").selectOption("ITEM");
-    await d.getByLabel("Item").selectOption({ label: item });
+    await pick(d.getByLabel("O quê"), "ITEM");
+    await pick(d.getByLabel("Item"), { label: item });
     await d.getByLabel("Quantidade").fill("10");
     await d.getByRole("button", { name: "Registrar" }).click();
     await expectToast(page, "Entrada registrada");
@@ -236,7 +236,7 @@ test.describe("vendas", () => {
     let v = page.getByRole("dialog");
     await v.getByLabel("Nome do player").fill(`João ${s}`);
     await v.getByLabel("ID (opcional)").fill("5555");
-    await v.getByLabel("Item", { exact: true }).selectOption({ label: item });
+    await pick(v.getByLabel("Item", { exact: true }), { label: item });
     await expect(v.getByText("No baú: 10")).toBeVisible();
     await v.getByLabel("Quantidade").fill("3");
     await v.getByLabel("Preço unitário (R$)").fill("2000");
@@ -248,11 +248,11 @@ test.describe("vendas", () => {
     await page.getByRole("button", { name: "Nova venda" }).click();
     v = page.getByRole("dialog");
     await v.getByText("Facção", { exact: true }).click();
-    await v.getByRole("combobox", { name: "Facção" }).selectOption({ label: faction });
-    await v.getByLabel("Item", { exact: true }).selectOption({ label: item });
+    await pick(v.getByRole("combobox", { name: "Facção" }), { label: faction });
+    await pick(v.getByLabel("Item", { exact: true }), { label: item });
     await v.getByLabel("Quantidade").fill("2");
     await v.getByLabel("Preço unitário (R$)").fill("1500");
-    await v.getByLabel("Pagamento entrou como").selectOption("DINHEIRO_LIMPO");
+    await pick(v.getByLabel("Pagamento entrou como"), "DINHEIRO_LIMPO");
     await v.getByRole("button", { name: "Registrar venda" }).click();
     await expectToast(page, "Venda registrada: R$ 3.000 no baú");
 

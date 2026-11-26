@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRightIcon, IdCardIcon, PlusIcon, SearchIcon } from "@/components/icons";
+import { ChevronRightIcon, IdCardIcon, PlusIcon } from "@/components/icons";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { requireViewer } from "@/lib/session";
@@ -9,7 +9,8 @@ import { EmptyState, GroupedList } from "@/components/layout/grouped-list";
 import { FormDialog } from "@/components/forms/form-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchSuggest } from "@/components/forms/search-suggest";
+import { tokensWhere } from "@/lib/search";
 import { DossierFields } from "./dossier-fields";
 import { createDossier } from "./actions";
 
@@ -19,13 +20,15 @@ export default async function DossiePage({ searchParams }: PageProps<"/dossie">)
   const viewer = await requireViewer("dossie.ver");
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim() : "";
-  const contains = { contains: q, mode: "insensitive" as const };
-  const where: Prisma.DossierWhereInput = q
-    ? { OR: [{ name: contains }, { nickname: contains }, { passport: contains }, { phone: contains }, { vehicles: { some: { plate: contains } } }] }
-    : {};
-  const [dossiers, factions] = await Promise.all([
+  // cada palavra precisa aparecer em algum campo (pedaço basta, em qualquer ordem)
+  const where: Prisma.DossierWhereInput = tokensWhere<Prisma.DossierWhereInput>(q, (t) => {
+    const contains = { contains: t, mode: "insensitive" as const };
+    return [{ name: contains }, { nickname: contains }, { passport: contains }, { phone: contains }, { vehicles: { some: { plate: contains } } }];
+  });
+  const [dossiers, factions, suggestions] = await Promise.all([
     db.dossier.findMany({ where, include: { faction: true, vehicles: true }, orderBy: { updatedAt: "desc" }, take: 100 }),
     db.faction.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    db.dossier.findMany({ select: { id: true, name: true, nickname: true, passport: true, phone: true, vehicles: { select: { plate: true } } }, orderBy: { name: "asc" } }),
   ]);
 
   return (
@@ -53,18 +56,20 @@ export default async function DossiePage({ searchParams }: PageProps<"/dossie">)
       />
 
       <form role="search" className="mb-6 flex gap-2">
-        <div className="relative flex-1">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-grey-500" />
-          <Input
-            name="q"
-            defaultValue={q}
-            aria-label="Buscar no dossiê"
-            placeholder="Buscar por nome, apelido, ID, telefone ou placa…"
-            autoComplete="off"
-            spellCheck={false}
-            className="bg-card pl-12"
-          />
-        </div>
+        <SearchSuggest
+          name="q"
+          defaultValue={q}
+          aria-label="Buscar no dossiê"
+          placeholder="Buscar por nome, apelido, ID, telefone ou placa…"
+          className="flex-1"
+          items={suggestions.map((d) => ({
+            id: d.id,
+            label: d.name,
+            hint: [d.nickname && `"${d.nickname}"`, d.passport && `ID ${d.passport}`, d.phone].filter(Boolean).join(" · "),
+            keywords: d.vehicles.map((v) => v.plate).join(" "),
+            href: `/dossie/${d.id}`,
+          }))}
+        />
         <Button type="submit" variant="secondary" size="lg">
           Buscar
         </Button>
